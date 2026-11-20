@@ -20,6 +20,8 @@ void i18n.use(initReactI18next).init({
   resources,
   lng: "ar", // Arabic-first (KX-03 §03)
   fallbackLng: "en",
+  // Hermes in Expo Go has no Intl.PluralRules; i18next then falls back to v3 plurals anyway but logs a red console.error. Choose it explicitly (same behaviour, no error).
+  compatibilityJSON: typeof Intl !== "undefined" && typeof Intl.PluralRules === "function" ? "v4" : "v3",
   interpolation: { escapeValue: false },
   initImmediate: false,
 });
