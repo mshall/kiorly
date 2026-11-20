@@ -1,0 +1,367 @@
+{
+  "app": {
+    "name": "Kiorly Work",
+    "tagline": "One staff app for Clinic, Pharmacy and Lab",
+    "by": "by Kiorex"
+  },
+  "product": {
+    "clinic": "Clinic",
+    "pharmacy": "Pharmacy",
+    "lab": "Lab"
+  },
+  "common": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "done": "Done",
+    "back": "Back",
+    "retry": "Retry",
+    "refresh": "Refresh",
+    "search": "Search",
+    "scan": "Scan",
+    "confirm": "Confirm",
+    "continue": "Continue",
+    "yes": "Yes",
+    "no": "No",
+    "open": "Open",
+    "view": "View",
+    "none": "None",
+    "optional": "Optional",
+    "all": "All",
+    "today": "Today",
+    "loading": "Loading",
+    "offlineSaved": "Saved offline. It will sync when you are back online.",
+    "saved": "Saved",
+    "failed": "Something went wrong",
+    "notAllowed": "Your role cannot do this",
+    "enterCode": "Enter code",
+    "orTypeCode": "or type the code",
+    "items": "{{count}} items",
+    "min": "min",
+    "units": "units",
+    "patient": "Patient",
+    "status": "Status",
+    "notes": "Notes",
+    "reason": "Reason",
+    "name": "Name",
+    "phone": "Phone",
+    "total": "Total",
+    "viewAll": "View all",
+    "lastUpdated": "Updated {{time}}",
+    "cachedCopy": "Showing the last saved copy (offline)"
+  },
+  "states": {
+    "loading": "Loading",
+    "errorTitle": "We could not load this",
+    "errorBody": "Check your connection and try again.",
+    "retry": "Try again",
+    "emptyTitle": "Nothing here yet",
+    "emptyHint": "New items will show up here."
+  },
+  "unavailable": {
+    "title": "Temporarily unavailable",
+    "body": "This feature has been switched off for your organisation. Your data is safe.",
+    "gateTitle": "Coming soon",
+    "gateBody": "This capability is waiting for approval before it can be used."
+  },
+  "signIn": {
+    "title": "Sign in",
+    "subtitle": "Choose your workplace product",
+    "email": "Email",
+    "password": "Password",
+    "org": "Lab organisation",
+    "orgHint": "e.g. demo-lab",
+    "submit": "Sign in",
+    "passport": "Sign in with Kiorex Passport",
+    "passportSoon": "Passport sign-in for staff is being enabled. Use your product login for now.",
+    "demo": "Demo accounts",
+    "demoHint": "Development only",
+    "invalid": "Wrong email or password",
+    "network": "Cannot reach the server. Check your connection.",
+    "mfa": "Verification code",
+    "connected": "Connected",
+    "addAccount": "Add another product",
+    "planBasic": "Basic",
+    "planPro": "Pro",
+    "planEnterprise": "Enterprise"
+  },
+  "tabs": {
+    "home": "Home",
+    "work": "Work",
+    "inbox": "Inbox",
+    "me": "Me"
+  },
+  "home": {
+    "greeting": "Hello, {{name}}",
+    "greetingMorning": "Good morning, {{name}}",
+    "greetingEvening": "Good evening, {{name}}",
+    "quick": "Quick actions",
+    "modules": "Your modules",
+    "attention": "Needs attention",
+    "allClear": "All clear. Nothing urgent right now.",
+    "scanNow": "Scan",
+    "searchAll": "Search patients, drugs, orders",
+    "upgradeCard": "{{product}} is on the {{plan}} plan",
+    "upgradeCta": "See what Pro adds",
+    "safetyOnly": "Safety alerts only"
+  },
+  "work": {
+    "title": "Work",
+    "empty": "No modules are enabled for your role yet",
+    "emptyHint": "Ask your administrator to review your role.",
+    "locked": "Pro",
+    "proOnly": "Available on Pro and Enterprise"
+  },
+  "inbox": {
+    "title": "Inbox",
+    "alerts": "Safety alerts",
+    "messages": "Messages",
+    "noAlerts": "No open safety alerts",
+    "noAlertsHint": "Critical lab values, controlled-drug discrepancies and nurse safety alerts appear here on every plan.",
+    "noMessages": "No messages yet",
+    "ack": "Acknowledge",
+    "acked": "Acknowledged",
+    "ackedBy": "Acknowledged by {{name}}",
+    "ackNote": "Note (optional)",
+    "ackSuccess": "Alert acknowledged",
+    "markAll": "Mark all read",
+    "unread": "{{count}} unread",
+    "open": "{{count}} open",
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "sendTest": "Send a test notification",
+    "testSent": "Test notification sent",
+    "justNow": "Just now",
+    "safetyFree": "Safety alerts are included in every plan",
+    "needsPro": "Messages need the Pro plan"
+  },
+  "me": {
+    "title": "Me",
+    "accounts": "Connected accounts",
+    "security": "Security",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "arabic": "العربية",
+    "english": "English",
+    "restartHint": "Restart the app to flip the layout direction.",
+    "lock": "Biometric app lock",
+    "lockHint": "Ask for Face ID / fingerprint when you return to the app",
+    "lockUnavailable": "Biometrics are not available on this device",
+    "lockGrace": "Lock after",
+    "devices": "Devices and sessions",
+    "devicesHint": "See where you are signed in and sign out remotely",
+    "sync": "Sync and offline",
+    "syncHint": "Queued changes and conflicts",
+    "signOut": "Sign out",
+    "signOutAll": "Sign out of everything",
+    "about": "About",
+    "version": "Version {{v}}",
+    "privacy": "Patient data stays on the product servers. Nothing clinical is cached outside this device's secure storage.",
+    "seconds": "{{count}} s",
+    "immediately": "Immediately",
+    "demoReset": "Clear local cache"
+  },
+  "upgrade": {
+    "title": "Unlock Kiorly Work",
+    "subtitle": "{{product}} · {{org}} is on the {{plan}} plan",
+    "body": "Kiorly Work puts your daily workflows in your pocket. It is included from the Pro plan.",
+    "flagOff": "Kiorly Work has been switched off for your organisation by the administrator.",
+    "cta": "Ask your owner to upgrade",
+    "contact": "Contact your Kiorly account owner or support to move to Pro.",
+    "included": "What you get on Pro",
+    "safetyTitle": "Safety alerts are never locked",
+    "safetyBody": "Critical results, controlled-drug discrepancies and home-visit safety alerts still reach you on every plan.",
+    "viewAlerts": "Open safety alerts",
+    "signOut": "Sign out of {{product}}",
+    "feat1": "Today's work, queues and worklists",
+    "feat2": "Barcode and QR scanning",
+    "feat3": "Offline-first with safe conflict handling",
+    "feat4": "Push notifications and quick actions",
+    "feat5": "Biometric lock and remote sign-out"
+  },
+  "devices": {
+    "title": "Devices and sessions",
+    "thisDevice": "This device",
+    "lastSeen": "Last active {{time}}",
+    "revoke": "Sign out this device",
+    "revoked": "Signed out",
+    "revokeConfirm": "Sign this device out of {{product}}? It must sign in again.",
+    "empty": "No registered devices",
+    "yours": "Your devices",
+    "team": "Team devices",
+    "active": "Active"
+  },
+  "sync": {
+    "title": "Sync and offline",
+    "online": "Online",
+    "offline": "Offline",
+    "synced": "All synced",
+    "syncing": "Syncing",
+    "pending": "{{count}} waiting",
+    "conflicts": "{{count}} conflict",
+    "conflicts_other": "{{count}} conflicts",
+    "failed": "{{count}} failed",
+    "syncNow": "Sync now",
+    "queue": "Queued changes",
+    "emptyQueue": "Nothing is waiting to sync",
+    "conflictTitle": "This record changed on the server",
+    "conflictBody": "Someone else updated it while you were offline. Review the server copy, then keep your change or discard it.",
+    "keepMine": "Keep my change",
+    "discard": "Discard",
+    "retry": "Retry",
+    "lastSync": "Last sync {{time}}",
+    "offlineBanner": "You are offline. Changes are saved on this device.",
+    "never": "never",
+    "queuedToast": "Saved offline"
+  },
+  "search": {
+    "title": "Search",
+    "placeholder": "Patients, drugs, orders, specimens",
+    "hint": "Type at least 2 characters",
+    "noResults": "No results",
+    "patients": "Patients",
+    "drugs": "Drugs",
+    "customers": "Customers",
+    "prescriptions": "Prescriptions",
+    "orders": "Orders",
+    "specimens": "Specimens",
+    "appointments": "Appointments"
+  },
+  "scan": {
+    "title": "Scan",
+    "hint": "Point the camera at a barcode or QR code",
+    "permission": "Camera access is needed to scan",
+    "grant": "Allow camera",
+    "manual": "Type or paste a code",
+    "go": "Go",
+    "unsupported": "Camera scanning is not available here. Type the code instead.",
+    "scanned": "Scanned {{code}}",
+    "unknown": "Code not recognised"
+  },
+  "lock": {
+    "title": "Kiorly Work is locked",
+    "body": "Unlock to see patient and stock data.",
+    "unlock": "Unlock"
+  },
+  "notice": {
+    "expired": "Your {{product}} session expired. Sign in again.",
+    "revoked": "This device was signed out of {{product}} remotely.",
+    "entitlement": "{{product}} is no longer included in your plan. Safety alerts remain available."
+  },
+  "push": {
+    "title": "Notifications",
+    "enabled": "Push notifications are on (mock provider in development)",
+    "registered": "Registered this device for push"
+  },
+  "tiles": {
+    "clinic.schedule": {
+      "title": "Today's schedule",
+      "desc": "Queue and appointments"
+    },
+    "clinic.patients": {
+      "title": "Patients",
+      "desc": "Summary, allergies, medications"
+    },
+    "clinic.visits": {
+      "title": "Visits",
+      "desc": "Start or continue a visit"
+    },
+    "clinic.prescriptions": {
+      "title": "Prescriptions",
+      "desc": "Review and sign"
+    },
+    "clinic.labs": {
+      "title": "Lab results",
+      "desc": "Review and approve"
+    },
+    "clinic.vitals": {
+      "title": "Quick vitals",
+      "desc": "Record vital signs"
+    },
+    "clinic.homevisits": {
+      "title": "Home-visit rounds",
+      "desc": "Route, check-in, safety button"
+    },
+    "clinic.revenue": {
+      "title": "Revenue",
+      "desc": "Today and the last 7 days"
+    },
+    "pharmacy.rx": {
+      "title": "Rx queue",
+      "desc": "Verify and check safety"
+    },
+    "pharmacy.barcode": {
+      "title": "Barcode lookup",
+      "desc": "Price, stock and lots"
+    },
+    "pharmacy.receiving": {
+      "title": "Receiving",
+      "desc": "Scan against a PO"
+    },
+    "pharmacy.stockcount": {
+      "title": "Stock count",
+      "desc": "Scan and count lots"
+    },
+    "pharmacy.expiry": {
+      "title": "Expiry and low stock",
+      "desc": "What needs action"
+    },
+    "pharmacy.controlled": {
+      "title": "Controlled register",
+      "desc": "Witness countersign"
+    },
+    "pharmacy.shift": {
+      "title": "Shift cash",
+      "desc": "Sales and expected cash"
+    },
+    "pharmacy.customers": {
+      "title": "Customers",
+      "desc": "Quick lookup"
+    },
+    "pharmacy.orders": {
+      "title": "Kiorex orders",
+      "desc": "New order alerts"
+    },
+    "lab.phlebotomy": {
+      "title": "Phlebotomy round",
+      "desc": "Scan labels, chain of custody"
+    },
+    "lab.accession": {
+      "title": "Accessioning",
+      "desc": "Scan and receive specimens"
+    },
+    "lab.critical": {
+      "title": "Critical values",
+      "desc": "Acknowledge and escalate"
+    },
+    "lab.validation": {
+      "title": "Validation",
+      "desc": "Sign off results"
+    },
+    "lab.worklist": {
+      "title": "Worklist",
+      "desc": "Progress by section"
+    },
+    "lab.qc": {
+      "title": "Quality control",
+      "desc": "Blocks and runs"
+    },
+    "lab.tat": {
+      "title": "Turnaround time",
+      "desc": "At risk and breached"
+    },
+    "lab.orders": {
+      "title": "Today's orders",
+      "desc": "Status board"
+    },
+    "lab.reagents": {
+      "title": "Reagents",
+      "desc": "Low stock and expiry"
+    }
+  }
+}

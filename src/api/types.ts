@@ -1,0 +1,39 @@
+import type { Product } from "./products";
+
+export type Plan = "BASIC" | "PRO" | "ENTERPRISE";
+export interface Entitlement { key: "mobile_staff_app"; enabled: boolean; requiredPlan: "PRO"; reason: null | "PLAN_BELOW_PRO" | "FLAG_OFF" }
+export interface ModuleDef { key: string; enabled: boolean; screens: string[] }
+export interface Bootstrap {
+  apiVersion: 1;
+  product: Product;
+  serverTime: string;
+  user: { id: string; name: string; email: string; role: string; roles: string[]; locale?: string; isOwner?: boolean; branchId?: string; signatory?: boolean };
+  org: { id: string; name: string; nameAr?: string; slug?: string; plan: Plan; rawPlan?: string; edition?: string; mode?: string };
+  entitlement: Entitlement;
+  safetyAlertsOnly: boolean;
+  modules: ModuleDef[];
+  permissions?: string[];
+  device: { id: string; status: string } | null;
+}
+
+export type Severity = "CRITICAL" | "HIGH" | "MEDIUM";
+export interface SafetyAlert {
+  id: string; kind: string; severity: Severity; title: string; titleAr?: string; body: string; bodyAr?: string;
+  subject: { type: string; id: string; label: string } | null; raisedAt: string; dueAt?: string | null;
+  ackedAt: string | null; ackedBy: string | null; ackedByName?: string | null; ackNote?: string | null; escalationLevel?: number;
+}
+export interface InboxItem { id: string; kind: "GENERAL" | "SAFETY" | "CLINICAL" | "OPS"; title: string; titleAr?: string; body: string; bodyAr?: string; data?: Record<string, unknown> | null; createdAt: string; readAt: string | null }
+export interface DeviceRow { id: string; deviceId: string; platform: string; name: string; appVersion?: string; status: string; lastSeenAt?: string | null; createdAt?: string; revokedAt?: string | null; mine?: boolean; staff?: { id: string; name: string }; userName?: string }
+
+export interface Session {
+  product: Product;
+  token: string;
+  refreshToken?: string;
+  userName: string;
+  email: string;
+  deviceId: string;        // client-generated install id
+  deviceRecordId?: string; // server device id
+  deviceToken?: string;    // device-bound secret (stored in SecureStore only)
+  bootstrap?: Bootstrap;
+  signedInAt: string;
+}
