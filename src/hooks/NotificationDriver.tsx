@@ -18,7 +18,19 @@ export function NotificationDriver() {
   const alerts = useAlerts("open");
   const seen = useRef<Set<string> | null>(null);
 
-  useEffect(() => { for (const p of products) { const s = sessions[p]; if (s?.deviceRecordId) void registerPush(p, s); } }, [products, sessions]);
+  const registered = useRef<Set<string>>(new Set());
+  const deviceKey = products.map((p) => `${p}:${sessions[p]?.deviceRecordId ?? ""}`).join("|");
+  useEffect(() => {
+    for (const p of products) {
+      const s = sessions[p];
+      if (!s?.deviceRecordId) continue;
+      const k = `${p}:${s.deviceRecordId}`;
+      if (registered.current.has(k)) continue;
+      registered.current.add(k);
+      void registerPush(p, s);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deviceKey]);
   useEffect(() => installNotificationTapHandler((data) => { const p = (data?.product as "clinic" | undefined) ?? products[0]; const r = p ? routeForPush(p, data) : null; if (r) router.push(r as never); }), [products, router]);
 
   useEffect(() => {

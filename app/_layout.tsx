@@ -30,11 +30,12 @@ const queryClient = new QueryClient({
 function Shell() {
   const { i18n } = useTranslation();
   const { colors, scheme } = useTheme();
-  const { products } = useSessions();
+  const { products, ready } = useSessions();
   const common = {
     headerStyle: { backgroundColor: colors.surface }, headerShadowVisible: false, animation: "slide_from_right" as const, headerTintColor: colors.ink,
     headerTitleStyle: { fontFamily: fontFamily(i18n.language, "semibold"), color: colors.text }, contentStyle: { backgroundColor: colors.ground }, headerBackButtonDisplayMode: "minimal" as const,
   };
+  if (!ready) return null; // wait for stored sessions so first requests carry the token
   return (
     <LockProvider signedIn={products.length > 0}>
       <View style={{ flex: 1 }}>

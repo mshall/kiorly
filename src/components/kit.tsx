@@ -56,7 +56,7 @@ export function StatTile({ label, value, tone = "ink", icon, spark, onPress, hin
   const { colors } = useTheme();
   const c = toneColor(colors, tone);
   return (
-    <Card onPress={onPress} testID={testID} style={{ flex: 1, minWidth: 140, padding: 14, gap: 6 }} accessibilityLabel={`${label} ${value}`}>
+    <Card onPress={onPress} testID={testID} style={{ flex: 1, minWidth: 96, padding: 14, gap: 6, alignSelf: "stretch" }} accessibilityLabel={`${label} ${value}`}>
       <Row style={{ justifyContent: "space-between" }}>
         <T variant="small" muted numberOfLines={1} style={{ flex: 1 }}>{label}</T>
         {icon ? <Icon name={icon} size={16} color={c} /> : null}

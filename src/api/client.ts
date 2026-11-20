@@ -8,10 +8,14 @@ type Hook = (p: Product, e: ApiError) => void;
 
 let authGetter: Getter = () => null;
 let errorHook: Hook = () => {};
+const inflight: Partial<Record<Product, Promise<boolean>>> = {};
 let refresher: ((p: Product) => Promise<boolean>) | null = null;
 /** Wired by the SessionProvider: supplies tokens, reacts to 401 / DEVICE_REVOKED / FEATURE_DISABLED, refreshes clinic tokens. */
 export function configureClient(opts: { getAuth: Getter; onError: Hook; refresh?: (p: Product) => Promise<boolean> }) {
-  authGetter = opts.getAuth; errorHook = opts.onError; refresher = opts.refresh ?? null;
+  authGetter = opts.getAuth; errorHook = opts.onError;
+  const raw = opts.refresh ?? null;
+  // single-flight: parallel 401s share one refresh (refresh tokens rotate, so concurrent refreshes would revoke each other)
+  refresher = raw ? (p) => (inflight[p] ??= raw(p).finally(() => { delete inflight[p]; })) : null;
 }
 
 export interface ReqOpts {
