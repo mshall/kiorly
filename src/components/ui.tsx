@@ -63,15 +63,30 @@ function usePressScale(to = 0.97) {
   return { scale: v, onPressIn: () => go(to), onPressOut: () => go(1) };
 }
 
+
+const LAYOUT_KEYS = new Set(["flex", "flexGrow", "flexShrink", "flexBasis", "width", "minWidth", "maxWidth", "alignSelf", "margin", "marginTop", "marginBottom", "marginStart", "marginEnd", "marginLeft", "marginRight", "marginHorizontal", "marginVertical", "position", "top", "bottom", "left", "right", "start", "end", "zIndex"]);
+/** Splits a style into the keys that position the box inside its parent (outer wrapper) and the rest (visual box). */
+export function splitLayoutStyle(style: StyleProp<ViewStyle>): { outer: ViewStyle | undefined; inner: ViewStyle } {
+  const flat = (StyleSheet.flatten(style) ?? {}) as Record<string, unknown>;
+  const outer: Record<string, unknown> = {}; const inner: Record<string, unknown> = {};
+  for (const k of Object.keys(flat)) (LAYOUT_KEYS.has(k) ? outer : inner)[k] = flat[k];
+  return { outer: Object.keys(outer).length ? (outer as ViewStyle) : undefined, inner: inner as ViewStyle };
+}
+
 export function Card({ children, style, onPress, accessibilityLabel, testID }: { children: ReactNode; style?: StyleProp<ViewStyle>; onPress?: () => void; accessibilityLabel?: string; testID?: string }) {
   const { colors, scheme } = useTheme();
   const ps = usePressScale(0.985);
   const base: ViewStyle = { backgroundColor: colors.surface, borderRadius: radius + 2, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, padding: 16, ...elevation(1, scheme) };
-  if (onPress) return (
-    <Animated.View style={{ transform: [{ scale: ps.scale }] }}>
-      <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={() => { haptic.tap(); onPress(); }} onPressIn={ps.onPressIn} onPressOut={ps.onPressOut} style={({ pressed }) => [base, pressed && { backgroundColor: colors.raised }, style]}>{children}</Pressable>
+  if (onPress) {
+    // Layout props (flex/width/margin/alignSelf…) belong on the OUTER animated wrapper: it is the flex child of the parent. Left on the
+    // inner Pressable only, a `flex: 1` card collapses to its content width (stat tiles truncated to "زيارات…").
+    const { outer, inner } = splitLayoutStyle(style);
+    return (
+    <Animated.View style={[outer, { transform: [{ scale: ps.scale }] }]}>
+      <Pressable testID={testID} accessibilityRole="button" accessibilityLabel={accessibilityLabel} onPress={() => { haptic.tap(); onPress(); }} onPressIn={ps.onPressIn} onPressOut={ps.onPressOut} style={({ pressed }) => [base, outer && { flexGrow: 1 }, pressed && { backgroundColor: colors.raised }, inner]}>{children}</Pressable>
     </Animated.View>
-  );
+    );
+  }
   return <View testID={testID} style={[base, style]}>{children}</View>;
 }
 

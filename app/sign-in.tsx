@@ -43,7 +43,7 @@ export default function SignIn() {
   const valid = meta.login === "devlogin" ? email.includes("@") && org.length > 1 : email.includes("@") && password.length > 0;
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior={Platform.OS === "ios" ? "padding" : undefined}>
+    <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior="padding" /* Android 15 is edge-to-edge: the window no longer resizes for the keyboard, so pad on both platforms */>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <LinearGradient colors={scheme === "dark" ? ["#1B1A4E", "#0A3A57"] : ["#3730A3", "#0369A1"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ paddingTop: insets.top + 20, paddingBottom: 56, paddingHorizontal: 24 }}>
           <Row style={{ justifyContent: "space-between" }}>
