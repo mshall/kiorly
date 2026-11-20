@@ -1,1 +1,66 @@
-export const clinicStrings = { en: {} as Record<string, unknown>, ar: {} as Record<string, unknown> };
+/** Kiorly Work / Clinic module strings (keys under `clinic.*`). Arabic is the default language. */
+const en = {
+  nextUp: "Next up",
+  kpi: { today: "Today's visits", waiting: "Waiting", inExam: "In exam", rx: "Prescriptions to sign", labs: "Lab results to review" },
+  queue: { scheduled: "Scheduled", waiting: "Waiting", inExam: "In exam", completed: "Done", cancelled: "Cancelled", noShow: "No-show" },
+  schedule: { queue: "Live queue", all: "All today", empty: "No appointments today", emptyHint: "Pull down to refresh. New check-ins appear here.", waited: "Waiting {{count}} min", openPatient: "Open patient", checkIn: "Check in", checkedIn: "Patient checked in", startVisit: "Start / continue visit" },
+  patients: { title: "Patients", search: "Name, phone or MRN", scanMrn: "Scan a patient wristband or type an MRN", empty: "No patients found" },
+  patient: { allergies: "Allergies and problems", noAllergies: "No known allergies", lastVitals: "Last vitals", meds: "Current medications", balance: "Outstanding balance", upcoming: "Upcoming", visits: "Recent visits", labs: "Recent lab results" },
+  visits: { visit: "Visit", draft: "Open", signed: "Signed", none: "No visits yet", ready: "Ready to start", open: "Open visits", noneOpen: "No open visits", noneOpenHint: "Start a visit from the queue.", continue: "Continue", start: "Start" },
+  visit: { title: "Visit", vitals: "Vitals", notes: "Visit notes", complaint: "Chief complaint", subjective: "Subjective", objective: "Objective", assessment: "Assessment", plan: "Plan", meds: "Prescribed medications", diagnoses: "Diagnoses", saveDraft: "Save draft", sign: "Sign visit", signTitle: "Sign this visit?", signBody: "Signing finalises the note and the prescription. This cannot be undone from the phone.", signConfirm: "Sign and finalise", signed: "Visit signed", openPatient: "Open patient summary", nurseNote: "Only the treating doctor can sign. You can still record vitals and notes." },
+  rx: { pending: "To sign", signedTab: "Signed", empty: "No prescriptions here", sign: "Sign prescription", signed: "Prescription signed", already: "Already signed", confirmTitle: "Sign prescription?", confirmBody: "Sign the prescription for {{name}}? It will be finalised.", override: "Safety override recorded", unverified: "Unverified drug", readOnly: "Your role can view this but not sign." },
+  labs: { reviewed: "Reviewed", empty: "No lab results here", abnormal: "Abnormal", normal: "Normal", approve: "Approve result", approved: "Result approved", criticalTitle: "Critical value", criticalBody: "Acknowledge the safety alert in the Inbox as well as approving.", reviewedNote: "This result has been reviewed." },
+  vitals: {
+    title: "Quick vitals", pick: "Choose a patient", change: "Change", sys: "Systolic", dia: "Diastolic", bp: "Blood pressure", pulse: "Pulse", temp: "Temperature", weight: "Weight (kg)", rr: "Respiratory rate", glucose: "Glucose", pain: "Pain", record: "Record vitals", recorded: "Vitals recorded", trend: "Recent trend",
+    criticalTitle: "Critical reading", criticalBody: "The reading is critical. The care team was alerted and an escalation is needed.", flags: "Flags", normal: "Within the expected range.", hint: "Check", thresholdNote: "Thresholds pending clinical sign-off",
+    err: { range: "Out of range", nan: "Enter a number", pair: "Enter both values" }, h: { spo2: "low oxygen", bp: "blood pressure", pulse: "pulse", temp: "temperature", glucose: "glucose" },
+  },
+  rounds: {
+    today: "Today's visits", done: "Completed", empty: "No home visits today", emptyHint: "Your route appears here once visits are assigned.", masked: "Address is shown when the visit is confirmed.", safetyNote: "The safety button and the 30-minute check are always on for field visits.",
+    state: { REQUESTED: "Requested", CONFIRMED: "Confirmed", ON_MY_WAY: "On my way", EN_ROUTE: "On my way", ARRIVED: "Arrived", FINISHED: "Finished", ABORTED_UNSAFE: "Left (unsafe)", CANCELLED: "Cancelled", NO_SHOW: "No-show" },
+  },
+  round: {
+    title: "Home visit", depart: "Start travelling", arrive: "I have arrived", finish: "Finish visit", answer: "I'm OK", done: { depart: "On the way", arrive: "Arrival recorded", finish: "Visit finished", answer: "Thanks, noted", abort: "Visit ended for safety" },
+    needLocation: "Location is needed to record arrival. Turn on location and try again.", outside: "You are outside the visit's coverage area.", bldg: "Bldg", floor: "Floor", navigate: "Navigate",
+    promptTitle: "Are you OK?", promptBody: "The visit is past its planned end. Confirm you are safe, or the safety contact will be alerted.", imOk: "I'm OK",
+    safetyTitle: "Safety", sos: "Hold for SOS", sosHint: "Press and hold to alert your safety contact with your location.", sosSent: "SOS sent", abort: "Leave: unsafe situation", abortTitle: "Leave this visit", abortBody: "Tell us why. Your safety contact is notified.", abortConfirm: "End visit for safety",
+    cat: { AGGRESSION: "Aggression", ANIMALS: "Animals", INTOXICATION: "Intoxication", THREAT: "Threat", OTHER: "Other" },
+    samples: "Sample collection", newOrder: "Lab request", noOrders: "No lab requests for this visit.", collect: "Collect sample", collected: "Handed to lab", testCode: "Test code", testName: "Test name", doctor: "Requesting doctor", confirmOrder: "I am transcribing a doctor's lab request.",
+    idHint: "Check at least two identifiers with the patient before collecting.", id: { FULL_NAME: "Full name", DATE_OF_BIRTH: "Date of birth", PHONE: "Phone" }, tubes: "Tube labels", tubeLabel: "Scan or type a tube label", tubeBad: "A tube label is 3-40 characters with no spaces.", spec: { BLOOD: "Blood", URINE: "Urine", SWAB: "Swab" },
+    temp: "Sample temperature (°C)", handOff: "Hand over to lab", handedOff: "Sample handed to the lab", custody: "Lab status",
+  },
+  revenue: { today: "Today", last7: "Last 7 days", last30: "Last 30 days", gross7: "Gross, 7 days", daily: "Daily net revenue", visitsToday: "{{count}} visits completed today", note: "Posted revenue only. Export from the web app for your accountant." },
+};
+const ar = {
+  nextUp: "التالي",
+  kpi: { today: "زيارات اليوم", waiting: "في الانتظار", inExam: "في الكشف", rx: "وصفات للتوقيع", labs: "نتائج للمراجعة" },
+  queue: { scheduled: "مجدول", waiting: "في الانتظار", inExam: "في الكشف", completed: "تم", cancelled: "ملغي", noShow: "لم يحضر" },
+  schedule: { queue: "الطابور الحالي", all: "كل مواعيد اليوم", empty: "لا توجد مواعيد اليوم", emptyHint: "اسحب للتحديث. تظهر هنا حالات الوصول الجديدة.", waited: "ينتظر {{count}} د", openPatient: "فتح ملف المريض", checkIn: "تسجيل الوصول", checkedIn: "تم تسجيل وصول المريض", startVisit: "بدء / متابعة الزيارة" },
+  patients: { title: "المرضى", search: "الاسم أو الهاتف أو رقم الملف", scanMrn: "امسح سوار المريض أو اكتب رقم الملف", empty: "لا يوجد مرضى مطابقون" },
+  patient: { allergies: "الحساسية والمشكلات", noAllergies: "لا توجد حساسية معروفة", lastVitals: "آخر العلامات الحيوية", meds: "الأدوية الحالية", balance: "المبلغ المستحق", upcoming: "المواعيد القادمة", visits: "الزيارات الأخيرة", labs: "آخر نتائج التحاليل" },
+  visits: { visit: "زيارة", draft: "مفتوحة", signed: "موقّعة", none: "لا توجد زيارات بعد", ready: "جاهزة للبدء", open: "الزيارات المفتوحة", noneOpen: "لا توجد زيارات مفتوحة", noneOpenHint: "ابدأ زيارة من الطابور.", continue: "متابعة", start: "ابدأ" },
+  visit: { title: "الزيارة", vitals: "العلامات الحيوية", notes: "ملاحظات الزيارة", complaint: "الشكوى الرئيسية", subjective: "الأعراض (S)", objective: "الفحص (O)", assessment: "التقييم (A)", plan: "الخطة (P)", meds: "الأدوية الموصوفة", diagnoses: "التشخيصات", saveDraft: "حفظ المسودة", sign: "توقيع الزيارة", signTitle: "توقيع هذه الزيارة؟", signBody: "التوقيع ينهي الملاحظات والوصفة ولا يمكن التراجع عنه من الهاتف.", signConfirm: "وقّع وأنهِ", signed: "تم توقيع الزيارة", openPatient: "فتح ملخص المريض", nurseNote: "الطبيب المعالج فقط يمكنه التوقيع. يمكنك تسجيل العلامات الحيوية والملاحظات." },
+  rx: { pending: "للتوقيع", signedTab: "موقّعة", empty: "لا توجد وصفات هنا", sign: "توقيع الوصفة", signed: "تم توقيع الوصفة", already: "تم توقيعها مسبقًا", confirmTitle: "توقيع الوصفة؟", confirmBody: "هل تريد توقيع وصفة {{name}}؟ سيتم اعتمادها نهائيًا.", override: "تم تجاوز تنبيه السلامة", unverified: "دواء غير مؤكد", readOnly: "دورك يسمح بالعرض فقط دون التوقيع." },
+  labs: { reviewed: "تمت مراجعتها", empty: "لا توجد نتائج هنا", abnormal: "غير طبيعية", normal: "طبيعية", approve: "اعتماد النتيجة", approved: "تم اعتماد النتيجة", criticalTitle: "قيمة حرجة", criticalBody: "أقرّ بتنبيه السلامة في الوارد بالإضافة إلى الاعتماد.", reviewedNote: "تمت مراجعة هذه النتيجة." },
+  vitals: {
+    title: "علامات حيوية سريعة", pick: "اختر المريض", change: "تغيير", sys: "الانقباضي", dia: "الانبساطي", bp: "ضغط الدم", pulse: "النبض", temp: "الحرارة", weight: "الوزن (كجم)", rr: "معدل التنفس", glucose: "السكر", pain: "الألم", record: "تسجيل العلامات", recorded: "تم تسجيل العلامات", trend: "الاتجاه الأخير",
+    criticalTitle: "قراءة حرجة", criticalBody: "القراءة حرجة. تم تنبيه الفريق الطبي ويلزم التصعيد.", flags: "تنبيهات", normal: "ضمن المعدل المتوقع.", hint: "راجع", thresholdNote: "الحدود بانتظار اعتماد الطبيب",
+    err: { range: "خارج النطاق", nan: "أدخل رقمًا", pair: "أدخل القيمتين" }, h: { spo2: "نقص الأكسجين", bp: "ضغط الدم", pulse: "النبض", temp: "الحرارة", glucose: "السكر" },
+  },
+  rounds: {
+    today: "زيارات اليوم", done: "المكتملة", empty: "لا توجد زيارات منزلية اليوم", emptyHint: "يظهر مسارك هنا بعد تعيين الزيارات.", masked: "يظهر العنوان بعد تأكيد الزيارة.", safetyNote: "زر الأمان وفحص الـ30 دقيقة يعملان دائمًا في الزيارات الميدانية.",
+    state: { REQUESTED: "مطلوبة", CONFIRMED: "مؤكدة", ON_MY_WAY: "في الطريق", EN_ROUTE: "في الطريق", ARRIVED: "وصلت", FINISHED: "انتهت", ABORTED_UNSAFE: "غادرت (غير آمن)", CANCELLED: "ملغاة", NO_SHOW: "لم يحضر" },
+  },
+  round: {
+    title: "زيارة منزلية", depart: "بدء التحرك", arrive: "وصلت", finish: "إنهاء الزيارة", answer: "أنا بخير", done: { depart: "في الطريق", arrive: "تم تسجيل الوصول", finish: "انتهت الزيارة", answer: "شكرًا، تم التسجيل", abort: "تم إنهاء الزيارة للسلامة" },
+    needLocation: "نحتاج الموقع لتسجيل الوصول. فعّل الموقع وحاول مجددًا.", outside: "أنت خارج نطاق تغطية الزيارة.", bldg: "مبنى", floor: "دور", navigate: "الملاحة",
+    promptTitle: "هل أنت بخير؟", promptBody: "تجاوزت الزيارة وقتها المخطط. أكّد أنك بأمان وإلا سيتم تنبيه جهة الاتصال للسلامة.", imOk: "أنا بخير",
+    safetyTitle: "السلامة", sos: "اضغط مطولًا للاستغاثة", sosHint: "اضغط مطولًا لتنبيه جهة اتصال السلامة بموقعك.", sosSent: "تم إرسال الاستغاثة", abort: "المغادرة: وضع غير آمن", abortTitle: "مغادرة هذه الزيارة", abortBody: "أخبرنا بالسبب. سيتم إشعار جهة اتصال السلامة.", abortConfirm: "إنهاء الزيارة للسلامة",
+    cat: { AGGRESSION: "عدوانية", ANIMALS: "حيوانات", INTOXICATION: "تعاطي", THREAT: "تهديد", OTHER: "أخرى" },
+    samples: "سحب العينات", newOrder: "طلب تحليل", noOrders: "لا توجد طلبات تحاليل لهذه الزيارة.", collect: "سحب عينة", collected: "سُلّمت للمعمل", testCode: "رمز التحليل", testName: "اسم التحليل", doctor: "الطبيب الطالب", confirmOrder: "أنقل طلب تحليل صادرًا عن طبيب.",
+    idHint: "تحقق من هويتين على الأقل مع المريض قبل سحب العينة.", id: { FULL_NAME: "الاسم الكامل", DATE_OF_BIRTH: "تاريخ الميلاد", PHONE: "الهاتف" }, tubes: "ملصقات الأنابيب", tubeLabel: "امسح أو اكتب ملصق الأنبوب", tubeBad: "ملصق الأنبوب من 3 إلى 40 حرفًا بدون مسافات.", spec: { BLOOD: "دم", URINE: "بول", SWAB: "مسحة" },
+    temp: "حرارة العينة (°م)", handOff: "تسليم للمعمل", handedOff: "تم تسليم العينة للمعمل", custody: "حالة المعمل",
+  },
+  revenue: { today: "اليوم", last7: "آخر 7 أيام", last30: "آخر 30 يومًا", gross7: "الإجمالي، 7 أيام", daily: "صافي الإيراد اليومي", visitsToday: "{{count}} زيارات مكتملة اليوم", note: "الإيرادات المسجلة فقط. صدّر من تطبيق الويب لمحاسبك." },
+};
+export const clinicStrings = { en: { clinic: en } as Record<string, unknown>, ar: { clinic: ar } as Record<string, unknown> };
