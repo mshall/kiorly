@@ -203,8 +203,7 @@
     "synced": "All synced",
     "syncing": "Syncing",
     "pending": "{{count}} waiting",
-    "conflicts": "{{count}} conflict",
-    "conflicts_other": "{{count}} conflicts",
+    "conflicts": "{{count}} conflicts",
     "failed": "{{count}} failed",
     "syncNow": "Sync now",
     "queue": "Queued changes",
@@ -259,109 +258,115 @@
     "registered": "Registered this device for push"
   },
   "tiles": {
-    "clinic.schedule": {
-      "title": "Today's schedule",
-      "desc": "Queue and appointments"
+    "clinic": {
+      "schedule": {
+        "title": "Today's schedule",
+        "desc": "Queue and appointments"
+      },
+      "patients": {
+        "title": "Patients",
+        "desc": "Summary, allergies, medications"
+      },
+      "visits": {
+        "title": "Visits",
+        "desc": "Start or continue a visit"
+      },
+      "prescriptions": {
+        "title": "Prescriptions",
+        "desc": "Review and sign"
+      },
+      "labs": {
+        "title": "Lab results",
+        "desc": "Review and approve"
+      },
+      "vitals": {
+        "title": "Quick vitals",
+        "desc": "Record vital signs"
+      },
+      "homevisits": {
+        "title": "Home-visit rounds",
+        "desc": "Route, check-in, safety button"
+      },
+      "revenue": {
+        "title": "Revenue",
+        "desc": "Today and the last 7 days"
+      }
     },
-    "clinic.patients": {
-      "title": "Patients",
-      "desc": "Summary, allergies, medications"
+    "pharmacy": {
+      "rx": {
+        "title": "Rx queue",
+        "desc": "Verify and check safety"
+      },
+      "barcode": {
+        "title": "Barcode lookup",
+        "desc": "Price, stock and lots"
+      },
+      "receiving": {
+        "title": "Receiving",
+        "desc": "Scan against a PO"
+      },
+      "stockcount": {
+        "title": "Stock count",
+        "desc": "Scan and count lots"
+      },
+      "expiry": {
+        "title": "Expiry and low stock",
+        "desc": "What needs action"
+      },
+      "controlled": {
+        "title": "Controlled register",
+        "desc": "Witness countersign"
+      },
+      "shift": {
+        "title": "Shift cash",
+        "desc": "Sales and expected cash"
+      },
+      "customers": {
+        "title": "Customers",
+        "desc": "Quick lookup"
+      },
+      "orders": {
+        "title": "Kiorex orders",
+        "desc": "New order alerts"
+      }
     },
-    "clinic.visits": {
-      "title": "Visits",
-      "desc": "Start or continue a visit"
-    },
-    "clinic.prescriptions": {
-      "title": "Prescriptions",
-      "desc": "Review and sign"
-    },
-    "clinic.labs": {
-      "title": "Lab results",
-      "desc": "Review and approve"
-    },
-    "clinic.vitals": {
-      "title": "Quick vitals",
-      "desc": "Record vital signs"
-    },
-    "clinic.homevisits": {
-      "title": "Home-visit rounds",
-      "desc": "Route, check-in, safety button"
-    },
-    "clinic.revenue": {
-      "title": "Revenue",
-      "desc": "Today and the last 7 days"
-    },
-    "pharmacy.rx": {
-      "title": "Rx queue",
-      "desc": "Verify and check safety"
-    },
-    "pharmacy.barcode": {
-      "title": "Barcode lookup",
-      "desc": "Price, stock and lots"
-    },
-    "pharmacy.receiving": {
-      "title": "Receiving",
-      "desc": "Scan against a PO"
-    },
-    "pharmacy.stockcount": {
-      "title": "Stock count",
-      "desc": "Scan and count lots"
-    },
-    "pharmacy.expiry": {
-      "title": "Expiry and low stock",
-      "desc": "What needs action"
-    },
-    "pharmacy.controlled": {
-      "title": "Controlled register",
-      "desc": "Witness countersign"
-    },
-    "pharmacy.shift": {
-      "title": "Shift cash",
-      "desc": "Sales and expected cash"
-    },
-    "pharmacy.customers": {
-      "title": "Customers",
-      "desc": "Quick lookup"
-    },
-    "pharmacy.orders": {
-      "title": "Kiorex orders",
-      "desc": "New order alerts"
-    },
-    "lab.phlebotomy": {
-      "title": "Phlebotomy round",
-      "desc": "Scan labels, chain of custody"
-    },
-    "lab.accession": {
-      "title": "Accessioning",
-      "desc": "Scan and receive specimens"
-    },
-    "lab.critical": {
-      "title": "Critical values",
-      "desc": "Acknowledge and escalate"
-    },
-    "lab.validation": {
-      "title": "Validation",
-      "desc": "Sign off results"
-    },
-    "lab.worklist": {
-      "title": "Worklist",
-      "desc": "Progress by section"
-    },
-    "lab.qc": {
-      "title": "Quality control",
-      "desc": "Blocks and runs"
-    },
-    "lab.tat": {
-      "title": "Turnaround time",
-      "desc": "At risk and breached"
-    },
-    "lab.orders": {
-      "title": "Today's orders",
-      "desc": "Status board"
-    },
-    "lab.reagents": {
-      "title": "Reagents",
-      "desc": "Low stock and expiry"
+    "lab": {
+      "phlebotomy": {
+        "title": "Phlebotomy round",
+        "desc": "Scan labels, chain of custody"
+      },
+      "accession": {
+        "title": "Accessioning",
+        "desc": "Scan and receive specimens"
+      },
+      "critical": {
+        "title": "Critical values",
+        "desc": "Acknowledge and escalate"
+      },
+      "validation": {
+        "title": "Validation",
+        "desc": "Sign off results"
+      },
+      "worklist": {
+        "title": "Worklist",
+        "desc": "Progress by section"
+      },
+      "qc": {
+        "title": "Quality control",
+        "desc": "Blocks and runs"
+      },
+      "tat": {
+        "title": "Turnaround time",
+        "desc": "At risk and breached"
+      },
+      "orders": {
+        "title": "Today's orders",
+        "desc": "Status board"
+      },
+      "reagents": {
+        "title": "Reagents",
+        "desc": "Low stock and expiry"
+      }
     }
   }
 }

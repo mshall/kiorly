@@ -162,7 +162,7 @@ export function SyncChip({ onPress }: { onPress?: () => void }) {
   const s = useSyncStatus();
   let tone: Tone = "success"; let label = t("sync.synced"); let icon: IconName = "check";
   if (!online) { tone = "warning"; label = s.pending ? `${t("sync.offline")} · ${t("sync.pending", { count: s.pending })}` : t("sync.offline"); icon = "wifiOff"; }
-  else if (s.conflicts) { tone = "danger"; label = t("sync.conflicts", { count: s.conflicts, defaultValue: "" }); icon = "alert"; }
+  else if (s.conflicts) { tone = "danger"; label = t("sync.conflicts", { count: s.conflicts }); icon = "alert"; }
   else if (s.syncing) { tone = "ocean"; label = t("sync.syncing"); icon = "sync"; }
   else if (s.pending || s.failed) { tone = "warning"; label = t("sync.pending", { count: s.pending + s.failed }); icon = "sync"; }
   const c = toneColor(colors, tone);
