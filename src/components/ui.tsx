@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  ActivityIndicator, Animated, Easing, KeyboardAvoidingView, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
+  ActivityIndicator, Animated, Easing, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
   type ViewProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle, type RefreshControlProps,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -10,6 +10,7 @@ import { haptic } from "@/lib/haptics";
 import { animationsEnabled, nativeDriver, useReducedMotion } from "@/lib/motion";
 import { PulseLine } from "./Pulse";
 import { Icon, type IconName } from "./Icon";
+import { type InputHandle, KeyboardAvoider, ScrollIntoViewContext, useKeyboardVisible, useScrollIntoView, useScrollIntoViewContext } from "./KeyboardForm";
 
 // ---- Text ----
 type Variant = "large" | "display" | "title" | "h2" | "body" | "small" | "caption" | "label";
@@ -32,26 +33,27 @@ export function Screen({ children, scroll = true, padded = true, refresh, footer
 }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { scrollRef, value: scrollCtx } = useScrollIntoView();
   const y = useRef(new Animated.Value(0)).current;
   const onScroll = useMemo(() => Animated.event([{ nativeEvent: { contentOffset: { y } } }], { useNativeDriver: false }), [y]);
   const barOpacity = y.interpolate({ inputRange: [18, 56], outputRange: [0, 1], extrapolate: "clamp" });
   const body = scroll ? (
-    <Animated.ScrollView refreshControl={refresh} keyboardShouldPersistTaps="handled" onScroll={title ? onScroll : undefined} scrollEventThrottle={16}
+    <Animated.ScrollView ref={scrollRef as never} refreshControl={refresh} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" onScroll={title ? onScroll : undefined} scrollEventThrottle={16}
       contentContainerStyle={[padded && { padding: 16 }, { paddingBottom: 24 }, style]} showsVerticalScrollIndicator={false}>
       {title ? <T variant="large" accessibilityRole="header" style={{ marginBottom: 4 }}>{title}</T> : null}
       {children}
     </Animated.ScrollView>
   ) : <View style={[{ flex: 1 }, padded && { padding: 16 }, style]}>{title ? <T variant="large" accessibilityRole="header">{title}</T> : null}{children}</View>;
   return (
-    <View testID={testID} style={{ flex: 1, backgroundColor: colors.ground }}>
-      {body}
+    <KeyboardAvoider testID={testID} style={{ backgroundColor: colors.ground }}>
+      <ScrollIntoViewContext.Provider value={scrollCtx}>{body}</ScrollIntoViewContext.Provider>
       {title && scroll ? (
         <Animated.View pointerEvents="none" aria-hidden style={{ position: "absolute", top: 0, left: 0, right: 0, height: insets.top + 48, paddingTop: insets.top, opacity: barOpacity, backgroundColor: colors.surface, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.border, alignItems: "center", justifyContent: "center" }}>
           <T variant="small" weight="semibold" numberOfLines={1}>{title}</T>
         </Animated.View>
       ) : null}
       {footer ? <View style={{ padding: 16, paddingBottom: 16 + (insets.bottom ? 0 : 0), backgroundColor: colors.surface, borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }}>{footer}</View> : null}
-    </View>
+    </KeyboardAvoider>
   );
 }
 
@@ -150,13 +152,16 @@ export function Field({ label, style, onFocus, onBlur, ...p }: TextInputProps & 
   const { colors } = useTheme();
   const { i18n } = useTranslation();
   const [focused, setFocused] = useState(false);
+  const inputRef = useRef<InputHandle>(null);
+  const { scrollIntoView } = useScrollIntoViewContext();
   return (
     <View style={{ gap: 6 }}>
       {label ? <T variant="label">{label}</T> : null}
       <TextInput
+        ref={inputRef as never}
         accessibilityLabel={label ?? p.placeholder} placeholderTextColor={colors.muted}
         style={[{ minHeight: 50, borderRadius: radius, borderWidth: 1.5, borderColor: focused ? colors.ink : colors.border, backgroundColor: colors.surface, color: colors.text, paddingHorizontal: 14, fontSize: 16, fontFamily: fontFamily(i18n.language, "regular"), textAlign: i18n.language.startsWith("ar") ? "right" : "left" }, style]}
-        onFocus={(e) => { setFocused(true); onFocus?.(e); }} onBlur={(e) => { setFocused(false); onBlur?.(e); }}
+        onFocus={(e) => { setFocused(true); scrollIntoView(inputRef.current); onFocus?.(e); }} onBlur={(e) => { setFocused(false); onBlur?.(e); }}
         {...p}
       />
     </View>
@@ -199,6 +204,8 @@ export function Sheet({ visible, onClose, title, children, footer, testID }: { v
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
+  const kbOpen = useKeyboardVisible();
+  const { scrollRef, value: scrollCtx } = useScrollIntoView();
   const [mounted, setMounted] = useState(visible);
   const open = useRef(new Animated.Value(visible ? 1 : 0)).current;
   const drag = useRef(new Animated.Value(0)).current;
@@ -225,20 +232,20 @@ export function Sheet({ visible, onClose, title, children, footer, testID }: { v
   const translateY = Animated.add(open.interpolate({ inputRange: [0, 1], outputRange: [520, 0] }), drag);
   return (
     <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} accessibilityViewIsModal statusBarTranslucent>
-      <KeyboardAvoidingView behavior="padding" style={{ flex: 1, justifyContent: "flex-end" }}>
+      <KeyboardAvoider style={{ justifyContent: "flex-end" }}>
         <Animated.View style={{ ...(StyleSheet.absoluteFill as object), backgroundColor: colors.overlay, opacity: open }}>
           <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t("common.close")} />
         </Animated.View>
-        <Animated.View testID={testID} style={{ maxHeight: "88%", backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: insets.bottom + 8, transform: [{ translateY }], ...elevation(4, scheme) }}>
+        <Animated.View testID={testID} style={{ maxHeight: "88%", backgroundColor: colors.surface, borderTopLeftRadius: 24, borderTopRightRadius: 24, paddingBottom: (kbOpen ? 0 : insets.bottom) + 8, transform: [{ translateY }], ...elevation(4, scheme) }}>
           <View {...pan.panHandlers} style={{ alignItems: "center", paddingTop: 8 }} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><View style={{ width: 40, height: 5, borderRadius: 3, backgroundColor: colors.borderStrong }} /></View>
           <Row style={{ paddingHorizontal: 16, paddingBottom: 8, paddingTop: 4, justifyContent: "space-between" }} {...pan.panHandlers}>
             <T variant="h2" style={{ flex: 1 }} accessibilityRole="header">{title}</T>
             <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel={t("common.close")} style={{ width: MIN_TOUCH, height: MIN_TOUCH, alignItems: "center", justifyContent: "center" }}><Icon name="close" color={colors.text} /></Pressable>
           </Row>
-          <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16, gap: 12 }} keyboardShouldPersistTaps="handled">{children}</ScrollView>
+          <ScrollIntoViewContext.Provider value={scrollCtx}><ScrollView ref={scrollRef as never} contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16, gap: 12 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">{children}</ScrollView></ScrollIntoViewContext.Provider>
           {footer ? <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>{footer}</View> : null}
         </Animated.View>
-      </KeyboardAvoidingView>
+      </KeyboardAvoider>
     </Modal>
   );
 }
