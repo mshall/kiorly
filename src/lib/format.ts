@@ -1,8 +1,9 @@
 const loc = (lang: string) => (lang.startsWith("ar") ? "ar-EG" : "en-GB");
 const TZ = "Africa/Cairo";
 
-export const formatMoney = (egp: number, lang: string) =>
-  new Intl.NumberFormat(loc(lang), { style: "currency", currency: "EGP", maximumFractionDigits: 0 }).format(egp);
+/** `digits` = 0 for dashboards; pass 2 where piasters matter (unit prices, cash counts, variances). */
+export const formatMoney = (egp: number, lang: string, digits = 0) =>
+  new Intl.NumberFormat(loc(lang), { style: "currency", currency: "EGP", minimumFractionDigits: digits, maximumFractionDigits: digits }).format(egp);
 export const formatTime = (iso: string, lang: string) =>
   new Intl.DateTimeFormat(loc(lang), { hour: "numeric", minute: "2-digit", timeZone: TZ }).format(new Date(iso));
 export const formatDay = (iso: string, lang: string) =>

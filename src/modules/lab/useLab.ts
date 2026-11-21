@@ -9,7 +9,8 @@ export function useLab() {
   return {
     session, bootstrap: b, owner: session?.email ?? "",
     role: b?.user.role ?? "",
-    canSign: !!b?.user.signatory || !!mod("lab.validation")?.screens.includes("sign-off"),
+    /** Sign-off is offered only when the server says so (signatory role + licence); `user.signatory` alone is a licence flag and would also light up the owner. */
+    canSign: !!mod("lab.validation")?.screens.includes("sign-off"),
     can: (perm: string) => !!b?.permissions?.includes(perm),
     screens: (k: string) => mod(k)?.screens ?? [],
   };

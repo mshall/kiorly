@@ -28,6 +28,7 @@ const en = {
     samples: "Sample collection", newOrder: "Lab request", noOrders: "No lab requests for this visit.", collect: "Collect sample", collected: "Handed to lab", testCode: "Test code", testName: "Test name", doctor: "Requesting doctor", confirmOrder: "I am transcribing a doctor's lab request.",
     idHint: "Check at least two identifiers with the patient before collecting.", id: { FULL_NAME: "Full name", DATE_OF_BIRTH: "Date of birth", PHONE: "Phone" }, tubes: "Tube labels", tubeLabel: "Scan or type a tube label", tubeBad: "A tube label is 3-40 characters with no spaces.", spec: { BLOOD: "Blood", URINE: "Urine", SWAB: "Swab" },
     temp: "Sample temperature (°C)", handOff: "Hand over to lab", handedOff: "Sample handed to the lab", custody: "Lab status",
+    note: "Nursing note", noteHint: "What you assessed and did. Sign it to close the visit.", signFinish: "Sign note and finish visit", noteSigned: "Note signed, visit finished",
   },
   revenue: { today: "Today", last7: "Last 7 days", last30: "Last 30 days", gross7: "Gross, 7 days", daily: "Daily net revenue", visitsToday: "{{count}} visits completed today", note: "Posted revenue only. Export from the web app for your accountant." },
 };
@@ -60,6 +61,7 @@ const ar = {
     samples: "سحب العينات", newOrder: "طلب تحليل", noOrders: "لا توجد طلبات تحاليل لهذه الزيارة.", collect: "سحب عينة", collected: "سُلّمت للمعمل", testCode: "رمز التحليل", testName: "اسم التحليل", doctor: "الطبيب الطالب", confirmOrder: "أنقل طلب تحليل صادرًا عن طبيب.",
     idHint: "تحقق من هويتين على الأقل مع المريض قبل سحب العينة.", id: { FULL_NAME: "الاسم الكامل", DATE_OF_BIRTH: "تاريخ الميلاد", PHONE: "الهاتف" }, tubes: "ملصقات الأنابيب", tubeLabel: "امسح أو اكتب ملصق الأنبوب", tubeBad: "ملصق الأنبوب من 3 إلى 40 حرفًا بدون مسافات.", spec: { BLOOD: "دم", URINE: "بول", SWAB: "مسحة" },
     temp: "حرارة العينة (°م)", handOff: "تسليم للمعمل", handedOff: "تم تسليم العينة للمعمل", custody: "حالة المعمل",
+    note: "ملاحظة التمريض", noteHint: "ما قمت بتقييمه وتنفيذه. وقّعها لإغلاق الزيارة.", signFinish: "وقّع الملاحظة وأنهِ الزيارة", noteSigned: "تم توقيع الملاحظة وانتهت الزيارة",
   },
   revenue: { today: "اليوم", last7: "آخر 7 أيام", last30: "آخر 30 يومًا", gross7: "الإجمالي، 7 أيام", daily: "صافي الإيراد اليومي", visitsToday: "{{count}} زيارات مكتملة اليوم", note: "الإيرادات المسجلة فقط. صدّر من تطبيق الويب لمحاسبك." },
 };

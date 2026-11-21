@@ -368,5 +368,172 @@
         "desc": "Low stock and expiry"
       }
     }
+  },
+  "lite": {
+    "pro": "Pro",
+    "badge": "Lite",
+    "tileA11y": "{{title}}. {{desc}}. Pro feature, locked. Opens details.",
+    "meSee": "See what Pro adds",
+    "inboxNote": "Safety alerts are included on your Lite plan. Nothing here is locked.",
+    "includedTitle": "Included on Lite",
+    "includedBody": "Safety alerts reach you on every plan: see them, open the details and acknowledge them. Your admin can sign you out of a lost device remotely.",
+    "lockedTitle": "Pro tools for your role ({{count}})",
+    "seeAllTools": "See all {{count}} Pro tools",
+    "forYou": "What it does for you",
+    "planNeeded": "Plan needed",
+    "planValue": "Pro or Enterprise. You are on {{plan}}.",
+    "planBadge": "Needs Pro",
+    "safetyStays": "Safety alerts keep working on every plan. Requesting an upgrade changes nothing for you today and costs nothing.",
+    "seeAll": "See everything Pro adds",
+    "cta": {
+      "upgradePlan": "Upgrade plan",
+      "askAdmin": "Ask your admin to upgrade"
+    },
+    "sending": "Sending…",
+    "retry": "Try again",
+    "requestedOn": "Requested on {{date}}",
+    "queued": "Saved offline. We will send it when you are back online.",
+    "error": "We could not send your request. Check your connection and try again.",
+    "hint": {
+      "admin": "We record your request for the plan change. You can also switch plans from Billing on the web.",
+      "staff": "Your request goes to the account owner. It is optional and you can keep working as you are.",
+      "doneAdmin": "Request recorded. You can also switch plans from Billing on the web.",
+      "doneStaff": "Your owner has been told. There is nothing else to do.",
+      "queued": "It will be sent automatically; check Sync to see it."
+    },
+    "homeLast": "You looked at {{feature}}. Tap to see what it does for you.",
+    "homeRequested": "{{feature}}: requested on {{date}}",
+    "roles": {
+      "manager": "For owners and managers",
+      "doctor": "For doctors",
+      "nurse": "For nurses",
+      "frontdesk": "For front desk",
+      "pharmacist": "For pharmacists",
+      "counter": "For counter staff",
+      "signatory": "For signatories",
+      "tech": "For technologists",
+      "phleb": "For phlebotomists",
+      "staff": "For your role"
+    },
+    "benefit": {
+      "clinic": {
+        "schedule": {
+          "default": "See today's queue and appointments, and check patients in, from your phone.",
+          "doctor": "Know who is next and who is waiting before you walk to the room.",
+          "frontdesk": "Check patients in and see the live queue without going back to the desk.",
+          "manager": "See how the day is running across your clinics at a glance."
+        },
+        "patients": {
+          "default": "Look up a patient summary, allergies and current medications in seconds.",
+          "nurse": "Check allergies and current medications at the bedside before you give anything.",
+          "frontdesk": "Find a patient quickly and confirm their details at the desk or on the phone."
+        },
+        "visits": {
+          "default": "Start or continue a visit and write notes from anywhere.",
+          "doctor": "Open a visit, add your notes and close it between patients, no desktop needed."
+        },
+        "prescriptions": {
+          "default": "Review and sign prescriptions as soon as they are ready.",
+          "doctor": "Sign pending prescriptions in one tap instead of waiting until you are back at your desk."
+        },
+        "labs": {
+          "default": "Get lab results and approve them without waiting.",
+          "doctor": "Review and approve results the moment they land, and act on the abnormal ones first.",
+          "nurse": "See which results are back so you can tell patients and prepare next steps."
+        },
+        "vitals": {
+          "default": "Record blood pressure, pulse, temperature and more at the bedside.",
+          "nurse": "Enter vitals at the bedside and get an immediate warning when a value is critical.",
+          "doctor": "See and record vitals during the visit without asking someone to walk them over.",
+          "manager": "Keep vitals recorded on time across the team."
+        },
+        "homevisits": {
+          "default": "Plan your route, check in at each home and use the safety button on home visits.",
+          "nurse": "Follow your round, check in at every home and press the safety button if you ever feel unsafe.",
+          "doctor": "Run your home visits with route, check-in and a one-tap safety button."
+        },
+        "revenue": {
+          "default": "See today's revenue and the last 7 days.",
+          "manager": "Check today's and this week's revenue from your phone, wherever you are."
+        }
+      },
+      "pharmacy": {
+        "rx": {
+          "default": "Verify prescriptions and see safety checks in one queue.",
+          "pharmacist": "Work the verification queue and see interaction and allergy checks before you dispense."
+        },
+        "barcode": {
+          "default": "Scan any box to see price, stock and lots.",
+          "counter": "Scan a box and answer a customer on price and stock without leaving the counter."
+        },
+        "receiving": {
+          "default": "Scan deliveries against the purchase order."
+        },
+        "stockcount": {
+          "default": "Count stock by scanning lots instead of writing it down."
+        },
+        "expiry": {
+          "default": "See what is expiring or running low before it becomes a problem.",
+          "manager": "Catch expiring and low stock early and avoid write-offs.",
+          "pharmacist": "See which lots expire soon so you can rotate stock first."
+        },
+        "controlled": {
+          "default": "Handle the controlled-drug register and witness countersigns.",
+          "pharmacist": "Countersign controlled-drug movements from your phone instead of hunting for a colleague.",
+          "manager": "See the controlled register balances and discrepancies at a glance."
+        },
+        "shift": {
+          "default": "See your shift's sales and expected cash.",
+          "counter": "See your shift sales and expected cash before you count the drawer.",
+          "manager": "Check every shift's sales and expected cash without waiting for the end-of-day report."
+        },
+        "customers": {
+          "default": "Look up a customer quickly."
+        },
+        "orders": {
+          "default": "Get alerts for new Kiorex orders and respond on time."
+        }
+      },
+      "lab": {
+        "phlebotomy": {
+          "default": "Scan labels and keep chain of custody on collection rounds.",
+          "phleb": "Scan every tube at the patient and keep the chain of custody without paper."
+        },
+        "accession": {
+          "default": "Scan and receive specimens as they arrive."
+        },
+        "critical": {
+          "default": "Acknowledge and escalate critical values.",
+          "signatory": "Acknowledge critical results and see escalations wherever you are.",
+          "tech": "Acknowledge a critical result the moment it is raised and see what happens next.",
+          "manager": "Make sure every critical value is acknowledged in time."
+        },
+        "validation": {
+          "default": "Review and sign off results.",
+          "signatory": "Review and sign off results from your phone so reports are not waiting on you.",
+          "tech": "Technically validate results at the bench and move them on faster."
+        },
+        "worklist": {
+          "default": "See worklist progress by section."
+        },
+        "qc": {
+          "default": "See QC status and blocks before you run patients.",
+          "tech": "Check QC status and Levey-Jennings charts before you release a run.",
+          "manager": "See which analysers are blocked by QC without walking to the bench."
+        },
+        "tat": {
+          "default": "Watch turnaround times and breaches.",
+          "manager": "See which orders are about to breach their turnaround time and act before they do."
+        },
+        "orders": {
+          "default": "Look up today's orders and their details."
+        },
+        "reagents": {
+          "default": "See low and expiring reagents.",
+          "tech": "Know which reagents are low before a run fails.",
+          "manager": "Reorder reagents before the bench runs out."
+        }
+      }
+    }
   }
 }

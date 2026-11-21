@@ -12,6 +12,8 @@ import { useLock } from "@/auth/lock";
 import { PRODUCT_META, APP_VERSION, accentFor } from "@/api/products";
 import { setLanguage, type Lang } from "@/i18n";
 import { haptic } from "@/lib/haptics";
+import { LiteBadge } from "@/components/lite";
+import { isLite } from "@/lite/logic";
 
 export default function Me() {
   const { t, i18n } = useTranslation();
@@ -38,8 +40,9 @@ export default function Me() {
                 <T weight="semibold">{s.userName}</T>
                 <T variant="small" muted numberOfLines={1}>{t(PRODUCT_META[p].nameKey)} · {(i18n.language.startsWith("ar") && b?.org.nameAr) || b?.org.name} · {b?.user.role}</T>
               </View>
-              <Badge tone={b?.entitlement.enabled ? "success" : "warning"} label={b?.org.plan ?? "-"} />
+              <View style={{ alignItems: "flex-end", gap: 4 }}><Badge tone={b?.entitlement.enabled ? "success" : "warning"} label={b?.org.plan ?? "-"} /><LiteBadge product={p} /></View>
             </Row>
+            {isLite(b) ? <Button small variant="secondary" icon="award" title={t("lite.meSee")} onPress={() => router.push(`/upgrade?product=${p}` as never)} testID={`lite-see-${p}`} /> : null}
             <Button small variant="secondary" title={t("me.signOut")} onPress={() => void signOut(p)} testID={`signout-${p}`} />
           </Card>
         );

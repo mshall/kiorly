@@ -6,14 +6,13 @@ export const PRODUCTS: readonly Product[] = ["clinic", "pharmacy", "lab"] as con
 export const APP_VERSION: string = (Constants.expoConfig?.version as string | undefined) ?? "0.1.0";
 export const CLIENT_HEADER = `kiorly-work/${APP_VERSION}`;
 
-type Env = Record<string, string | undefined>;
-const env = (process.env ?? {}) as Env;
+// Literal `process.env.EXPO_PUBLIC_*` member reads only: Metro/Babel inline exactly these at build time (an aliased `const env = process.env` is NOT inlined, so every web/production build silently fell back to the localhost defaults).
 
 /** Base URLs (prefix included). Override per environment with EXPO_PUBLIC_*_API; defaults are the local workspace ports (INTEGRATION.md). */
 export const API_BASE: Record<Product, string> = {
-  clinic: env.EXPO_PUBLIC_CLINIC_API ?? "http://localhost:3010/api/v1",
-  pharmacy: env.EXPO_PUBLIC_PHARMACY_API ?? "http://localhost:3100/api/v1",
-  lab: env.EXPO_PUBLIC_LAB_API ?? "http://localhost:3200/api/v1",
+  clinic: process.env.EXPO_PUBLIC_CLINIC_API ?? "http://localhost:3010/api/v1",
+  pharmacy: process.env.EXPO_PUBLIC_PHARMACY_API ?? "http://localhost:3100/api/v1",
+  lab: process.env.EXPO_PUBLIC_LAB_API ?? "http://localhost:3200/api/v1",
 };
 
 export interface ProductMeta {

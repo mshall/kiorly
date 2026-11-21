@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/theme";
-import { Badge, Button, Card, Field, Row, Screen, Sheet, T, useToast } from "@/components/ui";
+import { Badge, Banner, Button, Card, Field, Row, Screen, Sheet, T, useToast } from "@/components/ui";
 import { EmptyState } from "@/components/states";
 import { Segmented, SkeletonList, TimeAgo, ListRow } from "@/components/kit";
 import { usePullRefresh } from "@/hooks/useRead";
@@ -16,6 +16,7 @@ import { api } from "@/api/client";
 import { routeForPush } from "@/modules/registry";
 import { haptic } from "@/lib/haptics";
 import { ApiError } from "@/api/errors";
+import { isLite } from "@/lite/logic";
 
 const sevTone = (s: string) => (s === "CRITICAL" ? "danger" : s === "HIGH" ? "warning" : "muted") as "danger" | "warning" | "muted";
 
@@ -27,7 +28,8 @@ export default function Inbox() {
   const toast = useToast();
   const qc = useQueryClient();
   const ar = i18n.language.startsWith("ar");
-  const { products, isEntitled } = useSessions();
+  const { products, isEntitled, sessions } = useSessions();
+  const liteProducts = products.filter((p) => isLite(sessions[p]?.bootstrap));
   const [tab, setTab] = useState<"alerts" | "messages">("alerts");
   const alerts = useAlerts("all");
   const msgs = useMessages();
@@ -49,6 +51,7 @@ export default function Inbox() {
   return (
     <Screen style={{ paddingTop: insets.top + 8, gap: 12 }} title={t("inbox.title")} refresh={refresh} testID="inbox">
       <Segmented value={tab} onChange={setTab} options={[{ value: "alerts", label: t("inbox.alerts"), count: open.length }, { value: "messages", label: t("inbox.messages"), count: msgs.unread || undefined }]} />
+      {tab === "alerts" && liteProducts.length ? <Banner tone="success" testID="inbox-lite-note" body={t("lite.inboxNote")} /> : null}
       {tab === "alerts" ? (
         alerts.isLoading ? <SkeletonList rows={4} /> : !alerts.items.length ? (
           <EmptyState icon="shield" title={t("inbox.noAlerts")} hint={t("inbox.noAlertsHint")} />

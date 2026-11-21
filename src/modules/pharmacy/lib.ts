@@ -8,8 +8,8 @@ export interface ExpiryItem { lotId: string; daysToExpiry: number; qtyOnHand: nu
 
 export const hasScreen = (b: Bootstrap | undefined, key: string, screen: string) => !!b?.modules.find((m) => m.key === key)?.screens.includes(screen);
 
-/** Money strings come from the API ("42.50"); formatted as EGP. */
-export const money = (v: string | number | null | undefined, lang: string) => (v == null || v === "" ? "-" : formatMoney(Number(v), lang));
+/** Money strings come from the API ("42.50"); formatted as EGP with piasters (a pharmacy price or a till variance of 0.50 must not round to a whole pound). */
+export const money = (v: string | number | null | undefined, lang: string) => (v == null || v === "" ? "-" : formatMoney(Number(v), lang, 2));
 
 /** First-expiring-first-out order (expired lots first, they must be quarantined). */
 export const fefo = <T extends { expiryDate: string }>(lots: T[]) => [...lots].sort((a, b) => +new Date(a.expiryDate) - +new Date(b.expiryDate));
@@ -58,11 +58,26 @@ export function summarizeChecks(checks: SafetyCheck[]) {
     block: block.length, warn: warn.length, pass: checks.filter((c) => c.outcome === "PASS").length, overridden: checks.filter((c) => c.outcome === "OVERRIDDEN_BY_PHARMACIST").length,
     /** Checks that must be overridden (or the draft cancelled) before sign-off. */
     open: [...block, ...warn], locked: block.filter((c) => c.overridable === false),
-    canSignOff: block.length === 0 && warn.length === 0,
+    // A WARN the server marks non-overridable (e.g. "prescriber has no Kiorly-verified badge") is informational: the API signs off with it, and nobody can clear it,
+    // so it must not gate sign-off (it used to leave the pharmacist stuck on every Rx from an unverified prescriber).
+    canSignOff: block.length === 0 && warn.every((c) => c.overridable === false),
   };
 }
 export const canOverride = (c: SafetyCheck, allowed: boolean) => allowed && c.overridable !== false && (c.outcome === "WARN" || c.outcome === "BLOCK");
 export const validReason = (r: string) => r.trim().length >= 5;
+
+/**
+ * What the Rx detail screen offers for a prescription status and role. The queue holds RECEIVED / VALIDATING prescriptions; validating moves one to
+ * VALIDATED (it then leaves the queue but must still be dispensable from this screen, or the flow dead-ends). Validate / reject need `rx.validate`;
+ * the dispensing sign-off needs the licensed-signer screen (`rx.override`). Roles without either (cashier, assistant) get a read-only screen.
+ */
+export function rxActions(status: string | undefined, role: { canValidate: boolean; canSign: boolean }) {
+  const needsValidation = status === "RECEIVED" || status === "VALIDATING";
+  const dispensable = status === "VALIDATED" || status === "PARTIALLY_DISPENSED";
+  const validate = needsValidation && role.canValidate;
+  const dispense = (needsValidation && role.canValidate && role.canSign) || (dispensable && role.canSign);
+  return { validate, reject: validate, dispense, footer: validate || dispense, needsValidation };
+}
 
 export interface CountLine { id?: string; lotId: string; qtyExpected: number; qtyCounted: number | null }
 export const setCounted = <T extends CountLine>(lines: T[], lotId: string, delta: number, abs = false): T[] =>

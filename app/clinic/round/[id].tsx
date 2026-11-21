@@ -56,6 +56,17 @@ export default function Round() {
       await qc.invalidateQueries({ queryKey: ["clinic"] });
     } catch (e) { const er = e as ApiError; haptic.error(); toast.show(er.code === "OUTSIDE_COVERAGE" ? t("clinic.round.outside") : er.status === 403 ? t("common.notAllowed") : er.message, "error"); } finally { setBusy(null); }
   };
+  // The visit's clinical encounter must be finalized before "Finish" (server: 400). For a nurse that is the signed visit record: signing it closes the visit.
+  const [note, setNote] = useState("");
+  const signNote = async () => {
+    if (!v || note.trim().length < 3) return; setBusy("note");
+    try {
+      await api.get("clinic", `/nurse/visits/${v.appointmentId}/record`); // creates the record on first use
+      await api.put("clinic", `/nurse/visits/${v.appointmentId}/record`, { assessment: note.trim() });
+      await api.post("clinic", `/nurse/visits/${v.appointmentId}/record/sign`, {});
+      haptic.success(); toast.show(t("clinic.round.noteSigned")); setNote(""); await qc.invalidateQueries({ queryKey: ["clinic"] });
+    } catch (e) { haptic.error(); toast.show((e as ApiError).message, "error"); } finally { setBusy(null); }
+  };
   const doAbort = async () => {
     if (!v || reason.trim().length < 3) return; setBusy("abort");
     try { const pos = await getPosition(3000); await api.post("clinic", `/home-visits/${v.id}/abort-unsafe`, { reason: reason.trim(), reasonCategory: cat, ...(pos ? { lat: pos.lat, lng: pos.lng } : {}) }); haptic.warn(); toast.show(t("clinic.round.done.abort")); setAbort(false); setReason(""); await qc.invalidateQueries({ queryKey: ["clinic"] }); }
@@ -101,6 +112,14 @@ export default function Round() {
 
           {actions.includes("depart") ? <Button title={t("clinic.round.depart")} icon="navigation" onPress={() => void act("depart")} loading={busy === "depart"} testID="round-depart" /> : null}
           {actions.includes("arrive") ? <Button title={t("clinic.round.arrive")} icon="pin" onPress={() => void act("arrive")} loading={busy === "arrive"} testID="round-arrive" /> : null}
+          {v.state === "ARRIVED" ? (
+            <Card style={{ gap: 8 }} testID="round-note-card">
+              <T weight="semibold">{t("clinic.round.note")}</T>
+              <T variant="caption" muted>{t("clinic.round.noteHint")}</T>
+              <Field label={t("clinic.round.note")} value={note} onChangeText={setNote} multiline testID="round-note" />
+              <Button title={t("clinic.round.signFinish")} icon="check" onPress={() => void signNote()} disabled={note.trim().length < 3} loading={busy === "note"} testID="round-sign-finish" />
+            </Card>
+          ) : null}
           {actions.includes("finish") ? <Button title={t("clinic.round.finish")} icon="check" onPress={() => void act("finish")} loading={busy === "finish"} testID="round-finish" /> : null}
 
           {actions.includes("sos") ? (

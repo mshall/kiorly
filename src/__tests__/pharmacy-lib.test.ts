@@ -41,6 +41,11 @@ describe("safety checks", () => {
     expect(s.locked).toHaveLength(1);
     expect(summarizeChecks([c("PASS"), c("OVERRIDDEN_BY_PHARMACIST")]).canSignOff).toBe(true);
   });
+  it("a non-overridable WARN (unverified prescriber) does not block sign-off, an overridable WARN still does", () => {
+    expect(summarizeChecks([c("PASS"), c("WARN", false)]).canSignOff).toBe(true);
+    expect(summarizeChecks([c("PASS"), c("WARN", true)]).canSignOff).toBe(false);
+    expect(summarizeChecks([c("WARN", false), c("BLOCK", true)]).canSignOff).toBe(false);
+  });
   it("override rules", () => {
     expect(canOverride(c("WARN"), true)).toBe(true);
     expect(canOverride(c("WARN"), false)).toBe(false);

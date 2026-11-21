@@ -7,8 +7,9 @@ import { Icon } from "@/components/Icon";
 import { KV, QueryView, SectionTitle } from "@/components/kit";
 import { useRead, usePullRefresh } from "@/hooks/useRead";
 import { api } from "@/api/client";
+import { ApiError } from "@/api/errors";
 import { usePh } from "@/modules/pharmacy/hooks";
-import { canOverride, drugName, errText, hasScreen, summarizeChecks, validReason, type SafetyCheck } from "@/modules/pharmacy/lib";
+import { canOverride, drugName, errText, hasScreen, rxActions, summarizeChecks, validReason, type SafetyCheck } from "@/modules/pharmacy/lib";
 import { useTheme } from "@/theme";
 import { haptic } from "@/lib/haptics";
 import { uid } from "@/offline/queue";
@@ -32,6 +33,8 @@ export default function RxDetail() {
   const [rej, setRej] = useState(false);
   const [rejReason, setRejReason] = useState("");
   const mayOverride = hasScreen(boot, "pharmacy.rx", "rx.override");
+  // the licensed signer (rx.override screen) always validates; other roles need the rx.validate screen (managers)
+  const act = rxActions(rx.data?.status, { canValidate: mayOverride || hasScreen(boot, "pharmacy.rx", "rx.validate"), canSign: mayOverride });
   const sum = disp ? summarizeChecks(disp.safetyChecks) : null;
 
   // OFFLINE: every call here is online-only (validate, dispense, override, sign-off are clinical sign-off paths and are never queued).
@@ -41,21 +44,36 @@ export default function RxDetail() {
     catch (e) { toast.show(errText(e, t), "error"); } finally { setBusy(null); }
   };
   const createDraft = () => run("draft", async () => {
+    // a prescription still awaiting verification is validated first (same call as "Mark as validated"); safety checks need a validated Rx
+    if (act.needsValidation) {
+      const v = await api.post<{ validated?: boolean; issues?: { message?: string; code?: string }[] }>("pharmacy", `/prescriptions/${id}/validate`, {});
+      if (v?.validated === false) throw new Error(v.issues?.map((i) => i.message ?? i.code).join(", ") || "Prescription failed validation");
+      await rx.refetch();
+    }
     const items = (rx.data?.lines ?? []).filter((l) => l.drugId ?? l.drug?.id).map((l) => ({ prescriptionLineId: l.id, drugId: (l.drugId ?? l.drug?.id) as string, quantity: l.quantity ?? 1 }));
     const d = await api.post<Dispensing>("pharmacy", "/dispensings", { prescriptionId: id, items });
     setDisp(d);
   });
   const reload = async () => { if (disp) setDisp(await api.get<Dispensing>("pharmacy", `/dispensings/${disp.id}`)); };
   const doOverride = () => ov && disp && run("ov", async () => { await api.post("pharmacy", `/dispensings/${disp.id}/override/${ov.id}`, { reason: reason.trim() }); setOv(null); setReason(""); await reload(); }, t("pharmacy.rx.overridden"));
-  const signOff = () => disp && run("sign", async () => { await api.post("pharmacy", `/dispensings/${disp.id}/signoff`, {}); await api.post("pharmacy", `/dispensings/${disp.id}/complete`, { idempotencyKey: uid() + uid() }); haptic.success(); await reload(); }, t("pharmacy.rx.completed"));
+  // Sign-off is the pharmacist's act. A counter sale is then completed with its payment at the till; the app can only complete what is already paid (e.g. prepaid Kiorex orders),
+  // so PAYMENT_REQUIRED is not a failure: the dispensing stays SIGNED_OFF for the till.
+  const signOff = () => disp && run("sign", async () => {
+    await api.post("pharmacy", `/dispensings/${disp.id}/signoff`, {});
+    let paid = true;
+    try { await api.post("pharmacy", `/dispensings/${disp.id}/complete`, { idempotencyKey: uid() + uid() }); }
+    catch (e) { if (e instanceof ApiError && e.code === "PAYMENT_REQUIRED") paid = false; else throw e; }
+    haptic.success(); await reload();
+    toast.show(t(paid ? "pharmacy.rx.completed" : "pharmacy.rx.signedPendingPayment"));
+  });
 
   const tone = (o: string) => (o === "BLOCK" ? "danger" : o === "WARN" ? "warning" : o === "PASS" ? "success" : "ocean") as "danger" | "warning" | "success" | "ocean";
   return (
-    <Screen refresh={refresh} testID="rx-detail" footer={rx.data && ["RECEIVED", "VALIDATING"].includes(rx.data.status) ? (
+    <Screen refresh={refresh} testID="rx-detail" footer={rx.data && act.footer ? (
       <Row gap={8}>
-        {!disp ? <Button title={t("pharmacy.rx.runChecks")} icon="shield" onPress={() => void createDraft()} loading={busy === "draft"} style={{ flex: 1 }} testID="rx-run-checks" /> :
-          <Button title={t("pharmacy.rx.signOff")} icon="check" disabled={!sum?.canSignOff || disp.status === "COMPLETED"} onPress={() => void signOff()} loading={busy === "sign"} style={{ flex: 1 }} testID="rx-signoff" />}
-        <Button variant="secondary" title={t("pharmacy.rx.reject")} onPress={() => setRej(true)} testID="rx-reject" />
+        {!act.dispense ? null : !disp ? <Button title={t("pharmacy.rx.runChecks")} icon="shield" onPress={() => void createDraft()} loading={busy === "draft"} style={{ flex: 1 }} testID="rx-run-checks" /> :
+          <Button title={t("pharmacy.rx.signOff")} icon="check" disabled={!sum?.canSignOff || ["DISPENSED", "SIGNED_OFF", "COMPLETED"].includes(disp.status)} onPress={() => void signOff()} loading={busy === "sign"} style={{ flex: 1 }} testID="rx-signoff" />}
+        {act.reject ? <Button variant="secondary" title={t("pharmacy.rx.reject")} onPress={() => setRej(true)} testID="rx-reject" /> : null}
       </Row>) : undefined}>
       <Stack.Screen options={{ title: t("pharmacy.rx.detail") }} />
       <QueryView q={rx}>
@@ -102,7 +120,7 @@ export default function RxDetail() {
       <Sheet visible={rej} onClose={() => setRej(false)} title={t("pharmacy.rx.reject")} footer={<Button title={t("pharmacy.rx.reject")} variant="danger" disabled={!validReason(rejReason)} onPress={() => void run("rej", async () => { await api.post("pharmacy", `/prescriptions/${id}/reject`, { reason: rejReason.trim() }); setRej(false); }, t("pharmacy.rx.rejected"))} />}>
         <Field label={t("common.reason")} value={rejReason} onChangeText={setRejReason} multiline />
       </Sheet>
-      {rx.data && ["RECEIVED"].includes(rx.data.status) && !disp ? <Button variant="ghost" title={t("pharmacy.rx.markValidated")} onPress={() => void run("val", () => api.post("pharmacy", `/prescriptions/${id}/validate`, {}), t("pharmacy.rx.validated"))} /> : null}
+      {rx.data && act.validate && rx.data.status === "RECEIVED" && !disp ? <Button variant="ghost" title={t("pharmacy.rx.markValidated")} onPress={() => void run("val", () => api.post("pharmacy", `/prescriptions/${id}/validate`, {}), t("pharmacy.rx.validated"))} testID="rx-validate" /> : null}
     </Screen>
   );
 }

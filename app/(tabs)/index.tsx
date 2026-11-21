@@ -18,6 +18,8 @@ import ClinicSummary from "@/modules/clinic/HomeSummary";
 import PharmacySummary from "@/modules/pharmacy/HomeSummary";
 import LabSummary from "@/modules/lab/HomeSummary";
 import { haptic } from "@/lib/haptics";
+import { LiteHomeBlock } from "@/components/lite";
+import { isLite } from "@/lite/logic";
 import { pick } from "@/lib/format";
 
 const SUMMARY = { clinic: ClinicSummary, pharmacy: PharmacySummary, lab: LabSummary } as const;
@@ -31,7 +33,7 @@ export default function Home() {
   const { sessions, products, notice, dismissNotice, refreshBootstrap, isEntitled } = useSessions();
   const alerts = useAlerts("open");
   const first = sessions[products[0]];
-  const name = (first?.userName ?? "").split("@")[0].split(" ")[0];
+  const name = (first?.userName ?? "").split("@")[0].split(" ").find((w) => w && !/^(dr|prof|mr|mrs|ms|eng)\.?$/i.test(w)) ?? ""; // skip honorifics ("Dr Nadia" -> "Nadia")
   const refresh = useCallback(async () => { await Promise.all([...products.map((p) => refreshBootstrap(p)), qc.invalidateQueries()]); }, [products, refreshBootstrap, qc]);
   const critical = alerts.items.filter((a) => !a.ackedAt && a.severity === "CRITICAL").length;
   const open = alerts.openCount;
@@ -91,16 +93,11 @@ export default function Home() {
                   </View>
                 </>
               ) : (
-                <Card onPress={() => go(`/upgrade?product=${p}`)} testID={`upgrade-card-${p}`} style={{ borderColor: colors.pulse }}>
-                  <Row gap={12}>
-                    <View style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.pulseSoft, alignItems: "center", justifyContent: "center" }}><Icon name="lock" size={22} color={colors.pulse} /></View>
-                    <View style={{ flex: 1 }}>
-                      <T weight="semibold">{t("home.upgradeCard", { product: t(PRODUCT_META[p].nameKey), plan: b?.org.plan === "BASIC" ? t("signIn.planBasic") : (b?.org.plan ?? "") })}</T>
-                      <T variant="small" muted>{t("home.safetyOnly")} · {t("home.upgradeCta")}</T>
-                    </View>
-                    <Icon name="chevron" size={18} color={colors.subtleText} mirror />
-                  </Row>
-                </Card>
+                isLite(b) ? <LiteHomeBlock product={p} /> : (
+                  <Card onPress={() => go(`/upgrade?product=${p}`)} testID={`upgrade-card-${p}`} style={{ borderColor: colors.pulse }}>
+                    <Row gap={12}><Icon name="lock" size={22} color={colors.pulse} /><T style={{ flex: 1 }}>{t("upgrade.flagOff")}</T><Icon name="chevron" size={18} color={colors.subtleText} mirror /></Row>
+                  </Card>
+                )
               )}
             </View>
           </FadeIn>

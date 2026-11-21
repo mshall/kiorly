@@ -34,4 +34,4 @@ Expo web **8082**. APIs: clinic 3010, pharmacy 3100, lab 3200 (never 3000/5173/5
 Light/dark + AR (default, RTL) / EN; haptics; skeletons; pull-to-refresh; bottom sheets; charts (Sparkline, BarChart, Progress); biometric lock; remote sign-out; offline queue + sync chip; push (mock) + inbox; global search; barcode/QR (expo-camera + manual entry); deep links (`kiorlywork://`, expo-router file routes + push `data` routing).
 
 ## Limits
-No native device/simulator run in this environment (Xcode absent): verified with jest-expo, `tsc`, and Expo web in the browser pane at mobile size (AR/EN, light/dark). Native-only paths (biometrics, camera, push tokens, expo-location) are unit-tested with mocks and degrade on web.
+Verified on Expo web (Playwright, per role, against the live local APIs), jest-expo and `tsc`, plus an Android 15 emulator and an iPhone 18 Pro simulator (Expo Go, 20-21 Nov 2026; see `_docs/mobile/DEVICE_TEST_REPORT_2026-11-20.md` in the workspace). Native-only paths still unverified on a device: biometrics, camera scanning, push tokens, expo-location accuracy.

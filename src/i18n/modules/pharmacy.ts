@@ -58,6 +58,7 @@ export const pharmacyStrings = {
     "confirmOverride": "Confirm override",
     "overridden": "Check overridden",
     "completed": "Dispensing completed",
+    "signedPendingPayment": "Signed off. Payment is taken at the till to complete the hand-over.",
     "kind": {
       "INTERACTION": "Drug interaction",
       "ALLERGY": "Allergy",
@@ -147,6 +148,9 @@ export const pharmacyStrings = {
   "expiry": {
     "buckets": "Lots by time to expiry",
     "attention": "Expiring soon",
+    "blocked": "Blocked stock (quarantined / recalled)",
+    "recalled": "Recalled",
+    "quarantined": "Quarantined",
     "lowStock": "Low stock",
     "noLow": "Nothing below minimum",
     "suggested": "Suggested order",
@@ -285,6 +289,7 @@ export const pharmacyStrings = {
     "confirmOverride": "تأكيد التجاوز",
     "overridden": "تم تجاوز الفحص",
     "completed": "تم إتمام الصرف",
+    "signedPendingPayment": "تم اعتماد الصرف. يُستكمل التسليم بعد الدفع عند الكاشير.",
     "kind": {
       "INTERACTION": "تداخل دوائي",
       "ALLERGY": "حساسية",
@@ -374,6 +379,9 @@ export const pharmacyStrings = {
   "expiry": {
     "buckets": "التشغيلات حسب مدة الصلاحية",
     "attention": "تنتهي قريبًا",
+    "blocked": "مخزون محجوز / مسحوب",
+    "recalled": "مسحوبة",
+    "quarantined": "محجوزة",
     "lowStock": "نقص المخزون",
     "noLow": "لا شيء تحت الحد الأدنى",
     "suggested": "الطلب المقترح",

@@ -3,6 +3,8 @@ import type { Product } from "./products";
 export type Plan = "BASIC" | "PRO" | "ENTERPRISE";
 export interface Entitlement { key: "mobile_staff_app"; enabled: boolean; requiredPlan: "PRO"; reason: null | "PLAN_BELOW_PRO" | "FLAG_OFF" }
 export interface ModuleDef { key: string; enabled: boolean; screens: string[] }
+/** Basic orgs only (null/absent on Pro): what this role would get on Pro, my latest upgrade request (24h), and open requests for owner/admin. */
+export interface UpgradeBlock { lockedModules: string[]; myRequest: { featureKey: string; requestedAt: string } | null; openRequests: number | null; canApprove: boolean }
 export interface Bootstrap {
   apiVersion: 1;
   product: Product;
@@ -12,6 +14,7 @@ export interface Bootstrap {
   entitlement: Entitlement;
   safetyAlertsOnly: boolean;
   modules: ModuleDef[];
+  upgrade?: UpgradeBlock | null;
   permissions?: string[];
   device: { id: string; status: string } | null;
 }
