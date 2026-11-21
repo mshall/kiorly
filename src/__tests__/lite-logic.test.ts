@@ -37,13 +37,21 @@ describe("locked-tile rule", () => {
 });
 
 describe("upgrade wording: admin vs staff", () => {
-  it("server canApprove wins; otherwise owner flag or admin role", () => {
+  it("follows the server canApprove only: no client-side role or owner guess", () => {
     expect(isUpgradeAdmin("clinic", lite([], {}, true))).toBe(true);
     expect(isUpgradeAdmin("clinic", lite([], { role: "NURSE" }, false))).toBe(false);
-    expect(isUpgradeAdmin("clinic", { entitlement: ent(false), user: { id: "u", name: "n", email: "e", role: "NURSE", roles: [], isOwner: true } })).toBe(true);
-    expect(isUpgradeAdmin("pharmacy", { entitlement: ent(false), user: { id: "u", name: "n", email: "e", role: "OWNER", roles: [] } })).toBe(true);
-    expect(isUpgradeAdmin("pharmacy", { entitlement: ent(false), user: { id: "u", name: "n", email: "e", role: "CASHIER", roles: [] } })).toBe(false);
+    // the server said no: an owner flag or an OWNER role on the client does not change that
+    expect(isUpgradeAdmin("clinic", { ...lite([], { role: "NURSE", isOwner: true }, false) })).toBe(false);
+    expect(isUpgradeAdmin("pharmacy", lite([], { role: "OWNER" }, false))).toBe(false);
+    // a server that omits the flag (or no bootstrap) is "ask your admin"
+    expect(isUpgradeAdmin("pharmacy", { entitlement: ent(false), user: { id: "u", name: "n", email: "e", role: "OWNER", roles: [] } })).toBe(false);
     expect(isUpgradeAdmin("lab", undefined)).toBe(false);
+  });
+  it("lab: LAB_DIRECTOR asks their admin (server canApprove=false); only the OWNER approves (canApprove=true)", () => {
+    expect(isUpgradeAdmin("lab", lite([], { role: "LAB_DIRECTOR" }, false))).toBe(false);
+    expect(isUpgradeAdmin("lab", lite([], { role: "OWNER" }, true))).toBe(true);
+    // a LAB_DIRECTOR sees no owner-only request list either
+    expect(openRequestCount("lab", { entitlement: ent(false), user: { id: "u", name: "n", email: "e", role: "LAB_DIRECTOR", roles: [] }, upgrade: { lockedModules: [], myRequest: null, openRequests: 3, canApprove: false } })).toBe(0);
   });
   it("maps roles onto benefit-copy groups", () => {
     expect(roleGroup("clinic", "NURSE")).toBe("nurse");

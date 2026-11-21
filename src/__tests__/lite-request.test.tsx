@@ -57,6 +57,37 @@ describe("UpgradeRequestButton", () => {
     expect(mockMutate).toHaveBeenCalledWith("clinic", "POST", "/mobile/upgrade-request", { featureKey: "clinic.vitals" }, expect.objectContaining({ queueable: true, owner: "nurse.basic@demo.kiorex.test" }));
   });
 
+  it("optional note: capped at 500 chars, trimmed, sent with the request; omitted when empty", async () => {
+    mockMutate.mockResolvedValue({ queued: false, data: { status: "REQUESTED", requestedAt: "2026-11-21T10:00:00.000Z" } });
+    await wrap(<UpgradeRequestButton product="clinic" featureKey="clinic.vitals" />);
+    const field = screen.getByTestId("upgrade-note");
+    expect(field.props.maxLength).toBe(500);
+    await fireEvent.changeText(field, "x".repeat(600));
+    expect(screen.getByTestId("upgrade-note").props.value.length).toBe(500);
+    expect(screen.getByTestId("upgrade-note-count").props.children).toBe("500/500");
+    await tap("upgrade-request");
+    await waitFor(() => expect(screen.getByTestId("upgrade-request-done")).toBeTruthy());
+    expect(mockMutate).toHaveBeenCalledWith("clinic", "POST", "/mobile/upgrade-request", { featureKey: "clinic.vitals", note: "x".repeat(500) }, expect.objectContaining({ queueable: true }));
+  });
+
+  it("optional note: queued offline together with the request body", async () => {
+    const op = await enqueue({ product: "clinic", owner: "nurse.basic@demo.kiorex.test", method: "POST", path: "/mobile/upgrade-request", body: {}, label: "upgrade:clinic.vitals" });
+    mockMutate.mockResolvedValue({ queued: true, opId: op.id });
+    await wrap(<UpgradeRequestButton product="clinic" featureKey="clinic.vitals" />);
+    await fireEvent.changeText(screen.getByTestId("upgrade-note"), "I take vitals for every walk-in");
+    await tap("upgrade-request");
+    await waitFor(() => expect(screen.getByText(/Saved offline/)).toBeTruthy());
+    expect(mockMutate.mock.calls[0][3]).toEqual({ featureKey: "clinic.vitals", note: "I take vitals for every walk-in" });
+    expect(mockMutate.mock.calls[0][4]).toEqual(expect.objectContaining({ queueable: true }));
+    expect(screen.queryByTestId("upgrade-note")).toBeNull(); // note box gives way to the queued state
+  });
+
+  it("optional note: shown in Arabic", async () => {
+    await act(async () => { await i18n.changeLanguage("ar"); });
+    await wrap(<UpgradeRequestButton product="clinic" featureKey="clinic.vitals" />);
+    expect(screen.getByText("أضف ملاحظة (اختياري)")).toBeTruthy();
+  });
+
   it("offline: goes through the offline queue and shows the queued state", async () => {
     const op = await enqueue({ product: "clinic", owner: "nurse.basic@demo.kiorex.test", method: "POST", path: "/mobile/upgrade-request", body: {}, label: "upgrade:clinic.vitals" });
     mockMutate.mockResolvedValue({ queued: true, opId: op.id });

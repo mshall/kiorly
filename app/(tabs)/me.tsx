@@ -11,6 +11,8 @@ import { useSessions } from "@/auth/SessionProvider";
 import { useLock } from "@/auth/lock";
 import { PRODUCT_META, APP_VERSION, accentFor } from "@/api/products";
 import { setLanguage, type Lang } from "@/i18n";
+import { handleRestart } from "@/i18n/restart";
+import { usePushPermission } from "@/lib/pushPermission";
 import { haptic } from "@/lib/haptics";
 import { LiteBadge } from "@/components/lite";
 import { isLite } from "@/lite/logic";
@@ -24,6 +26,7 @@ export default function Me() {
   const { sessions, products, signOut, signOutAll } = useSessions();
   const lock = useLock();
   const [restart, setRestart] = useState(false);
+  const push = usePushPermission();
   const lang = (i18n.language.startsWith("ar") ? "ar" : "en") as Lang;
   const row = (icon: IconName, title: string, sub: string, to: string) => <ListRow icon={icon} title={title} subtitle={sub} onPress={() => router.push(to as never)} testID={`me-${to.slice(1)}`} />;
 
@@ -59,12 +62,27 @@ export default function Me() {
           <Segmented value={String(lock.graceS)} onChange={(v) => lock.setGrace(Number(v))} options={[{ value: "0", label: t("me.immediately") }, { value: "30", label: t("me.seconds", { count: 30 }) }, { value: "300", label: t("me.seconds", { count: 300 }) }]} />
         ) : null}
       </Card>
+      <SectionTitle title={t("pushPrompt.settingsTitle")} />
+      <Card style={{ gap: 8 }} testID="me-notifications">
+        <Row style={{ justifyContent: "space-between" }} gap={12}>
+          <Row gap={12} style={{ flex: 1 }}>
+            <Icon name="bell" size={22} color={colors.ink} />
+            <View style={{ flex: 1 }}>
+              <T weight="semibold">{t("pushPrompt.settingsRow")}</T>
+              <T variant="caption" muted>{push.status === "granted" ? t("pushPrompt.stateOn") : push.status === "denied" ? t("pushPrompt.stateDenied") : push.status === "unsupported" ? t("pushPrompt.stateUnsupported") : t("pushPrompt.stateOff")}</T>
+            </View>
+          </Row>
+          <Switch testID="push-switch" value={push.status === "granted"} disabled={push.status == null || push.status === "unsupported"} trackColor={{ true: colors.ink, false: colors.border }}
+            onValueChange={async () => { await push.enable(); void push.refresh(); }} accessibilityLabel={t("pushPrompt.settingsRow")} />
+        </Row>
+        {push.status === "granted" || push.status === "denied" ? <Button small variant="secondary" title={t("pushPrompt.openSettings")} onPress={() => void push.openSettings()} testID="push-open-settings" /> : null}
+      </Card>
       {row("device", t("me.devices"), t("me.devicesHint"), "/devices")}
 
       <SectionTitle title={t("me.preferences")} />
       <Card style={{ gap: 12 }}>
         <T variant="small" weight="semibold">{t("me.language")}</T>
-        <Segmented value={lang} onChange={async (l) => { haptic.tap(); setRestart(await setLanguage(l)); }} options={[{ value: "ar", label: t("me.arabic") }, { value: "en", label: t("me.english") }]} />
+        <Segmented value={lang} onChange={async (l) => { haptic.tap(); if (await setLanguage(l)) setRestart((await handleRestart({ force: false })) === "manual"); else setRestart(false); }} options={[{ value: "ar", label: t("me.arabic") }, { value: "en", label: t("me.english") }]} />
         {restart ? <Banner tone="ink" body={t("me.restartHint")} /> : null}
         <T variant="small" weight="semibold">{t("me.theme")}</T>
         <Segmented value={pref} onChange={setPref} options={[{ value: "system", label: t("me.system") }, { value: "light", label: t("me.light") }, { value: "dark", label: t("me.dark") }]} />

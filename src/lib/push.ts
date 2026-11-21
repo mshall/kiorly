@@ -8,14 +8,15 @@ import type { Session } from "@/api/types";
  *  (go-live task in each product's Docs/NEEDS_HUMAN.md). On web / simulators we register a deterministic mock token so the full path is exercised. */
 export const mockToken = (deviceId: string) => `mock-${deviceId}`;
 
+/** Registers the device's push token. NEVER prompts: it only reads the current permission; the OS prompt is raised by `requestPushPermission()` after our own explainer (see `src/lib/pushPermission.ts`). */
 export async function registerPush(product: Product, s: Session): Promise<"registered" | "mock" | "skipped"> {
   if (!s.deviceRecordId) return "skipped";
   let token = mockToken(s.deviceId); let provider: "expo" | "mock" = "mock";
   if (Platform.OS !== "web") {
     try {
-      const perm = await Notifications.requestPermissionsAsync();
+      const perm = await Notifications.getPermissionsAsync();
       if (perm.granted) { const t = await Notifications.getExpoPushTokenAsync(); token = t.data; provider = "expo"; }
-    } catch { /* simulator without push: stay on the mock token */ }
+    } catch { /* simulator / Expo Go without push: stay on the mock token */ }
   }
   try { await api.put(product, `/mobile/devices/${s.deviceRecordId}/push-token`, { token, provider }); } catch { return "skipped"; }
   return provider === "expo" ? "registered" : "mock";

@@ -10,6 +10,9 @@ import { IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansA
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { bootstrapI18n } from "@/i18n";
+import { handleRestart } from "@/i18n/restart";
+import { DirectionBanner } from "@/components/DirectionBanner";
+import { PushPrimer } from "@/components/PushPrimer";
 import { ThemeProvider, fontFamily, useTheme } from "@/theme";
 import { ToastProvider } from "@/components/ui";
 import { AnimatedSplash } from "@/components/AnimatedSplash";
@@ -50,6 +53,8 @@ function Shell() {
           <Stack.Screen name="search" options={{ headerShown: false, animation: "fade_from_bottom" }} />
           <Stack.Screen name="scan" options={{ headerShown: false, presentation: "fullScreenModal" }} />
         </Stack>
+        <PushPrimer />
+        <DirectionBanner />
         <LockScreen />
       </View>
     </LockProvider>
@@ -59,7 +64,10 @@ function Shell() {
 export default function RootLayout() {
   const [i18nReady, setI18nReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({ Jost_400Regular, Jost_500Medium, Jost_600SemiBold, Jost_700Bold, IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansArabic_600SemiBold, IBMPlexSansArabic_700Bold });
-  useEffect(() => { void bootstrapI18n().finally(() => setI18nReady(true)); }, []);
+  useEffect(() => {
+    // `needsRestart`: RTL was just forced and only applies after a JS reload. Reload in a real build; in Expo Go raise a one-time "close and reopen" banner.
+    void bootstrapI18n().then((r) => { if (r.needsRestart) void handleRestart(); }).catch(() => {}).finally(() => setI18nReady(true));
+  }, []);
   const ready = i18nReady && (fontsLoaded || !!fontError);
   const [splash, setSplash] = useState(true);
   useEffect(() => { if (ready) void SplashScreen.hideAsync(); }, [ready]);

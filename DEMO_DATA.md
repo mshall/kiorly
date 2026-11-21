@@ -13,12 +13,12 @@
 
 ```bash
 e2e/scripts/up.sh [--build] [--seed]            # workspace root: the three APIs (+ Passport, Kiorex) the app talks to
-scripts/seed-all.sh                             # base demo data first (idempotent)
+scripts/seed-all.sh                             # base demo data first (idempotent); since 21 Nov 2026 it also runs the three seed:mobile seeds below in dependency order
 cd clinics-management/apps/api && npm run db:seed:mobile       # Clinic: Basic clinic, mobile alerts, pending Rx + critical result (needs db:seed:demo first)
-cd kiorly-pharmacy/apps/api    && npm run seed:mobile          # Pharmacy: Solo (PRO) + Corner (BASIC) tenants + alerts (also in seed:all)
+cd kiorly-pharmacy/apps/api    && npm run seed:mobile          # Pharmacy: Solo (PRO) + Corner (BASIC) tenants + alerts (also in seed:all and in scripts/seed-all.sh)
 cd kiorly-lab/apps/api         && npm run db:seed:mobile       # Lab: chain-lab (ENTERPRISE) + basic-lab (BASIC) tenants + alerts
 ```
-All three are idempotent and guarded (`DEMO_SEED_ALLOWED=true`, non-production). Re-running re-opens the demo alerts.
+The three commands above are only needed when you do not run `scripts/seed-all.sh`. All three are idempotent and guarded (`DEMO_SEED_ALLOWED=true`, non-production). Re-running re-opens the demo alerts.
 
 Run the app (`cd kiorly-work && npm install` once; own lockfile and `.npmrc` with `legacy-peer-deps`):
 
@@ -29,7 +29,7 @@ Run the app (`cd kiorly-work && npm install` once; own lockfile and `.npmrc` wit
 | **Android emulator** | `npm run android` (= `expo start --android`) | In the emulator `localhost` is the emulator itself: set `EXPO_PUBLIC_CLINIC_API=http://10.0.2.2:3010/api/v1`, `EXPO_PUBLIC_PHARMACY_API=http://10.0.2.2:3100/api/v1`, `EXPO_PUBLIC_LAB_API=http://10.0.2.2:3200/api/v1` (10.0.2.2 reaches the Mac's loopback). Android Studio / `adb` are not installed on this Mac. |
 | **Physical phone** | `npm start`, scan the QR in Expo Go (or an EAS dev client) | use the Mac's LAN IP in the three `EXPO_PUBLIC_*_API` variables; pharmacy (`:3100`) and lab (`:3200`) APIs listen on `127.0.0.1` only, so start them with a LAN bind first. Push is mock. |
 
-* Defaults come from `.env.example` (3010 / 3100 / 3200). **`kiorly-work/.env.local` currently points at 3011 / 3190 / 3250** (an alternate stack): delete it or edit it, otherwise sign-in will hit nothing on the standard stack.
+* Defaults come from `.env.example` (3010 / 3100 / 3200). `.env.local` is a local, git-ignored override and overrides `.env.example`: on 21 Nov 2026 it holds the same three URLs (3010 / 3100 / 3200) as `.env.example`; earlier it pointed at an alternate stack (3011 / 3190 / 3250), so if sign-in hits nothing, check that file first.
 * The sign-in screen has **demo chips** (dev builds) that fill the e-mail, password and lab org slug for you.
 * Bundle ids `com.kiorly.work` are placeholders until the store accounts exist (NEEDS_HUMAN).
 
@@ -165,8 +165,11 @@ Sign-in is **per product**: the app keeps one session per product, so one person
 
 * Providers are mocked: push is `MOBILE_PUSH_MODE=mock` (stored as inbox rows); real push/Expo tokens are refused until the provider go-live pass. Lab login is dev-login (no password); clinic and pharmacy use product login (e-mail + password), not Passport (Passport public-client flow is backlog).
 * Native paths (biometrics, camera, push tokens, expo-location) are unit-tested with mocks and degrade on web; no simulator or device run is documented. Offline queue is stored unencrypted in AsyncStorage (backlog in `Docs/SECURITY.md`).
-* `kiorly-work/.env.local` points at an alternate stack (3011 / 3190 / 3250), not at `.env.example` defaults.
-* There is **no `README.md`** in this repo (every other repo has one); one pointer file was added only to link this document.
-* Pharmacy and Lab web ports (5190 / 5191) clash with the Clinic *main* checkout; this app's 8082 and the patient app's 8081 do not.
-* Matrix note: for `demo-lab` a `signatory` also has no `reagents`, and the lab alerts (critical values) are already ESCALATED by the scheduler, so a freshly-seeded "open, not escalated" state is only visible right after a seed.
+* `.env.example` (3010 / 3100 / 3200) and `.env.local` (git-ignored, same values on 21 Nov 2026; it used to point at 3011 / 3190 / 3250) are two different things: `.env.local` wins, so edit it, not `.env.example`, to point the app at another stack.
+* `README.md` now exists (a pointer to this document).
+* Pharmacy and Lab web dev ports now default to 5192 / 5193 (5190 / 5191 clash with the Clinic *main* checkout); this app's 8082 and the patient app's 8081 do not clash.
+* Matrix note: for `demo-lab` a `signatory` also has no `reagents`, and the Lab demo seed keeps one critical alert (`DEMO-OPEN-ALERT-001`, demo-lab) OPEN with a far deadline; the other lab critical alerts are ESCALATED (or ACKNOWLEDGED by tests).
 * `admin@kiorly.com` still uses the legacy password `demo`; every other demo clinic login uses `Demo@12345`.
+
+---
+Verified: 2026-11-21 (seed scripts incl. the three `seed:mobile` seeds run twice, databases via SELECT, `.env.example` / `.env.local` compared).

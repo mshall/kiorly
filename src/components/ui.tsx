@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  ActivityIndicator, Animated, Easing, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
+  ActivityIndicator, Animated, Easing, KeyboardAvoidingView, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
   type ViewProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle, type RefreshControlProps,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -115,7 +115,7 @@ export function Button({ title, onPress, variant = "primary", disabled, loading,
         })}
       >
         {loading ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} size={20} color={fg} /> : null}
-        <T variant="label" weight="semibold" style={{ color: fg, fontSize: 16 }}>{title}</T>
+        <T variant="label" weight="semibold" numberOfLines={1} style={{ color: fg, fontSize: 16, flexShrink: 1 }}>{title}</T>
       </Pressable>
     </Animated.View>
   );
@@ -128,7 +128,7 @@ export function Chip({ label, selected, onPress, testID, icon }: { label: string
     <Pressable testID={testID} onPress={() => { haptic.select(); onPress?.(); }} accessibilityRole="button" accessibilityLabel={label} accessibilityState={{ selected: !!selected }}
       style={{ minHeight: MIN_TOUCH, paddingHorizontal: 16, borderRadius: 999, justifyContent: "center", alignItems: "center", flexDirection: "row", gap: 6, backgroundColor: selected ? colors.ink : colors.surface, borderWidth: 1, borderColor: selected ? colors.ink : colors.border }}>
       {icon ? <Icon name={icon} size={16} color={selected ? colors.onInk : colors.ink} /> : null}
-      <T variant="small" weight="medium" color={selected ? colors.onInk : colors.text}>{label}</T>
+      <T variant="small" weight="medium" numberOfLines={1} color={selected ? colors.onInk : colors.text}>{label}</T>
     </Pressable>
   );
 }
@@ -139,7 +139,8 @@ export function Badge({ label, tone = "ink", icon, testID }: { testID?: string; 
   return (
     <View testID={testID} style={{ flexDirection: "row", alignItems: "center", gap: 4, alignSelf: "flex-start", backgroundColor: map[0], borderRadius: 999, paddingHorizontal: 10, paddingVertical: 4 }}>
       {icon ? <Icon name={icon} size={14} color={map[1]} /> : null}
-      <T variant="caption" weight="semibold" color={map[1]}>{label}</T>
+      {/* numberOfLines={1}: on Android, Arabic labels in a shrink-wrapped pill (e.g. "في الانتظار") are measured on one line but laid out on two, and the 2nd line is clipped ("في"). A single-line Text cannot wrap. */}
+      <T variant="caption" weight="semibold" numberOfLines={1} color={map[1]}>{label}</T>
     </View>
   );
 }
@@ -224,7 +225,7 @@ export function Sheet({ visible, onClose, title, children, footer, testID }: { v
   const translateY = Animated.add(open.interpolate({ inputRange: [0, 1], outputRange: [520, 0] }), drag);
   return (
     <Modal visible={mounted} transparent animationType="none" onRequestClose={onClose} accessibilityViewIsModal statusBarTranslucent>
-      <View style={{ flex: 1, justifyContent: "flex-end" }}>
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1, justifyContent: "flex-end" }}>
         <Animated.View style={{ ...(StyleSheet.absoluteFill as object), backgroundColor: colors.overlay, opacity: open }}>
           <Pressable style={{ flex: 1 }} onPress={onClose} accessibilityLabel={t("common.close")} />
         </Animated.View>
@@ -237,7 +238,7 @@ export function Sheet({ visible, onClose, title, children, footer, testID }: { v
           <ScrollView contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 16, gap: 12 }} keyboardShouldPersistTaps="handled">{children}</ScrollView>
           {footer ? <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>{footer}</View> : null}
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

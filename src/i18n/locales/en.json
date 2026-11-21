@@ -558,6 +558,30 @@
         "phleb": "Phlebotomist",
         "staff": "Staff"
       }
-    }
+    },
+    "noteLabel": "Add a note (optional)",
+    "notePlaceholder": "Why you need it, for example how it would help your work",
+    "noteCount": "{{n}}/{{max}}"
+  },
+  "pushPrompt": {
+    "title": "Stay on top of what matters",
+    "body": "Turn on notifications so Kiorly can reach you when something needs your attention. You can change this any time in Me.",
+    "pointCritical": "Critical alerts: safety and emergency events you must not miss.",
+    "pointRx": "Prescription events: new, signed or ready for dispensing.",
+    "pointLab": "Lab events: results ready and critical values.",
+    "footnote": "We only send work notifications. Nothing is sent without your permission.",
+    "allow": "Turn on notifications",
+    "notNow": "Not now",
+    "settingsTitle": "Notifications",
+    "settingsRow": "Push notifications",
+    "stateOn": "On: critical alerts, Rx and lab events",
+    "stateOff": "Off. Turn on to get critical alerts, Rx and lab events",
+    "stateDenied": "Blocked in system settings",
+    "stateUnsupported": "Not available on this device",
+    "openSettings": "Open system settings"
+  },
+  "direction": {
+    "restart": "Close and reopen the app to switch direction.",
+    "gotIt": "Got it"
   }
 }

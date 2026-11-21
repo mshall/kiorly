@@ -16,6 +16,10 @@ export type ReqEvent =
   | { type: "flushed"; at: string }
   | { type: "reset" };
 
+/** Optional free-text note sent with the request (the API accepts `note`, max 500 chars). Returns undefined when empty. */
+export const NOTE_MAX = 500;
+export const normalizeNote = (note: string | undefined): string | undefined => { const n = (note ?? "").trim().slice(0, NOTE_MAX).trim(); return n ? n : undefined; };
+
 export const IDLE: ReqState = { kind: "idle" };
 
 export function reduce(s: ReqState, e: ReqEvent): ReqState {

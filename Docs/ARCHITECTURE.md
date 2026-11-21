@@ -35,3 +35,9 @@ Light/dark + AR (default, RTL) / EN; haptics; skeletons; pull-to-refresh; bottom
 
 ## Limits
 Verified on Expo web (Playwright, per role, against the live local APIs), jest-expo and `tsc`, plus an Android 15 emulator and an iPhone 18 Pro simulator (Expo Go, 20-21 Nov 2026; see `_docs/mobile/DEVICE_TEST_REPORT_2026-11-20.md` in the workspace). Native-only paths still unverified on a device: biometrics, camera scanning, push tokens, expo-location accuracy.
+
+## Notification permission, direction restart, pills (21 Nov 2026)
+* **Push permission in context.** `registerPush` never prompts; it only reads the permission. `PushPrimer` (`src/components/PushPrimer.tsx`) shows a short bottom sheet once, 2.5 s after the tabs first appear, explaining critical alerts and Rx/lab events; "Not now" (or swipe away) is remembered for 14 days (`kw-push-prompt-v1`, rule `shouldShowPrimer` in `src/lib/pushPermission.ts`). Me > Notifications has a switch (asks the OS, or opens system settings when blocked). Never blocks the app; absent on web and when already allowed.
+* **Direction restart.** `bootstrapI18n().needsRestart` -> `handleRestart()` (`src/i18n/restart.ts`): real build reloads with `reloadAppAsync` from the `expo` core package (lazy `require` in try/catch, once per 60 s to avoid loops; no `expo-updates` needed); Expo Go shows a one-time dismissible "close and reopen" banner (`DirectionBanner`). Expo Go is detected by `isRunningInExpoGo()` as well as `Constants.executionEnvironment`, because Expo Go 58 on Android reports "bare". The automatic reload needs a development build to verify.
+* **Android pill clipping.** Shrink-wrapped Arabic labels ("في الانتظار") were measured on one line but laid out on two, the second clipped. `Badge`, `Chip` and `Button` labels now use `numberOfLines={1}`.
+* `Sheet` wraps its content in `KeyboardAvoidingView` (the upgrade note field).

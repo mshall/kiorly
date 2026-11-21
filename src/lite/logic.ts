@@ -22,16 +22,12 @@ export function lockedTilesFor(product: Product, b: Ent | null | undefined): Til
   return all.filter((t) => set.has(t.key));
 }
 
-/** Roles that can change the plan themselves (owner / admins). Everyone else asks their admin; the request goes to the owner. */
-const ADMIN_ROLES: Record<Product, string[]> = {
-  clinic: ["GROUP_ADMIN", "CLINIC_ADMIN"],
-  pharmacy: ["OWNER"],
-  lab: ["OWNER"],
-};
-export function isUpgradeAdmin(product: Product, b: Ent | null | undefined): boolean {
-  if (!b) return false;
-  if (typeof b.upgrade?.canApprove === "boolean") return b.upgrade.canApprove;
-  return !!b.user?.isOwner || ADMIN_ROLES[product].includes(b.user?.role ?? "");
+/**
+ * Who may change the plan: ONLY what the server says (`bootstrap.upgrade.canApprove`, computed per product: clinic GROUP_ADMIN/CLINIC_ADMIN or tenant owner,
+ * pharmacy OWNER, lab OWNER only: a LAB_DIRECTOR is "ask your admin"). No client-side role guess; a server that omits the flag (or no bootstrap) means "ask your admin".
+ */
+export function isUpgradeAdmin(_product: Product, b: Ent | null | undefined): boolean {
+  return b?.upgrade?.canApprove === true;
 }
 
 /** Coarse role groups used to pick the benefit copy a person in that role cares about (`lite.benefit.<tile>.<group>`; falls back to `default`). */

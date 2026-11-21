@@ -3,7 +3,8 @@ import { Pressable, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useTheme, radius, MIN_TOUCH } from "@/theme";
-import { Badge, Button, Card, Row, Sheet, T } from "@/components/ui";
+import { Badge, Button, Card, Field, Row, Sheet, T } from "@/components/ui";
+import { NOTE_MAX } from "@/lite/machine";
 import { Icon } from "@/components/Icon";
 import { useSessions } from "@/auth/SessionProvider";
 import { PRODUCT_META, accentFor, type Product } from "@/api/products";
@@ -43,6 +44,7 @@ export function UpgradeRequestButton({ product, featureKey }: { product: Product
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const { state, request, isAdmin } = useUpgradeRequest(product, featureKey);
+  const [note, setNote] = useState("");
   const idleTitle = t(isAdmin ? "lite.cta.upgradePlan" : "lite.cta.askAdmin");
   const date = state.kind === "requested" || state.kind === "queued" ? formatDay(state.at, i18n.language) : "";
   if (state.kind === "requested" || state.kind === "queued") {
@@ -61,8 +63,15 @@ export function UpgradeRequestButton({ product, featureKey }: { product: Product
   return (
     <View style={{ gap: 6 }}>
       {state.kind === "error" ? <T variant="small" color={colors.danger} testID="upgrade-request-error" accessibilityRole="alert">{t("lite.error")}</T> : null}
+      {state.kind === "idle" || state.kind === "error" ? (
+        <View style={{ gap: 4 }}>
+          <Field testID="upgrade-note" label={t("lite.noteLabel")} placeholder={t("lite.notePlaceholder")} value={note} onChangeText={(v) => setNote(v.slice(0, NOTE_MAX))} maxLength={NOTE_MAX} multiline
+            style={{ minHeight: 72, paddingVertical: 10, textAlignVertical: "top" }} accessibilityHint={t("lite.noteCount", { n: note.length, max: NOTE_MAX })} />
+          <T variant="caption" muted style={{ alignSelf: "flex-end" }} testID="upgrade-note-count">{t("lite.noteCount", { n: note.length, max: NOTE_MAX })}</T>
+        </View>
+      ) : null}
       <Button testID="upgrade-request" title={state.kind === "sending" ? t("lite.sending") : state.kind === "error" ? t("lite.retry") : idleTitle} icon={state.kind === "sending" ? undefined : "award"} loading={state.kind === "sending"}
-        accessibilityLabel={state.kind === "error" ? t("lite.retry") : idleTitle} onPress={() => void request()} />
+        accessibilityLabel={state.kind === "error" ? t("lite.retry") : idleTitle} onPress={() => void request(note)} />
       {state.kind === "idle" ? <T variant="small" muted>{t(isAdmin ? "lite.hint.admin" : "lite.hint.staff")}</T> : null}
     </View>
   );

@@ -1,4 +1,4 @@
-import { IDLE, REQUEST_WINDOW_MS, canSend, fromStored, reduce, settle, toStored, type ReqState } from "@/lite/machine";
+import { NOTE_MAX, normalizeNote, IDLE, REQUEST_WINDOW_MS, canSend, fromStored, reduce, settle, toStored, type ReqState } from "@/lite/machine";
 
 const at = "2026-11-21T10:00:00.000Z";
 const run = (s: ReqState, ...e: Parameters<typeof reduce>[1][]) => e.reduce(reduce, s);
@@ -37,5 +37,15 @@ describe("upgrade request state machine", () => {
     expect(toStored({ kind: "error", message: "x" })).toBeNull();
     for (const s of [{ kind: "requested", at }, { kind: "queued", at, opId: "o" }] as ReqState[]) expect(fromStored(toStored(s)!)).toEqual(s);
     expect(fromStored(undefined)).toEqual(IDLE);
+  });
+});
+
+describe("request note", () => {
+  it("trims, caps at 500 and drops empty notes", () => {
+    expect(NOTE_MAX).toBe(500);
+    expect(normalizeNote(undefined)).toBeUndefined();
+    expect(normalizeNote("   ")).toBeUndefined();
+    expect(normalizeNote("  hi  ")).toBe("hi");
+    expect(normalizeNote("a".repeat(900))).toHaveLength(500);
   });
 });

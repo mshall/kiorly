@@ -5,7 +5,7 @@ import { useSessions } from "@/auth/SessionProvider";
 import { mutate } from "@/offline/mutate";
 import { getQueue, loadQueue, subscribe } from "@/offline/queue";
 import { isUpgradeAdmin } from "./logic";
-import { canSend, IDLE, reduce, settle, type ReqState } from "./machine";
+import { canSend, IDLE, normalizeNote, reduce, settle, type ReqState } from "./machine";
 import { getLast, getRequest, liteVersion, loadLite, reqKey, setLast, setRequest, subscribeLite } from "./store";
 
 /** Reads the persisted Lite store (re-renders on change). */
@@ -56,7 +56,8 @@ export function useUpgradeRequest(product: Product, featureKey: string) {
     if (!canSend(state)) return;
     setLocal((x) => reduce(x.kind === "error" ? IDLE : x, { type: "send" }));
     try {
-      const body = { featureKey, ...(note?.trim() ? { note: note.trim() } : {}) };
+      const n = normalizeNote(note);
+      const body = { featureKey, ...(n ? { note: n } : {}) };
       const r = await mutate<{ status: string; requestedAt: string | null }>(product, "POST", "/mobile/upgrade-request", body, { label: `upgrade:${featureKey}`, owner, queueable: true });
       if (r.queued) { setRequest(key, { kind: "queued", at: new Date().toISOString(), opId: r.opId }); setLocal(IDLE); return; }
       if (r.data.status === "ALREADY_ENTITLED") { setLocal(IDLE); void refreshBootstrap(product); return; }
