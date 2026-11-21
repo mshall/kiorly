@@ -1,5 +1,5 @@
 import type { Product } from "@/api/products";
-import type { Bootstrap } from "@/api/types";
+import type { Bootstrap, UpgradeRequestItem } from "@/api/types";
 import { TILES, tileByKey, type Tile } from "@/modules/registry";
 
 /** Lite = the org is below the Pro plan (entitlement `mobile_staff_app` off because of the PLAN). Safety alerts still work (ADR-025). */
@@ -63,3 +63,17 @@ export const benefitKeys = (tileKey: string, group: RoleGroup) => [`lite.benefit
 
 export const GENERAL_FEATURE = "general";
 export const isFeatureKey = (k: string | undefined): k is string => !!k && (k === GENERAL_FEATURE || !!tileByKey(k));
+
+/** Open staff requests an approver should see on Home (Lite only; staff roles get none). Newest first, max 10, items without a usable id/date dropped. */
+export function openRequestsFor(product: Product, b: Ent | null | undefined): UpgradeRequestItem[] {
+  if (!isLite(b) || !isUpgradeAdmin(product, b)) return [];
+  const items = (b?.upgrade?.openRequestItems ?? []).filter((r) => r && r.id && r.requestedAt && !Number.isNaN(new Date(r.requestedAt).getTime()));
+  return [...items].sort((a, c) => new Date(c.requestedAt).getTime() - new Date(a.requestedAt).getTime()).slice(0, 10);
+}
+/** Count for badges: the server's total (can exceed the 10 listed), else what we have. 0 for non-approvers. */
+export function openRequestCount(product: Product, b: Ent | null | undefined): number {
+  if (!isLite(b) || !isUpgradeAdmin(product, b)) return 0;
+  return Math.max(b?.upgrade?.openRequests ?? 0, openRequestsFor(product, b).length);
+}
+/** Feature key a request is about, or "general" when it is not a known tile (older/other-product key). */
+export const requestFeature = (r: Pick<UpgradeRequestItem, "featureKey">): string => (tileByKey(r.featureKey) ? r.featureKey : GENERAL_FEATURE);

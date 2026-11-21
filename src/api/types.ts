@@ -4,7 +4,9 @@ export type Plan = "BASIC" | "PRO" | "ENTERPRISE";
 export interface Entitlement { key: "mobile_staff_app"; enabled: boolean; requiredPlan: "PRO"; reason: null | "PLAN_BELOW_PRO" | "FLAG_OFF" }
 export interface ModuleDef { key: string; enabled: boolean; screens: string[] }
 /** Basic orgs only (null/absent on Pro): what this role would get on Pro, my latest upgrade request (24h), and open requests for owner/admin. */
-export interface UpgradeBlock { lockedModules: string[]; myRequest: { featureKey: string; requestedAt: string } | null; openRequests: number | null; canApprove: boolean }
+/** One staff upgrade request as shown to an approver (owner/admin): display name only, never contact data. */
+export interface UpgradeRequestItem { id: string; featureKey: string; requesterRole: string; requesterName: string; requestedAt: string; note?: string }
+export interface UpgradeBlock { lockedModules: string[]; myRequest: { featureKey: string; requestedAt: string } | null; openRequests: number | null; /** Newest open requests (max 10), approvers only; absent on an older server. */ openRequestItems?: UpgradeRequestItem[]; canApprove: boolean }
 export interface Bootstrap {
   apiVersion: 1;
   product: Product;

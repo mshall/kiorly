@@ -8,7 +8,7 @@ import { Icon } from "@/components/Icon";
 import { useSessions } from "@/auth/SessionProvider";
 import { PRODUCT_META, accentFor, type Product } from "@/api/products";
 import { tileByKey, type Tile } from "@/modules/registry";
-import { benefitKeys, isLite, lockedTilesFor, roleGroup } from "@/lite/logic";
+import { benefitKeys, isLite, lockedTilesFor, openRequestCount, openRequestsFor, requestFeature, roleGroup } from "@/lite/logic";
 import { noteTapped, useLastTapped, useUpgradeRequest } from "@/lite/useUpgradeRequest";
 import { formatDay } from "@/lib/format";
 import { haptic } from "@/lib/haptics";
@@ -107,13 +107,78 @@ export function useLockedTap(product: Product, setFeature: (k: string) => void) 
   return (k: string) => { noteTapped(product, sessions[product]?.email ?? "", k); setFeature(k); };
 }
 
-/** "Lite" pill for account rows. */
+/** "Lite" pill for account rows; owners/admins also see how many staff upgrade requests are open. */
 export function LiteBadge({ product }: { product: Product }) {
   const { t } = useTranslation();
   const { sessions } = useSessions();
   const b = sessions[product]?.bootstrap;
   if (!isLite(b)) return null;
-  return <Badge testID={`lite-badge-${product}`} tone="ocean" icon="shield" label={t("lite.badge")} />;
+  const n = openRequestCount(product, b);
+  return (
+    <View style={{ alignItems: "flex-end", gap: 4 }} accessible accessibilityLabel={n ? `${t("lite.badge")}. ${t("lite.req.countA11y", { count: n })}` : t("lite.badge")}>
+      <Badge testID={`lite-badge-${product}`} tone="ocean" icon="shield" label={t("lite.badge")} />
+      {n ? <Badge testID={`lite-badge-count-${product}`} tone="warning" icon="users" label={String(n)} /> : null}
+    </View>
+  );
+}
+
+/** Total open staff upgrade requests across the signed-in Lite products (approvers only): drives the Me tab badge. */
+export function useOpenRequestTotal(): number {
+  const { sessions, products } = useSessions();
+  return products.reduce((n, p) => n + openRequestCount(p, sessions[p]?.bootstrap), 0);
+}
+
+/**
+ * Owner/admin only (Lite): who asked for what and when. Each row opens the plan page for that feature. The in-app inbox stays Pro-only, so this is where an
+ * approver learns about requests. Display name only. A server that sends just the count gets a single count row.
+ */
+export function UpgradeRequestsSection({ product, limit = 3 }: { product: Product; limit?: number }) {
+  const { t, i18n } = useTranslation();
+  const { colors } = useTheme();
+  const router = useRouter();
+  const { sessions } = useSessions();
+  const b = sessions[product]?.bootstrap;
+  const items = openRequestsFor(product, b);
+  const count = openRequestCount(product, b);
+  if (!count) return null;
+  const shown = items.slice(0, limit);
+  const more = count - shown.length;
+  const open = (feature?: string) => router.push(`/upgrade?product=${product}${feature ? `&feature=${feature}` : ""}` as never);
+  return (
+    <Card style={{ gap: 4, padding: 12 }} testID={`upgrade-requests-${product}`}>
+      <Row gap={8} style={{ justifyContent: "space-between", minHeight: 32 }}>
+        <T variant="small" weight="semibold" color={colors.muted} accessibilityRole="header" style={{ flex: 1 }}>{t("lite.req.title")}</T>
+        <Badge testID={`upgrade-requests-count-${product}`} tone="warning" icon="users" label={String(count)} />
+      </Row>
+      {shown.length ? shown.map((r) => {
+        const feature = requestFeature(r);
+        const featureTitle = feature === "general" ? "" : t(`tiles.${feature}.title`);
+        const who = r.requesterName || t(`lite.req.role.${roleGroup(product, r.requesterRole)}`);
+        const line = feature === "general" ? t("lite.req.askedGeneral", { name: who }) : t("lite.req.asked", { name: who, feature: featureTitle });
+        const meta = t("lite.req.meta", { role: t(`lite.req.role.${roleGroup(product, r.requesterRole)}`), date: formatDay(r.requestedAt, i18n.language) });
+        return (
+          <Pressable key={r.id} testID={`upgrade-request-${r.id}`} onPress={() => { haptic.tap(); open(feature === "general" ? undefined : feature); }} accessibilityRole="button"
+            accessibilityLabel={`${line}. ${meta}.${r.note ? ` ${r.note}.` : ""} ${t("lite.req.open")}`}
+            style={({ pressed }) => ({ minHeight: 52, flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 6, borderRadius: radius, backgroundColor: pressed ? colors.raised : "transparent" })}>
+            <View style={{ width: 36, height: 36, borderRadius: 12, backgroundColor: colors.soft, alignItems: "center", justifyContent: "center" }}><Icon name="user" size={18} color={colors.ink2} /></View>
+            <View style={{ flex: 1 }}>
+              <T weight="medium" numberOfLines={2}>{line}</T>
+              <T variant="caption" muted numberOfLines={1}>{meta}</T>
+              {r.note ? <T variant="caption" muted numberOfLines={2}>“{r.note}”</T> : null}
+            </View>
+            <Icon name="chevron" size={16} color={colors.subtleText} mirror />
+          </Pressable>
+        );
+      }) : (
+        <Pressable testID={`upgrade-requests-countonly-${product}`} onPress={() => { haptic.tap(); open(); }} accessibilityRole="button" accessibilityLabel={`${t("lite.req.countOnly")}. ${t("lite.req.countA11y", { count })}`}
+          style={{ minHeight: 52, flexDirection: "row", alignItems: "center", gap: 12 }}>
+          <T weight="medium" style={{ flex: 1 }}>{t("lite.req.countOnly")}</T><Icon name="chevron" size={16} color={colors.subtleText} mirror />
+        </Pressable>
+      )}
+      {shown.length && more > 0 ? <T variant="caption" muted testID={`upgrade-requests-more-${product}`}>{t("lite.req.more", { count: more })}</T> : null}
+      <T variant="caption" muted>{t("lite.req.hint")}</T>
+    </Card>
+  );
 }
 
 /** Home block for a Lite product: a calm upgrade card (shows what you looked at last + request status) and a few locked tiles. No banners, no nagging. */
@@ -149,6 +214,7 @@ export function LiteHomeBlock({ product }: { product: Product }) {
           <Icon name="chevron" size={18} color={colors.subtleText} mirror />
         </Row>
       </Card>
+      <UpgradeRequestsSection product={product} />
       {shown.length ? (
         <>
           <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>{shown.map((x) => <LockedTile key={x.key} tile={x} compact onPress={() => tap(x.key)} />)}</View>

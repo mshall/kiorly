@@ -10,7 +10,7 @@ import { FadeIn } from "@/components/kit";
 import { useSessions } from "@/auth/SessionProvider";
 import { PRODUCT_META, accentFor, type Product } from "@/api/products";
 import { useAlerts } from "@/hooks/useAlerts";
-import { UpgradeRequestButton, UpgradeSheet } from "@/components/lite";
+import { UpgradeRequestButton, UpgradeRequestsSection, UpgradeSheet } from "@/components/lite";
 import { benefitKeys, isFeatureKey, isLite, lockedTilesFor, roleGroup } from "@/lite/logic";
 import { tileByKey } from "@/modules/registry";
 import { noteTapped } from "@/lite/useUpgradeRequest";
@@ -63,6 +63,7 @@ export default function Upgrade() {
             )}
           </Card>
         </FadeIn>
+        {lite ? <UpgradeRequestsSection product={p} limit={10} /> : null}
         {lite && locked.length ? (
           <Card style={{ gap: 6 }} testID="upgrade-role-tools">
             <T variant="small" weight="semibold" color={colors.muted} accessibilityRole="header">{t("lite.lockedTitle", { count: locked.length })}</T>

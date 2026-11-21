@@ -8,6 +8,7 @@ import { useSessions } from "@/auth/SessionProvider";
 import { useUnreadBadge } from "@/hooks/useAlerts";
 import { OfflineBanner } from "@/components/kit";
 import { haptic } from "@/lib/haptics";
+import { useOpenRequestTotal } from "@/components/lite";
 
 const TabIcon = ({ name, color, focused, ink }: { name: IconName; color: unknown; focused: boolean; ink: string }) => (
   <View style={{ alignItems: "center" }}>
@@ -22,6 +23,7 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { ready, products } = useSessions();
   const badge = useUnreadBadge();
+  const reqs = useOpenRequestTotal();
   if (ready && !products.length) return <Redirect href="/sign-in" />;
   return (
     <View style={{ flex: 1 }}>
@@ -35,7 +37,7 @@ export default function TabsLayout() {
         <Tabs.Screen name="index" options={{ title: t("tabs.home"), tabBarIcon: (p) => <TabIcon name="home" ink={colors.ink} {...p} /> }} />
         <Tabs.Screen name="work" options={{ title: t("tabs.work"), tabBarIcon: (p) => <TabIcon name="list" ink={colors.ink} {...p} /> }} />
         <Tabs.Screen name="inbox" options={{ title: t("tabs.inbox"), tabBarBadge: badge > 0 ? badge : undefined, tabBarBadgeStyle: { backgroundColor: colors.pulse, color: "#fff", fontSize: 10 }, tabBarIcon: (p) => <TabIcon name="bell" ink={colors.ink} {...p} /> }} />
-        <Tabs.Screen name="me" options={{ title: t("tabs.me"), tabBarIcon: (p) => <TabIcon name="user" ink={colors.ink} {...p} /> }} />
+        <Tabs.Screen name="me" options={{ title: t("tabs.me"), tabBarBadge: reqs > 0 ? reqs : undefined, tabBarBadgeStyle: { backgroundColor: colors.pulse, color: "#fff", fontSize: 10 }, tabBarAccessibilityLabel: reqs > 0 ? `${t("tabs.me")}. ${t("lite.req.tab", { count: reqs })}` : undefined, tabBarIcon: (p) => <TabIcon name="user" ink={colors.ink} {...p} /> }} />
       </Tabs>
       <View style={{ position: "absolute", top: 0, left: 0, right: 0 }} pointerEvents="none"><View style={{ paddingTop: insets.top }}><OfflineBanner /></View></View>
     </View>

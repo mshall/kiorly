@@ -31,4 +31,10 @@ describe("Lite strings", () => {
     expect(used.size).toBeGreaterThan(15);
     expect([...used].filter((k) => get(en, k) === undefined || get(ar, k) === undefined)).toEqual([]);
   });
+  it("requester role labels exist for every role group in both languages", () => {
+    for (const g of Object.keys(get(en, "lite.roles") as object)) {
+      expect(typeof get(en, `lite.req.role.${g}`)).toBe("string");
+      expect(typeof get(ar, `lite.req.role.${g}`)).toBe("string");
+    }
+  });
 });

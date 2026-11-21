@@ -1,5 +1,5 @@
 import { TILES } from "@/modules/registry";
-import { isLite, isUpgradeAdmin, lockedTilesFor, roleGroup } from "@/lite/logic";
+import { isLite, isUpgradeAdmin, lockedTilesFor, openRequestCount, openRequestsFor, requestFeature, roleGroup } from "@/lite/logic";
 import type { Bootstrap } from "@/api/types";
 
 const ent = (enabled: boolean, reason: Bootstrap["entitlement"]["reason"] = enabled ? null : "PLAN_BELOW_PRO") => ({ key: "mobile_staff_app" as const, enabled, requiredPlan: "PRO" as const, reason });
@@ -55,5 +55,35 @@ describe("upgrade wording: admin vs staff", () => {
     expect(roleGroup("lab", "AUTHORIZED_SIGNATORY")).toBe("signatory");
     expect(roleGroup("lab", "PHLEBOTOMIST")).toBe("phleb");
     expect(roleGroup("lab", "WHO")).toBe("staff");
+  });
+});
+
+describe("owner view of staff upgrade requests", () => {
+  const item = (id: string, at: string, over: Record<string, unknown> = {}) => ({ id, featureKey: "clinic.vitals", requesterRole: "NURSE", requesterName: "Nadia Ali", requestedAt: at, ...over });
+  const owner = (items: unknown[] | undefined, openRequests: number | null = items?.length ?? null, over: Record<string, unknown> = {}) => ({
+    entitlement: ent(false), user: { id: "u", name: "n", email: "e", role: "CLINIC_ADMIN", roles: ["CLINIC_ADMIN"] },
+    upgrade: { lockedModules: [], myRequest: null, openRequests, openRequestItems: items, canApprove: true, ...over },
+  }) as never;
+  it("approvers get newest-first items capped at 10", () => {
+    const items = Array.from({ length: 12 }, (_, i) => item(`r${i}`, new Date(Date.UTC(2026, 10, 1 + i)).toISOString()));
+    const out = openRequestsFor("clinic", owner(items, 12));
+    expect(out).toHaveLength(10); expect(out[0].id).toBe("r11");
+    expect(openRequestCount("clinic", owner(items, 12))).toBe(12); // server total wins when it exceeds the listed items
+  });
+  it("staff roles and Pro orgs get nothing (they keep the 'ask your admin' state)", () => {
+    expect(openRequestsFor("clinic", owner([item("a", "2026-11-01T00:00:00Z")], 1, { canApprove: false }))).toEqual([]);
+    expect(openRequestCount("clinic", owner([item("a", "2026-11-01T00:00:00Z")], 1, { canApprove: false }))).toBe(0);
+    const pro = { ...(owner([item("a", "2026-11-01T00:00:00Z")]) as object), entitlement: ent(true) } as never;
+    expect(openRequestCount("clinic", pro)).toBe(0);
+  });
+  it("older server (count only) still yields a count; garbage items are dropped", () => {
+    expect(openRequestCount("clinic", owner(undefined, 3))).toBe(3);
+    expect(openRequestsFor("clinic", owner([item("", "2026-11-01T00:00:00Z"), item("b", "nope"), item("c", "2026-11-01T00:00:00Z")], 3)).map((r) => r.id)).toEqual(["c"]);
+    expect(openRequestCount("clinic", owner(undefined, null))).toBe(0);
+  });
+  it("unknown feature keys fall back to general", () => {
+    expect(requestFeature({ featureKey: "clinic.vitals" })).toBe("clinic.vitals");
+    expect(requestFeature({ featureKey: "pharmacy.nope" })).toBe("general");
+    expect(requestFeature({ featureKey: "general" })).toBe("general");
   });
 });

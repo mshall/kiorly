@@ -534,6 +534,30 @@
           "manager": "Reorder reagents before the bench runs out."
         }
       }
+    },
+    "req": {
+      "title": "Upgrade requests",
+      "asked": "{{name}} asked for {{feature}}",
+      "askedGeneral": "{{name}} asked for the Pro plan",
+      "meta": "{{role}} · {{date}}",
+      "more": "{{count}} more open requests",
+      "countOnly": "Staff have asked for an upgrade",
+      "countA11y": "Upgrade requests: {{count}}",
+      "open": "Open this request",
+      "tab": "{{count}} upgrade requests",
+      "hint": "Your staff asked. Nothing changes until you switch plans from Billing on the web.",
+      "role": {
+        "manager": "Manager",
+        "doctor": "Doctor",
+        "nurse": "Nurse",
+        "frontdesk": "Front desk",
+        "pharmacist": "Pharmacist",
+        "counter": "Counter staff",
+        "signatory": "Signatory",
+        "tech": "Technologist",
+        "phleb": "Phlebotomist",
+        "staff": "Staff"
+      }
     }
   }
 }
