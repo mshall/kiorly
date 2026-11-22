@@ -33,7 +33,9 @@ Run the app (`cd kiorly-work && npm install` once; own lockfile and `.npmrc` wit
 * The sign-in screen has **demo chips** (dev builds) that fill the e-mail, password and lab org slug for you.
 * Bundle ids `com.kiorly.work` are placeholders until the store accounts exist (NEEDS_HUMAN).
 
-## 3. Personas (sign-in screen: pick the product tab, then the chip or type e-mail + password; Lab: org slug + e-mail)
+## 3. Personas (sign-in screen: pick the tile (Clinic, Nurse, Pharmacy or Lab), then the chip or type e-mail + password; Lab: org slug + e-mail)
+
+The **Nurse** tile (22 Nov 2026) is a front door to the Clinic backend for nurses, aides and dispatchers: it signs in as the Clinic product and lands on today's home-visit rounds. Its demo chips are Nurse (Nile Care), solo nurse Mona, agency nurse Heba, aide Aya, dispatcher Dina and the agency owner.
 
 Sign-in is **per product**: the app keeps one session per product, so one person can be signed in to several. All logins below were checked against `/mobile/bootstrap` on 21 Nov 2026.
 
@@ -122,7 +124,7 @@ Sign-in is **per product**: the app keeps one session per product, so one person
 
 **W4. Vitals with a critical value (nurse.na).** 1) Work -> Vitals -> pick a patient, enter a dangerous value (for example systolic 220 or SpO2 80). *Expected:* saved; a CRITICAL_VITALS alert is raised and appears in the Inbox and the Home alert strip for clinical roles; acknowledge it (first acknowledger wins).
 
-**W5. Home-visit round (Mona).** 1) Sign in `mona@nurse-demo.kiorly.test`. 2) Work -> Home visits (round): today's route. 3) Depart, Arrive (location stamp; web degrades), Finish. 4) Press SOS on a visit. *Expected:* an SOS alert (CRITICAL) in her inbox and in the agency owner's inbox; 12 open alerts are already seeded (SOS, missed check-in, unsafe abort).
+**W5. Home-visit round (Mona).** 1) Sign-in -> Nurse tile -> chip "Solo nurse Mona" (lands on the rounds screen). 2) Work -> Home visits (round): today's route. 3) Depart, Arrive (location stamp; web degrades), Finish. 4) Press SOS on a visit. *Expected:* an SOS alert (CRITICAL) in her inbox and in the agency owner's inbox; 12 open alerts are already seeded (SOS, missed check-in, unsafe abort).
 
 **W6. Owner revenue and devices (owner.na, agency owner).** 1) `owner.na@` -> Revenue: today / last 7 / last 30 days. 2) Me -> Devices: the device list; the agency owner (`owner@nurse-demo`) sees every device in the org. 3) Remote sign-out one device. *Expected:* that device's next call returns 401 / `DEVICE_REVOKED` and it wipes its session.
 

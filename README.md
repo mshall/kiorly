@@ -36,3 +36,6 @@ What is real and testable today (no credentials needed): permission flow, token 
 | Upgrade request | `e2e-push/upgrade-request.json` | `/upgrade?product=<product>` |
 
 **What remains for real remote push (credentials only, no code):** (1) `eas init` to write `extra.eas.projectId` into `app.json` (without it the app logs a warning, shows the reason in the dev card and keeps the mock token; it does not crash); (2) upload an **APNs key** (iOS) and an **FCM v1 service account** + `google-services.json` (Android) to EAS; (3) switch the product APIs from `PUSH_MODE=mock` to `real` with the Expo gateway. Remote push cannot be delivered to a simulator.
+
+## Sign-in entries
+Sign-in shows four tiles: Clinic, **Nurse**, Pharmacy and Lab. Nurse is the front door for nurses, aides and dispatchers: they have Kiorly Clinic accounts, so it uses the Clinic API and lands on today's home-visit rounds. There is no separate nurse app.

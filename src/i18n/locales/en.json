@@ -7,7 +7,8 @@
   "product": {
     "clinic": "Clinic",
     "pharmacy": "Pharmacy",
-    "lab": "Lab"
+    "lab": "Lab",
+    "nurse": "Nurse"
   },
   "common": {
     "close": "Close",
@@ -83,7 +84,8 @@
     "addAccount": "Add another product",
     "planBasic": "Basic",
     "planPro": "Pro",
-    "planEnterprise": "Enterprise"
+    "planEnterprise": "Enterprise",
+    "nurseHint": "Nurses, aides and dispatchers sign in with their Kiorly Clinic account; you land on today's home visits."
   },
   "tabs": {
     "home": "Home",

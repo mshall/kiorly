@@ -8,7 +8,7 @@ import { useTheme, radius } from "@/theme";
 import { Banner, Button, Card, Chip, Field, Row, T } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 import { KiorexMark } from "@/components/Logo";
-import { DEMO_ACCOUNTS, PRODUCT_META, PRODUCTS, accentFor, type Product } from "@/api/products";
+import { DEMO_ACCOUNTS, PRODUCT_META, SIGN_IN_ENTRIES, accentFor, productOf, type Product, type SignInEntry } from "@/api/products";
 import { useSessions } from "@/auth/SessionProvider";
 import { ApiError } from "@/api/errors";
 import { haptic } from "@/lib/haptics";
@@ -20,7 +20,8 @@ export default function SignIn() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { signIn, products } = useSessions();
-  const [product, setProduct] = useState<Product>("clinic");
+  const [entry, setEntry] = useState<SignInEntry>("clinic");
+  const product: Product = productOf(entry);
   const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [org, setOrg] = useState("");
   const [mfa, setMfa] = useState(""); const [needMfa, setNeedMfa] = useState(false);
   const [busy, setBusy] = useState(false); const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export default function SignIn() {
     try {
       const b = await signIn(product, { email, password, org, mfaCode: mfa || undefined });
       haptic.success();
-      router.replace(b.entitlement.enabled ? "/(tabs)" : (`/upgrade?product=${product}` as never));
+      router.replace(b.entitlement.enabled ? (entry === "nurse" ? "/clinic/rounds" : "/(tabs)") as never : (`/upgrade?product=${product}` as never));
     } catch (e) {
       haptic.error();
       const err = e as ApiError;
@@ -65,18 +66,19 @@ export default function SignIn() {
             <T variant="h2">{t("signIn.title")}</T>
             <T variant="small" muted>{t("signIn.subtitle")}</T>
             <Row gap={8}>
-              {PRODUCTS.map((p) => {
-                const sel = p === product; const a = accentFor(p, scheme); const done = products.includes(p);
+              {SIGN_IN_ENTRIES.map((e) => {
+                const p = productOf(e); const sel = e === entry; const a = accentFor(p, scheme); const done = products.includes(p);
                 return (
-                  <Pressable key={p} testID={`product-${p}`} onPress={() => { haptic.select(); setProduct(p); setError(null); setNeedMfa(false); }} accessibilityRole="radio" accessibilityState={{ selected: sel }}
+                  <Pressable key={e} testID={`product-${e}`} onPress={() => { haptic.select(); setEntry(e); setError(null); setNeedMfa(false); }} accessibilityRole="radio" accessibilityState={{ selected: sel }}
                     style={{ flex: 1, minHeight: 84, borderRadius: radius, padding: 10, alignItems: "center", justifyContent: "center", gap: 6, borderWidth: sel ? 2 : 1, borderColor: sel ? a : colors.border, backgroundColor: sel ? colors.subtle : colors.surface }}>
-                    <Icon name={PRODUCT_META[p].icon} size={26} color={a} />
-                    <T variant="small" weight="semibold">{t(PRODUCT_META[p].nameKey)}</T>
+                    <Icon name={e === "nurse" ? "heart" : PRODUCT_META[p].icon} size={26} color={a} />
+                    <T variant="small" weight="semibold" numberOfLines={1}>{t(e === "nurse" ? "product.nurse" : PRODUCT_META[p].nameKey)}</T>
                     {done ? <T variant="caption" color={colors.success}>{t("signIn.connected")}</T> : null}
                   </Pressable>
                 );
               })}
             </Row>
+            {entry === "nurse" ? <T variant="caption" muted testID="nurse-hint">{t("signIn.nurseHint")}</T> : null}
             {error ? <Banner tone="danger" body={error} testID="signin-error" /> : null}
             <Field label={t("signIn.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" testID="signin-email" />
             {meta.login === "devlogin"
@@ -92,7 +94,7 @@ export default function SignIn() {
             <Card style={{ gap: 10 }}>
               <Row style={{ justifyContent: "space-between" }}><T variant="small" weight="semibold">{t("signIn.demo")}</T><T variant="caption" muted>{t("signIn.demoHint")}</T></Row>
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                {DEMO_ACCOUNTS[product].map((d) => (
+                {DEMO_ACCOUNTS[product].filter((d) => (entry === "nurse" ? d.nurse : entry === "clinic" ? !d.nurse : true)).map((d) => (
                   <Chip key={d.email} testID={`demo-${d.email}`} label={`${d.label} · ${d.plan}`} onPress={() => { setEmail(d.email); setPassword(d.password ?? ""); setOrg(d.org ?? ""); haptic.tap(); }} />
                 ))}
               </View>

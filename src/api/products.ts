@@ -31,15 +31,24 @@ export const PRODUCT_META: Record<Product, ProductMeta> = {
   lab: { key: "lab", nameKey: "product.lab", accent: theme.products.lab, login: "devlogin", icon: "flask" },
 };
 
+/** Sign-in entry points. "nurse" is a front door to the clinic backend (nurses, aides and dispatchers have Kiorly Clinic accounts): it signs in as the clinic product and lands on today's home visits. */
+export type SignInEntry = Product | "nurse";
+export const SIGN_IN_ENTRIES: readonly SignInEntry[] = ["clinic", "nurse", "pharmacy", "lab"] as const;
+export const productOf = (e: SignInEntry): Product => (e === "nurse" ? "clinic" : e);
+
 export const accentFor = (p: Product, scheme: "light" | "dark") => (scheme === "dark" ? PRODUCT_META[p].accent.dark : PRODUCT_META[p].accent.graphic);
 
 /** Demo accounts (dev only; TEST_DATA.md). Never shown in production builds. */
-export const DEMO_ACCOUNTS: Record<Product, { label: string; plan: "PRO" | "ENTERPRISE" | "BASIC"; email: string; password?: string; org?: string }[]> = {
+export const DEMO_ACCOUNTS: Record<Product, { label: string; plan: "PRO" | "ENTERPRISE" | "BASIC"; email: string; password?: string; org?: string; nurse?: boolean }[]> = {
   clinic: [
     { label: "Doctor (Nile Care)", plan: "PRO", email: "nadia.na@demo.kiorex.test", password: "Demo@12345" },
-    { label: "Nurse (Nile Care)", plan: "PRO", email: "nurse.na@demo.kiorex.test", password: "Demo@12345" },
+    { label: "Nurse (Nile Care)", plan: "PRO", email: "nurse.na@demo.kiorex.test", password: "Demo@12345", nurse: true },
     { label: "Owner (Nile Care)", plan: "PRO", email: "owner.na@demo.kiorex.test", password: "Demo@12345" },
-    { label: "Solo nurse Mona", plan: "PRO", email: "mona@nurse-demo.kiorly.test", password: "Demo@12345" },
+    { label: "Solo nurse Mona", plan: "PRO", email: "mona@nurse-demo.kiorly.test", password: "Demo@12345", nurse: true },
+    { label: "Agency nurse Heba", plan: "ENTERPRISE", email: "nurse1@nurse-demo.kiorly.test", password: "Demo@12345", nurse: true },
+    { label: "Agency aide Aya", plan: "ENTERPRISE", email: "aide@nurse-demo.kiorly.test", password: "Demo@12345", nurse: true },
+    { label: "Dispatcher Dina", plan: "ENTERPRISE", email: "dispatch@nurse-demo.kiorly.test", password: "Demo@12345", nurse: true },
+    { label: "Agency owner", plan: "ENTERPRISE", email: "owner@nurse-demo.kiorly.test", password: "Demo@12345", nurse: true },
     { label: "Owner (Basic clinic)", plan: "BASIC", email: "owner.basic@demo.kiorex.test", password: "Demo@12345" },
   ],
   pharmacy: [
