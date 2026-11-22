@@ -9,6 +9,7 @@ import { useTheme } from "@/theme";
 import { Avatar } from "@/modules/clinic/Avatar";
 import { ClinicError, Title, useClinicBoot, useLang } from "@/modules/clinic/shared";
 import { hasModule, patientName } from "@/modules/clinic/helpers";
+import { statusLabel } from "@/lib/status";
 
 interface Summary {
   allergies: { id: string; code: string; otherComment?: string | null }[]; activeProblems: { icd10Code?: string; labelEn?: string; labelAr?: string }[];
@@ -85,7 +86,7 @@ export default function PatientDetail() {
           <SectionTitle title={t("clinic.patient.meds")} />
           <Card style={{ gap: 6 }}>{sm.currentMedications.length ? sm.currentMedications.map((m, i) => <KV key={i} k={m.drugName} v={[m.dosage, m.frequency].filter(Boolean).join(" · ")} />) : <T variant="small" muted>{t("common.none")}</T>}</Card>
           {sm.outstandingBalance ? <KV k={t("clinic.patient.balance")} v={formatMoney(sm.outstandingBalance, i18n.language)} tone="warning" /> : null}
-          {sm.upcomingAppointments.length ? (<><SectionTitle title={t("clinic.patient.upcoming")} />{sm.upcomingAppointments.slice(0, 3).map((a) => <ListRow key={a.id} icon="calendar" title={`${formatDay(a.startsAt, i18n.language)} ${formatTime(a.startsAt, i18n.language)}`} subtitle={[a.typeName, a.clinicianName].filter(Boolean).join(" · ")} badge={a.status} />)}</>) : null}
+          {sm.upcomingAppointments.length ? (<><SectionTitle title={t("clinic.patient.upcoming")} />{sm.upcomingAppointments.slice(0, 3).map((a) => <ListRow key={a.id} icon="calendar" title={`${formatDay(a.startsAt, i18n.language)} ${formatTime(a.startsAt, i18n.language)}`} subtitle={[a.typeName, a.clinicianName].filter(Boolean).join(" · ")} badge={statusLabel(t, a.status, { scope: "clinic" })} />)}</>) : null}
         </View>
       ) : null}
 
@@ -99,7 +100,7 @@ export default function PatientDetail() {
       <SectionTitle title={t("clinic.patient.labs")} />
       {labItems.slice(0, 3).map((o) => (
         <Card key={o.id} style={{ gap: 6 }}>
-          <T variant="caption" muted>{o.resultsReadyAt ? `${formatDay(o.resultsReadyAt, i18n.language)}` : o.status}</T>
+          <T variant="caption" muted>{o.resultsReadyAt ? `${formatDay(o.resultsReadyAt, i18n.language)}` : statusLabel(t, o.status, { scope: "clinic" })}</T>
           {o.items.map((it) => <Row key={it.code} style={{ justifyContent: "space-between" }}><T variant="small">{ar ? it.nameAr ?? it.nameEn : it.nameEn}</T><T variant="small" weight="semibold" color={danger(it.resultFlag) ? colors.danger : colors.text}>{it.resultValue ?? "-"} {it.resultUnit ?? ""}</T></Row>)}
         </Card>
       ))}

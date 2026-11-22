@@ -1,0 +1,16 @@
+{
+  "Simulator Target Bundle": "com.kiorly.work",
+  "aps": {
+    "alert": {
+      "title": "طلب كيوريكس جديد",
+      "body": "وصل الطلب KX-1043. يرجى الرد خلال 15 دقيقة."
+    },
+    "sound": "default",
+    "badge": 3
+  },
+  "body": {
+    "product": "pharmacy",
+    "template": "order.received",
+    "orderId": "demo_kx_order_1043"
+  }
+}

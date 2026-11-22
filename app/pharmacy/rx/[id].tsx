@@ -13,6 +13,7 @@ import { canOverride, drugName, errText, hasScreen, rxActions, summarizeChecks, 
 import { useTheme } from "@/theme";
 import { haptic } from "@/lib/haptics";
 import { uid } from "@/offline/queue";
+import { statusLabel } from "@/lib/status";
 
 interface Line { id: string; drugId?: string | null; drug?: { id: string; brandName: string; brandNameAr?: string } | null; drugName?: string; strength?: string; quantity?: number; directions?: string; controlled?: boolean }
 interface Rx { id: string; status: string; priority?: string; prescriberName?: string; verificationNotes?: string | null; lines: Line[]; patient?: { id: string; displayName: string; allergies?: string[]; chronicConditions?: string[] } | null }
@@ -80,7 +81,7 @@ export default function RxDetail() {
         {(r) => (
           <View style={{ gap: 12 }}>
             <Card style={{ gap: 8 }}>
-              <Row style={{ justifyContent: "space-between" }}><T variant="h2">{r.patient?.displayName}</T><Badge tone={r.priority === "URGENT" ? "danger" : "ink"} label={r.status} /></Row>
+              <Row style={{ justifyContent: "space-between" }}><T variant="h2">{r.patient?.displayName}</T><Badge tone={r.priority === "URGENT" ? "danger" : "ink"} label={statusLabel(t, r.status, { scope: "pharmacy.rx" })} /></Row>
               <T variant="small" muted>{r.prescriberName}</T>
               {r.patient?.allergies?.length ? <Banner tone="danger" title={t("pharmacy.rx.allergies")} body={r.patient.allergies.join(", ")} testID="rx-allergies" /> : <Row gap={6}><Icon name="check" size={14} color={colors.success} /><T variant="caption" muted>{t("pharmacy.rx.noAllergies")}</T></Row>}
               {r.verificationNotes ? <T variant="small">{r.verificationNotes}</T> : null}

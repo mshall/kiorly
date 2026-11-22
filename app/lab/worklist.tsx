@@ -5,6 +5,7 @@ import { Card, Row, Screen, T } from "@/components/ui";
 import { ListRow, Progress, QueryView, SectionTitle } from "@/components/kit";
 import { useRead, usePullRefresh } from "@/hooks/useRead";
 import { sectionPercent, sectionTone, type Section } from "@/modules/lab/helpers";
+import { statusLabel } from "@/lib/status";
 
 interface Spec { id: string; accessionNumber: string; specimenType: string; status: string; order?: { orderNumber?: string; priority?: string } }
 
@@ -29,7 +30,7 @@ export default function Worklist() {
       </QueryView>
       <SectionTitle title={t("lab.inLab")} />
       <QueryView q={list} isEmpty={(d) => !d.length} rows={3} empty={{ icon: "list", title: t("lab.queueEmpty") }}>
-        {(d) => <View style={{ gap: 8 }}>{d.slice(0, 15).map((s) => <ListRow key={s.id} icon="syringe" title={s.accessionNumber} subtitle={`${s.order?.orderNumber ?? ""} · ${s.specimenType}`} badge={s.order?.priority !== "ROUTINE" ? s.order?.priority : undefined} badgeTone="danger" />)}</View>}
+        {(d) => <View style={{ gap: 8 }}>{d.slice(0, 15).map((s) => <ListRow key={s.id} icon="syringe" title={s.accessionNumber} subtitle={`${s.order?.orderNumber ?? ""} · ${s.specimenType}`} badge={s.order?.priority !== "ROUTINE" ? statusLabel(t, s.order?.priority, { kind: "priority" }) : undefined} badgeTone="danger" />)}</View>}
       </QueryView>
     </Screen>
   );

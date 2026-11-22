@@ -42,7 +42,7 @@ export default function Critical() {
               return (
                 <ListRow key={a.id} testID={`crit-${a.id}`} icon="alert" iconTone={a.ackedAt ? "muted" : a.severity === "CRITICAL" ? "danger" : "warning"} accent={a.ackedAt ? undefined : colors.danger}
                   title={ar ? a.titleAr ?? a.title : a.title} subtitle={ar ? a.bodyAr ?? a.body : a.body}
-                  meta={!a.ackedAt && m != null ? `${m < 0 ? t("lab.overdue") : t("lab.dueIn")} ${countdownLabel(m)}${a.escalationLevel ? ` · ${t("lab.escalationLevel", { level: a.escalationLevel })}` : ""}` : a.ackedAt ? t("inbox.ackedBy", { name: a.ackedByName ?? "" }) : undefined}
+                  meta={!a.ackedAt && m != null ? `${m < 0 ? t("lab.overdue") : t("lab.dueIn")} ${countdownLabel(Math.abs(m), i18n.language)}${a.escalationLevel ? ` · ${t("lab.escalationLevel", { level: a.escalationLevel })}` : ""}` : a.ackedAt ? t("inbox.ackedBy", { name: a.ackedByName ?? "" }) : undefined}
                   badge={a.ackedAt ? t("inbox.acked") : t("inbox.critical")} badgeTone={a.ackedAt ? "success" : "danger"} onPress={() => { haptic.tap(); setSel(a); }} />
               );
             })}

@@ -12,6 +12,8 @@ import { drugName, errText, expiryTone, fefo, money, parseGs1, type Lot } from "
 import { formatDay } from "@/lib/format";
 import { useTheme } from "@/theme";
 import { haptic } from "@/lib/haptics";
+import { statusLabel } from "@/lib/status";
+import { localizeDigits } from "@/lib/format";
 
 interface Result { found: boolean; code: string; drug?: { id: string; brandName: string; brandNameAr?: string; strength?: string; dosageForm?: string; rxOnly?: boolean; controlled?: boolean; coldChain?: boolean }; price?: string; requiresPrescription?: boolean; stock?: { onHand: number; available: number; nearestExpiry: string | null }; lots?: Lot[]; scan?: { lotNumber?: string | null; expiryDate?: string | null } }
 
@@ -62,7 +64,7 @@ export default function Barcode() {
               return (
                 <Card key={l.id} testID={`lot-${l.lotNumber}`} style={{ gap: 6, padding: 12, borderStartWidth: 4, borderStartColor: toneColor(colors, tone) }}>
                   <Row style={{ justifyContent: "space-between" }}><T weight="semibold">{l.lotNumber}</T><Row gap={6}>{i === 0 && !l.expired ? <Badge tone="ink" label={t("pharmacy.barcode.fefo")} /> : null}{l.scannedLotMatch ? <Badge tone="success" label={t("pharmacy.barcode.scannedLot")} icon="check" /> : null}<Badge tone={tone} label={l.expired ? t("pharmacy.expired") : `${l.daysToExpiry}d`} /></Row></Row>
-                  <T variant="small" muted>{formatDay(l.expiryDate, lang)} · {l.status} · {t("pharmacy.qty")} {l.qtyOnHand}{l.qtyReserved ? ` (${t("pharmacy.reserved")} ${l.qtyReserved})` : ""}</T>
+                  <T variant="small" muted>{formatDay(l.expiryDate, lang)} · {statusLabel(t, l.status, { scope: "pharmacy.lot" })} · {t("pharmacy.qty")} {localizeDigits(l.qtyOnHand, lang)}{l.qtyReserved ? ` (${t("pharmacy.reserved")} ${localizeDigits(l.qtyReserved, lang)})` : ""}</T>
                 </Card>
               );
             })}

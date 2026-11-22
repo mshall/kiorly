@@ -9,6 +9,7 @@ import { api } from "@/api/client";
 import { haptic } from "@/lib/haptics";
 import { usePh } from "@/modules/pharmacy/hooks";
 import { errText, money, slaLabel, slaMinutes, slaTone, validReason } from "@/modules/pharmacy/lib";
+import { statusLabel } from "@/lib/status";
 
 interface Order { id: string; externalOrderId: string; status: string; hasRx: boolean; customerName?: string; orderValue: string; prepaid: boolean; slaDueAt: string | null; deliveryMethod?: string; lines?: unknown[] }
 const OPEN = ["RECEIVED", "ACCEPTED", "PARTIALLY_ACCEPTED"];
@@ -43,9 +44,9 @@ export default function KiorexOrders() {
           const m = OPEN.includes(o.status) ? slaMinutes(o.slaDueAt, now) : null;
           return (
             <Card key={o.id} testID={`order-${o.id}`} onPress={() => setSel(o)} style={{ gap: 6 }}>
-              <Row style={{ justifyContent: "space-between" }}><T weight="semibold">{o.customerName ?? o.externalOrderId}</T><Badge tone={o.status === "RECEIVED" ? "warning" : o.status === "READY" || o.status === "DISPENSED" ? "success" : o.status === "REJECTED" || o.status === "CANCELLED" || o.status === "EXPIRED" ? "muted" : "ocean"} label={t(`pharmacy.orders.status.${o.status}`, { defaultValue: o.status })} /></Row>
+              <Row style={{ justifyContent: "space-between" }}><T weight="semibold">{o.customerName ?? o.externalOrderId}</T><Badge tone={o.status === "RECEIVED" ? "warning" : o.status === "READY" || o.status === "DISPENSED" ? "success" : o.status === "REJECTED" || o.status === "CANCELLED" || o.status === "EXPIRED" ? "muted" : "ocean"} label={statusLabel(t, o.status, { scope: "pharmacy.orders" })} /></Row>
               <T variant="small" muted>{money(o.orderValue, lang)} · {o.prepaid ? t("pharmacy.orders.prepaid") : t("pharmacy.orders.pay")} · {o.deliveryMethod ?? ""}{o.hasRx ? ` · ${t("pharmacy.rx.title")}` : ""}</T>
-              {m != null ? <Badge tone={slaTone(m)} label={`${t("pharmacy.orders.sla")} ${slaLabel(m)}`} icon="clock" /> : null}
+              {m != null ? <Badge tone={slaTone(m)} label={`${t("pharmacy.orders.sla")} ${slaLabel(m, lang)}`} icon="clock" /> : null}
             </Card>);
         })}</View>}
       </QueryView>

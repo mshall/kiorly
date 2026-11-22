@@ -25,8 +25,8 @@ Run the app (`cd kiorly-work && npm install` once; own lockfile and `.npmrc` wit
 | Target | Command | Notes |
 |---|---|---|
 | **Expo web** | `npm run web` -> `http://localhost:8082` | open at a phone-sized window (about 390 px). The APIs already allow the 8082 origin (verified with a CORS preflight on the clinic API; pharmacy/lab default `CORS_ORIGINS` include it). Native-only features (biometric lock, camera scan, push tokens, location) degrade on web. |
-| **iOS Simulator** | `npm run ios` (= `expo start --ios`) | `localhost` reaches the Mac, so the default API URLs work. Xcode and an iPhone simulator exist on this Mac; the docs state a native run was not exercised, treat it as untested. Face ID, camera and push need a real device or dev client. |
-| **Android emulator** | `npm run android` (= `expo start --android`) | In the emulator `localhost` is the emulator itself: set `EXPO_PUBLIC_CLINIC_API=http://10.0.2.2:3010/api/v1`, `EXPO_PUBLIC_PHARMACY_API=http://10.0.2.2:3100/api/v1`, `EXPO_PUBLIC_LAB_API=http://10.0.2.2:3200/api/v1` (10.0.2.2 reaches the Mac's loopback). Android Studio / `adb` are not installed on this Mac. |
+| **iOS Simulator** | `npm run ios` (= `expo run:ios`, a **development build**; see README) | `localhost` reaches the Mac, so the default API URLs work. Verified on the iPhone 18 Pro simulator on 22 Nov 2026 (first-run RTL reload, sign-in, push fixtures). Face ID and camera still need a real device. |
+| **Android emulator** | `npm run android` (= `expo run:android`, dev build) | In the emulator `localhost` is the emulator itself: set `EXPO_PUBLIC_CLINIC_API=http://10.0.2.2:3010/api/v1`, `EXPO_PUBLIC_PHARMACY_API=http://10.0.2.2:3100/api/v1`, `EXPO_PUBLIC_LAB_API=http://10.0.2.2:3200/api/v1` (10.0.2.2 reaches the Mac's loopback). Android Studio / `adb` are not installed on this Mac. |
 | **Physical phone** | `npm start`, scan the QR in Expo Go (or an EAS dev client) | use the Mac's LAN IP in the three `EXPO_PUBLIC_*_API` variables; pharmacy (`:3100`) and lab (`:3200`) APIs listen on `127.0.0.1` only, so start them with a LAN bind first. Push is mock. |
 
 * Defaults come from `.env.example` (3010 / 3100 / 3200). `.env.local` is a local, git-ignored override and overrides `.env.example`: on 21 Nov 2026 it holds the same three URLs (3010 / 3100 / 3200) as `.env.example`; earlier it pointed at an alternate stack (3011 / 3190 / 3250), so if sign-in hits nothing, check that file first.
@@ -173,3 +173,9 @@ Sign-in is **per product**: the app keeps one session per product, so one person
 
 ---
 Verified: 2026-11-21 (seed scripts incl. the three `seed:mobile` seeds run twice, databases via SELECT, `.env.example` / `.env.local` compared).
+
+## 5. Push notifications with dummy data (dev build)
+
+Real remote push cannot reach a simulator. Everything else is testable: sign in as `nadia.na@demo.kiorex.test`, Me > Notifications > turn on, then either use the **Dev: send test notification (local)** buttons or, on the iOS simulator, `e2e-push/send.sh <lab-critical|sos|order-received|upgrade-request>` (payload fixtures in `e2e-push/`, values from the demo seed). Tapping the banner (app open, backgrounded or killed) deep-links: critical lab alert to `/lab/critical`, SOS to the home-visit round (`demo_hv_cp1_7`) or the Inbox, `order.received` to Pharmacy orders, upgrade request to `/upgrade`. Screens that belong to a product you are not signed in to show the generic "could not load" state; the route taken is printed in the dev card (`last tapped: ...`). The device registers a `mock-<deviceId>` token via `PUT /mobile/devices/:id/push-token`.
+
+**Remaining for real push (credentials only):** an EAS `projectId` (`eas init`), an APNs key and an FCM v1 key uploaded to EAS, and `PUSH_MODE=real` on the product APIs. See README "Push notifications".

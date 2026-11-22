@@ -12,6 +12,7 @@ import { useLock } from "@/auth/lock";
 import { PRODUCT_META, APP_VERSION, accentFor } from "@/api/products";
 import { setLanguage, type Lang } from "@/i18n";
 import { handleRestart } from "@/i18n/restart";
+import { DevPushPanel } from "@/components/DevPushPanel";
 import { usePushPermission } from "@/lib/pushPermission";
 import { haptic } from "@/lib/haptics";
 import { LiteBadge } from "@/components/lite";
@@ -77,6 +78,7 @@ export default function Me() {
         </Row>
         {push.status === "granted" || push.status === "denied" ? <Button small variant="secondary" title={t("pushPrompt.openSettings")} onPress={() => void push.openSettings()} testID="push-open-settings" /> : null}
       </Card>
+      {__DEV__ ? <DevPushPanel /> : null}
       {row("device", t("me.devices"), t("me.devicesHint"), "/devices")}
 
       <SectionTitle title={t("me.preferences")} />

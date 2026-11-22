@@ -9,6 +9,7 @@ import { ApiError } from "@/api/errors";
 import { ErrorState } from "@/components/states";
 import SpecimenCard from "@/modules/lab/SpecimenCard";
 import type { ScanResult } from "@/modules/lab/helpers";
+import { statusLabel } from "@/lib/status";
 
 /** Accessioning: scan a specimen barcode / accession / order number -> receive & process. */
 export default function Accession() {
@@ -33,8 +34,8 @@ export default function Accession() {
       {scan?.type === "ORDER" ? (
         <Card style={{ gap: 8 }} testID="order-scan">
           <T variant="h2">{scan.order?.orderNumber}</T>
-          <T variant="small" muted>{scan.order?.patient?.fullName} · {scan.order?.status}</T>
-          {(scan.specimens ?? []).map((s) => <ListRow key={s.id} icon="syringe" title={s.accessionNumber} subtitle={s.status} onPress={() => void lookup(s.accessionNumber)} />)}
+          <T variant="small" muted>{scan.order?.patient?.fullName} · {statusLabel(t, scan.order?.status, { scope: "lab" })}</T>
+          {(scan.specimens ?? []).map((s) => <ListRow key={s.id} icon="syringe" title={s.accessionNumber} subtitle={statusLabel(t, s.status, { scope: "lab" })} onPress={() => void lookup(s.accessionNumber)} />)}
         </Card>
       ) : null}
       {!scan && !busy && !err ? <T variant="small" muted style={{ textAlign: "center" }}>{t("lab.accessionHint")}</T> : null}

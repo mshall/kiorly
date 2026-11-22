@@ -15,6 +15,7 @@ import { benefitKeys, isFeatureKey, isLite, lockedTilesFor, roleGroup } from "@/
 import { tileByKey } from "@/modules/registry";
 import { noteTapped } from "@/lite/useUpgradeRequest";
 import { useState } from "react";
+import { localizeDigits } from "@/lib/format";
 
 const FEATS: [IconName, string][] = [["list", "upgrade.feat1"], ["scan", "upgrade.feat2"], ["sync", "upgrade.feat3"], ["bell", "upgrade.feat4"], ["fingerprint", "upgrade.feat5"]];
 
@@ -84,7 +85,7 @@ export default function Upgrade() {
         <Card style={{ gap: 10, borderColor: colors.success }} testID="upgrade-safety">
           <Row gap={10}><Icon name="shield" size={22} color={colors.success} /><T weight="semibold" style={{ flex: 1 }}>{t("upgrade.safetyTitle")}</T></Row>
           <T variant="small" muted>{t("upgrade.safetyBody")}</T>
-          <Button title={`${t("upgrade.viewAlerts")}${mine ? ` (${mine})` : ""}`} variant="secondary" icon="alert" onPress={() => router.replace("/(tabs)/inbox")} testID="upgrade-alerts" />
+          <Button title={`${t("upgrade.viewAlerts")}${mine ? ` (${localizeDigits(mine, i18n.language)})` : ""}`} variant="secondary" icon="alert" onPress={() => router.replace("/(tabs)/inbox")} testID="upgrade-alerts" />
         </Card>
         <UpgradeSheet product={p} featureKey={sheet} onClose={() => setSheet(null)} />
         <Button title={t("upgrade.signOut", { product: name })} variant="ghost" onPress={() => void signOut(p).then(() => router.replace(Object.keys(sessions).length > 1 ? "/(tabs)" : "/sign-in"))} />

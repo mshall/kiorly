@@ -1,0 +1,17 @@
+{
+  "Simulator Target Bundle": "com.kiorly.work",
+  "aps": {
+    "alert": {
+      "title": "نداء استغاثة من زيارة منزلية",
+      "body": "الممرضة هبة ضغطت زر الاستغاثة في مدينة نصر."
+    },
+    "sound": "default",
+    "badge": 3
+  },
+  "body": {
+    "product": "clinic",
+    "template": "sos",
+    "homeVisitId": "demo_hv_cp1_7",
+    "kind": "SAFETY"
+  }
+}

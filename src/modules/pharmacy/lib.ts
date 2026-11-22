@@ -1,6 +1,6 @@
 import type { Bootstrap } from "@/api/types";
 import { ApiError } from "@/api/errors";
-import { formatMoney } from "@/lib/format";
+import { formatDuration, formatMoney } from "@/lib/format";
 
 /** Pure helpers for the Pharmacy module (unit-tested in src/__tests__/pharmacy-lib.test.ts). */
 export interface Lot { id: string; lotNumber: string; expiryDate: string; status?: string; qtyOnHand: number; qtyReserved?: number; expired?: boolean; daysToExpiry?: number; scannedLotMatch?: boolean }
@@ -91,7 +91,8 @@ export function countStats(lines: CountLine[]) {
 
 /** Minutes until SLA (negative = overdue). */
 export const slaMinutes = (due: string | null | undefined, now = Date.now()) => (due ? Math.round((+new Date(due) - now) / 60000) : null);
-export const slaLabel = (m: number | null) => (m == null ? "" : m < 0 ? `-${Math.abs(m)}m` : m >= 120 ? `${Math.floor(m / 60)}h` : `${m}m`);
+/** Same compact format as lab countdowns; pass the UI language for Arabic-Indic digits. (Existing short form kept: hours only from 2h, no minutes.) */
+export const slaLabel = (m: number | null, lang = "en") => (m == null ? "" : m >= 120 && m < 1440 ? formatDuration(Math.floor(m / 60) * 60, lang) : formatDuration(m, lang));
 export const slaTone = (m: number | null): "danger" | "warning" | "success" | "muted" => (m == null ? "muted" : m < 0 ? "danger" : m < 15 ? "warning" : "success");
 
 /** 403 with a role/permission cause vs. the plan entitlement. */

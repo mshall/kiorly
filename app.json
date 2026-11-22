@@ -14,29 +14,102 @@
       "supportsTablet": true,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "NSFaceIDUsageDescription": "Kiorly Work uses Face ID to unlock the app and protect patient data on this device."
+        "NSFaceIDUsageDescription": "Kiorly Work uses Face ID to unlock the app and protect patient data on this device.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
       "package": "com.kiorly.work",
-      "adaptiveIcon": { "foregroundImage": "./assets/adaptive-icon.png", "backgroundColor": "#3730A3" },
-      "permissions": ["CAMERA", "USE_BIOMETRIC", "ACCESS_FINE_LOCATION"]
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#3730A3"
+      },
+      "permissions": [
+        "CAMERA",
+        "USE_BIOMETRIC",
+        "ACCESS_FINE_LOCATION",
+        "POST_NOTIFICATIONS"
+      ]
     },
-    "web": { "bundler": "metro", "output": "single", "favicon": "./assets/favicon.png" },
-    "locales": { "ar": "./src/i18n/infoplist/ar.json", "en": "./src/i18n/infoplist/en.json" },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "locales": {
+      "ar": "./src/i18n/infoplist/ar.json",
+      "en": "./src/i18n/infoplist/en.json"
+    },
     "plugins": [
       "expo-router",
+      "expo-dev-client",
       "expo-secure-store",
       "expo-font",
       "expo-web-browser",
-      ["expo-localization", { "supportedLocales": { "ios": ["ar", "en"], "android": ["ar", "en"] } }],
-      ["expo-splash-screen", { "image": "./assets/splash-icon.png", "imageWidth": 200, "resizeMode": "contain", "backgroundColor": "#3730A3", "dark": { "backgroundColor": "#0F1024", "image": "./assets/splash-icon-dark.png" } }],
-      ["expo-notifications", { "color": "#3730A3" }],
-      ["expo-camera", { "cameraPermission": "Kiorly Work uses the camera to scan barcodes and QR labels.", "recordAudioAndroid": false }],
-      ["expo-local-authentication", { "faceIDPermission": "Kiorly Work uses Face ID to unlock the app and protect patient data on this device." }],
-      ["expo-location", { "locationWhenInUsePermission": "Kiorly Work stamps your location on home-visit check-ins and the safety button." }]
+      [
+        "expo-localization",
+        {
+          "supportedLocales": {
+            "ios": [
+              "ar",
+              "en"
+            ],
+            "android": [
+              "ar",
+              "en"
+            ]
+          }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#3730A3",
+          "dark": {
+            "backgroundColor": "#0F1024",
+            "image": "./assets/splash-icon-dark.png"
+          }
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Kiorly Work uses the camera to scan barcodes and QR labels.",
+          "recordAudioAndroid": false
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Kiorly Work uses Face ID to unlock the app and protect patient data on this device."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Kiorly Work stamps your location on home-visit check-ins and the safety button."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#3730A3",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": true
+        }
+      ]
     ],
-    "experiments": { "typedRoutes": false },
-    "extra": { "storeAccounts": "NEEDS_HUMAN: bundle ids com.kiorly.work are placeholders until Apple/Google accounts exist" }
+    "experiments": {
+      "typedRoutes": false
+    },
+    "extra": {
+      "storeAccounts": "NEEDS_HUMAN: bundle ids com.kiorly.work are placeholders until Apple/Google accounts exist",
+      "pushNote": "NEEDS_HUMAN: set extra.eas.projectId (eas init) + upload APNs key / FCM v1 service account to EAS to receive real remote push; until then the app registers a mock token."
+    }
   }
 }

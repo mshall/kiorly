@@ -18,6 +18,7 @@ import { ClinicError, Title, useClinicBoot } from "@/modules/clinic/shared";
 import { getPosition, type Pos } from "@/modules/clinic/location";
 import { IDENTIFIER_KINDS, identifiersOk, roundActions, roundStepIndex, roundTone, safetyPrompt, tubeLabelOk } from "@/modules/clinic/helpers";
 import type { RouteItem } from "../rounds";
+import { statusLabel } from "@/lib/status";
 
 type Visit = RouteItem & { plannedEndsAt: string };
 interface LabOrder { id: string; status: string; labStatus?: string; items: { code: string; nameEn: string; nameAr?: string }[]; sampleCollection?: unknown }
@@ -139,7 +140,7 @@ export default function Round() {
             <View style={{ gap: 10 }}>
               <Row style={{ justifyContent: "space-between" }}><SectionTitle title={t("clinic.round.samples")} />{v.state === "ARRIVED" ? <Button small variant="secondary" icon="plus" title={t("clinic.round.newOrder")} onPress={() => setOrder(true)} testID="round-new-order" /> : null}</Row>
               {orders.isError ? <ClinicError error={orders.error} /> : !list.length ? <T variant="small" muted>{t("clinic.round.noOrders")}</T> : list.map((o) => (
-                <ListRow key={o.id} testID={`lab-order-${o.id}`} icon="syringe" iconTone="ocean" title={o.items.map((i) => i.nameEn).join(", ")} subtitle={o.labStatus ?? o.status} badge={o.sampleCollection ? t("clinic.round.collected") : t("clinic.round.collect")} badgeTone={o.sampleCollection ? "success" : "warning"} onPress={o.sampleCollection ? undefined : () => setCollect(o)} />
+                <ListRow key={o.id} testID={`lab-order-${o.id}`} icon="syringe" iconTone="ocean" title={o.items.map((i) => i.nameEn).join(", ")} subtitle={statusLabel(t, o.labStatus ?? o.status, { scope: "clinic" })} badge={o.sampleCollection ? t("clinic.round.collected") : t("clinic.round.collect")} badgeTone={o.sampleCollection ? "success" : "warning"} onPress={o.sampleCollection ? undefined : () => setCollect(o)} />
               ))}
             </View>
           ) : null}
@@ -201,7 +202,7 @@ function CollectSheet({ order, patientName, appointmentId, onClose, onDone }: { 
       <Row gap={6} style={{ flexWrap: "wrap" }}>{tubes.map((l) => <Chip key={l} label={`${l}  ✕`} selected onPress={() => setTubes((s) => s.filter((x) => x !== l))} />)}</Row>
       <Row gap={6}>{["BLOOD", "URINE", "SWAB"].map((s) => <Chip key={s} label={t(`clinic.round.spec.${s}`)} selected={type === s} onPress={() => setType(s)} />)}</Row>
       <Field label={t("clinic.round.temp")} value={temp} onChangeText={setTemp} keyboardType="decimal-pad" />
-      {custody.data ? <KV k={t("clinic.round.custody")} v={(custody.data as { status?: string }).status ?? "-"} /> : null}
+      {custody.data ? <KV k={t("clinic.round.custody")} v={statusLabel(t, (custody.data as { status?: string }).status, { scope: "clinic" }) || "-"} /> : null}
     </Sheet>
   );
 }

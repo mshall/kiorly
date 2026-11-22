@@ -1,4 +1,5 @@
 import { ApiError } from "@/api/errors";
+import { formatDuration } from "@/lib/format";
 
 export interface NextAction { action: string; to: string; requiresScan: boolean; allowed: boolean }
 export interface ScanResult {
@@ -25,7 +26,7 @@ export const tatTone = (s: TatStatus): "success" | "warning" | "danger" | "muted
 
 /** Minutes until due (negative = overdue). */
 export const minutesLeft = (dueAt: string | null | undefined, now = Date.now()) => (dueAt ? Math.round((new Date(dueAt).getTime() - now) / 60000) : null);
-export const countdownLabel = (m: number | null) => (m == null ? "" : `${m < 0 ? "-" : ""}${Math.floor(Math.abs(m) / 60) ? `${Math.floor(Math.abs(m) / 60)}h ` : ""}${Math.abs(m) % 60}m`);
+export const countdownLabel = (m: number | null, lang = "en") => (m == null ? "" : formatDuration(m, lang));
 
 export const LAB_CRITICAL_KINDS = ["CRITICAL_VALUE", "TAT_BREACH_CRITICAL"] as const;
 export const isCriticalKind = (k: string) => (LAB_CRITICAL_KINDS as readonly string[]).includes(k);

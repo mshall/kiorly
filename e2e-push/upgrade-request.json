@@ -1,0 +1,18 @@
+{
+  "Simulator Target Bundle": "com.kiorly.work",
+  "aps": {
+    "alert": {
+      "title": "طلب موظف ترقية كيورلي ورك",
+      "body": "طلب أحد أعضاء الفريق تطبيق كيورلي ورك للموظفين (باقة Pro)."
+    },
+    "sound": "default",
+    "badge": 3
+  },
+  "body": {
+    "product": "clinic",
+    "template": "upgrade.request",
+    "requestId": "demo_upg_1",
+    "featureKey": "mobile_staff_app",
+    "role": "NURSE"
+  }
+}

@@ -11,6 +11,7 @@ import { formatDay, formatTime } from "@/lib/format";
 import { useLab } from "./useLab";
 import { isQueueable, labErrorKey, usableActions, type CustodyEvent, type ScanResult } from "./helpers";
 import { useTheme } from "@/theme";
+import { statusLabel } from "@/lib/status";
 
 /** Specimen/order card for a scan result: next actions (API `allowed`), label confirmation, temperature, chain of custody. */
 export default function SpecimenCard({ scan, scannedCode, onChanged }: { scan: ScanResult; scannedCode: string; onChanged: () => void }) {
@@ -44,13 +45,13 @@ export default function SpecimenCard({ scan, scannedCode, onChanged }: { scan: S
     <Card testID="specimen-card" style={{ gap: 10 }}>
       <Row style={{ justifyContent: "space-between" }}>
         <T variant="h2">{sp?.accessionNumber}</T>
-        <Badge tone={sp?.status === "REJECTED" ? "danger" : "ink"} label={sp?.status ?? ""} />
+        <Badge tone={sp?.status === "REJECTED" ? "danger" : "ink"} label={statusLabel(t, sp?.status, { scope: "lab" })} />
       </Row>
       <KV k={t("lab.order")} v={scan.order?.orderNumber} />
       <KV k={t("common.patient")} v={scan.order?.patient?.fullName} />
       <KV k={t("lab.specimenType")} v={`${sp?.specimenType ?? ""} · ${sp?.container ?? ""}`} />
       <KV k={t("lab.tests")} v={scan.tests?.join(", ")} />
-      {scan.order?.priority && scan.order.priority !== "ROUTINE" ? <Badge tone="danger" label={scan.order.priority} /> : null}
+      {scan.order?.priority && scan.order.priority !== "ROUTINE" ? <Badge tone="danger" label={statusLabel(t, scan.order.priority, { kind: "priority" })} /> : null}
       {actions.length ? (
         <View style={{ gap: 10 }}>
           {!label ? (<><T variant="small" weight="semibold">{t("lab.confirmLabel")}</T><ScanField testID="label-field" hint={t("lab.confirmLabelHint")} onCode={(c) => { setLabel(c); setError(null); }} /></>) : <Badge tone="success" icon="check" label={`${t("lab.labelScanned")}: ${label}`} />}

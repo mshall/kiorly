@@ -14,6 +14,7 @@ import { getGeostamp } from "@/modules/lab/geo";
 import SpecimenCard from "@/modules/lab/SpecimenCard";
 import { labErrorKey, type ScanResult } from "@/modules/lab/helpers";
 import { useTheme } from "@/theme";
+import { statusLabel } from "@/lib/status";
 
 interface Spec { id: string; accessionNumber: string; barcode: string; specimenType: string; container: string; status: string; order?: { orderNumber?: string; priority?: string; patient?: { fullName?: string } } }
 interface Stop { id: string; status: string; slotStart: string; slotEnd: string; address?: string; order?: { orderNumber?: string; patient?: { fullName?: string } } }
@@ -51,11 +52,11 @@ export default function Phlebotomy() {
       <Segmented value={tab} onChange={setTab} options={[{ value: "pending", label: t("lab.pendingCollection"), count: pending.data?.length }, { value: "route", label: t("lab.homeRoute") }]} />
       {tab === "pending" ? (
         <QueryView q={pending} cached={pending.fromCache} isEmpty={(d) => !d.length} empty={{ icon: "syringe", title: t("lab.nothingToCollect") }}>
-          {(d) => <View style={{ gap: 10 }}>{d.map((s) => <ListRow key={s.id} testID={`spec-${s.accessionNumber}`} icon="syringe" iconTone={s.order?.priority && s.order.priority !== "ROUTINE" ? "danger" : "ocean"} title={s.accessionNumber} subtitle={`${s.order?.patient?.fullName ?? ""} · ${s.specimenType}`} meta={s.container} badge={s.order?.priority !== "ROUTINE" ? s.order?.priority : undefined} badgeTone="danger" onPress={() => void onCode(s.barcode)} />)}</View>}
+          {(d) => <View style={{ gap: 10 }}>{d.map((s) => <ListRow key={s.id} testID={`spec-${s.accessionNumber}`} icon="syringe" iconTone={s.order?.priority && s.order.priority !== "ROUTINE" ? "danger" : "ocean"} title={s.accessionNumber} subtitle={`${s.order?.patient?.fullName ?? ""} · ${s.specimenType}`} meta={s.container} badge={s.order?.priority !== "ROUTINE" ? statusLabel(t, s.order?.priority, { kind: "priority" }) : undefined} badgeTone="danger" onPress={() => void onCode(s.barcode)} />)}</View>}
         </QueryView>
       ) : (
         <QueryView q={route} isEmpty={(d) => !d.length} empty={{ icon: "navigation", title: t("lab.noRoute") }}>
-          {(d) => <View style={{ gap: 10 }}>{d.map((s) => <ListRow key={s.id} testID={`stop-${s.id}`} icon="navigation" title={s.order?.patient?.fullName ?? s.order?.orderNumber ?? s.id} subtitle={s.address} meta={`${formatTime(s.slotStart, i18n.language)} - ${formatTime(s.slotEnd, i18n.language)}`} badge={s.status} badgeTone="ocean" onPress={() => setStop(s)} />)}</View>}
+          {(d) => <View style={{ gap: 10 }}>{d.map((s) => <ListRow key={s.id} testID={`stop-${s.id}`} icon="navigation" title={s.order?.patient?.fullName ?? s.order?.orderNumber ?? s.id} subtitle={s.address} meta={`${formatTime(s.slotStart, i18n.language)} - ${formatTime(s.slotEnd, i18n.language)}`} badge={statusLabel(t, s.status, { scope: "lab" })} badgeTone="ocean" onPress={() => setStop(s)} />)}</View>}
         </QueryView>
       )}
       <ActionSheet visible={!!stop} onClose={() => setStop(null)} title={t("lab.visitActions")} actions={[

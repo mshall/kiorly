@@ -15,10 +15,11 @@ import { LiteBadge, LockedTile, UpgradeSheet, useLockedTap } from "@/components/
 import { isLite, lockedTilesFor } from "@/lite/logic";
 import { useAlerts } from "@/hooks/useAlerts";
 import { useState } from "react";
+import { localizeDigits } from "@/lib/format";
 
 /** Lite (below Pro): what the slice includes, then every Pro tool for THIS role as a visible locked tile (tap = what it does for you + one request action). */
 function LiteSlice({ product }: { product: Product }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const router = useRouter();
   const { sessions } = useSessions();
@@ -33,9 +34,9 @@ function LiteSlice({ product }: { product: Product }) {
       <Card testID={`lite-included-${product}`} style={{ gap: 10, borderColor: colors.success }}>
         <Row gap={10}><Icon name="shield" size={22} color={colors.success} /><T weight="semibold" style={{ flex: 1 }}>{t("lite.includedTitle")}</T></Row>
         <T variant="small" muted>{t("lite.includedBody")}</T>
-        <Pressable testID={`lite-alerts-${product}`} onPress={() => { haptic.tap(); router.push("/(tabs)/inbox" as never); }} accessibilityRole="button" accessibilityLabel={t("upgrade.viewAlerts") + (mine ? ` (${mine})` : "")}
+        <Pressable testID={`lite-alerts-${product}`} onPress={() => { haptic.tap(); router.push("/(tabs)/inbox" as never); }} accessibilityRole="button" accessibilityLabel={t("upgrade.viewAlerts") + (mine ? ` (${localizeDigits(mine, i18n.language)})` : "")}
           style={{ minHeight: 48, borderRadius: radius, backgroundColor: colors.successSoft, paddingHorizontal: 14, flexDirection: "row", alignItems: "center", gap: 10 }}>
-          <Icon name="alert" size={20} color={colors.success} /><T weight="semibold" style={{ flex: 1 }}>{t("upgrade.viewAlerts")}{mine ? ` (${mine})` : ""}</T><Icon name="chevron" size={18} color={colors.subtleText} mirror />
+          <Icon name="alert" size={20} color={colors.success} /><T weight="semibold" style={{ flex: 1 }}>{t("upgrade.viewAlerts")}{mine ? ` (${localizeDigits(mine, i18n.language)})` : ""}</T><Icon name="chevron" size={18} color={colors.subtleText} mirror />
         </Pressable>
       </Card>
       {locked.length ? (

@@ -11,6 +11,7 @@ import { usePh } from "@/modules/pharmacy/hooks";
 import { drugName, errText, lineRemaining, matchPoLine, parseGs1, poProgress, type Po } from "@/modules/pharmacy/lib";
 import { uid } from "@/offline/queue";
 import { haptic } from "@/lib/haptics";
+import { statusLabel } from "@/lib/status";
 
 interface Drug { id: string; brandName: string; brandNameAr?: string; coldChain?: boolean }
 interface Entry { lineId: string; drugId: string; lotNumber: string; expiryDate: string; quantity: number; unitCost: string; temperatureC?: number }
@@ -64,7 +65,7 @@ export default function ReceivePo() {
           const pr = poProgress(p, scanned);
           return (
             <View style={{ gap: 12 }}>
-              <Card style={{ gap: 8 }}><Row style={{ justifyContent: "space-between" }}><T variant="h2">{p.poNumber}</T><Badge tone="ocean" label={p.status} /></Row><Progress value={pr.pct} tone={pr.pct >= 100 ? "success" : "ink"} /><T variant="caption" muted>{pr.done}/{pr.ordered} · {pr.pct}%</T></Card>
+              <Card style={{ gap: 8 }}><Row style={{ justifyContent: "space-between" }}><T variant="h2">{p.poNumber}</T><Badge tone="ocean" label={statusLabel(t, p.status, { scope: "pharmacy.receiving" })} /></Row><Progress value={pr.pct} tone={pr.pct >= 100 ? "success" : "ink"} /><T variant="caption" muted>{pr.done}/{pr.ordered} · {pr.pct}%</T></Card>
               <ScanField onCode={onScan} placeholder={t("pharmacy.receiving.scanPlaceholder")} hint={t("pharmacy.receiving.scanHint")} testID="receive-scan" />
               <SectionTitle title={t("pharmacy.receiving.lines")} />
               {p.lines.map((l) => {

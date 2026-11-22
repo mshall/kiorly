@@ -5,3 +5,7 @@ web-build
 *.log
 .DS_Store
 .env.local
+
+# Continuous Native Generation output (expo prebuild / run:ios / run:android); regenerate, never commit
+/ios
+/android

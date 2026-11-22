@@ -1,0 +1,17 @@
+{
+  "Simulator Target Bundle": "com.kiorly.work",
+  "aps": {
+    "alert": {
+      "title": "قيمة حرجة: البوتاسيوم 6.9",
+      "body": "الطلب LAB-DEMO-0042 يحتاج إلى تأكيد القراءة الآن."
+    },
+    "sound": "default",
+    "badge": 3
+  },
+  "body": {
+    "product": "lab",
+    "template": "CRITICAL_VALUE",
+    "criticalAlertId": "demo_ca_k_6_9",
+    "orderId": "demo_lab_order_42"
+  }
+}

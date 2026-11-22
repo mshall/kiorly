@@ -11,7 +11,7 @@ import { Skeleton } from "./Pulse";
 import { EmptyState, ErrorState } from "./states";
 import { useOnline } from "@/offline/network";
 import { useSyncStatus } from "@/hooks/useRead";
-import { formatTime } from "@/lib/format";
+import { formatTime, localizeDigits } from "@/lib/format";
 import { ApiError } from "@/api/errors";
 
 type Tone = "ink" | "ocean" | "success" | "warning" | "danger" | "muted";
@@ -54,14 +54,17 @@ export function ListRow({ title, subtitle, meta, icon, iconTone = "ink", leading
 /** KPI tile with optional sparkline. */
 export function StatTile({ label, value, tone = "ink", icon, spark, onPress, hint, testID }: { label: string; value: string | number; tone?: Tone; icon?: IconName; spark?: number[]; onPress?: () => void; hint?: string; testID?: string }) {
   const { colors } = useTheme();
+  const { i18n } = useTranslation();
   const c = toneColor(colors, tone);
+  // Pure numeric tiles ("12", "3/5", "87%") follow the language's digits; text values (names, ids) are left untouched.
+  const shown = typeof value === "number" || /^[\d\s/.,%:+-]+$/.test(value) ? localizeDigits(value, i18n.language) : value;
   return (
     <Card onPress={onPress} testID={testID} style={{ flex: 1, minWidth: 96, padding: 14, gap: 6, alignSelf: "stretch" }} accessibilityLabel={`${label} ${value}`}>
       <Row style={{ justifyContent: "space-between" }}>
         <T variant="small" muted numberOfLines={1} style={{ flex: 1 }}>{label}</T>
         {icon ? <Icon name={icon} size={16} color={c} /> : null}
       </Row>
-      <T variant="display" weight="bold" color={c} style={{ fontSize: 28, lineHeight: 34 }}>{value}</T>
+      <T variant="display" weight="bold" color={c} style={{ fontSize: 28, lineHeight: 34 }}>{shown}</T>
       {spark && spark.length > 1 ? <Sparkline data={spark} color={c} height={28} /> : hint ? <T variant="caption" muted>{hint}</T> : null}
     </Card>
   );
@@ -113,13 +116,14 @@ export function Progress({ value, tone = "ink", height = 8 }: { value: number; t
 /** Segmented control / chip row. */
 export function Segmented<V extends string>({ options, value, onChange }: { options: { value: V; label: string; count?: number }[]; value: V; onChange: (v: V) => void }) {
   const { colors } = useTheme();
+  const { i18n } = useTranslation();
   return (
     <View accessibilityRole="tablist" style={{ flexDirection: "row", backgroundColor: colors.subtle, borderRadius: radius, padding: 3, gap: 2 }}>
       {options.map((o) => {
         const sel = o.value === value;
         return (
           <Pressable key={o.value} accessibilityRole="tab" accessibilityState={{ selected: sel }} onPress={() => { if (!sel) { haptic.select(); onChange(o.value); } }} style={{ flex: 1, minHeight: 36, borderRadius: radius - 3, alignItems: "center", justifyContent: "center", backgroundColor: sel ? colors.surface : "transparent", ...(sel ? elevation(1) : {}) }}>
-            <T variant="small" weight={sel ? "semibold" : "medium"} color={sel ? colors.ink : colors.muted} numberOfLines={1}>{o.label}{o.count != null ? ` · ${o.count}` : ""}</T>
+            <T variant="small" weight={sel ? "semibold" : "medium"} color={sel ? colors.ink : colors.muted} numberOfLines={1}>{o.label}{o.count != null ? ` · ${localizeDigits(o.count, i18n.language)}` : ""}</T>
           </Pressable>
         );
       })}
