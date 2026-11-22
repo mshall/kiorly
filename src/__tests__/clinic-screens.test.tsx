@@ -27,7 +27,7 @@ import { enqueue, getQueue, __resetForTests } from "@/offline/queue";
 
 const bootstrap = (role: string, screens: Record<string, string[]>): Bootstrap => ({ apiVersion: 1, product: "clinic", serverTime: "", user: { id: "u", name: "Dr", email: "e", role, roles: [role] }, org: { id: "o", name: "o", plan: "PRO" }, entitlement: { key: "mobile_staff_app", enabled: true, requiredPlan: "PRO", reason: null }, safetyAlertsOnly: false, device: null, modules: Object.entries(screens).map(([key, s]) => ({ key, enabled: true, screens: s })) });
 const DOCTOR = bootstrap("PHYSICIAN", { "clinic.visits": ["start"], "clinic.prescriptions": ["sign"], "clinic.labs": ["approve"], "clinic.vitals": ["entry"] });
-const NURSE = bootstrap("NURSE", { "clinic.prescriptions": ["review"], "clinic.labs": ["results"], "clinic.vitals": ["entry"] });
+const NURSE = bootstrap("NURSE", { "clinic.prescriptions": ["review"], "clinic.vitals": ["entry"] });
 
 const wrap = (ui: ReactElement) => {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });

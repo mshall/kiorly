@@ -1,7 +1,7 @@
 {
   "app": {
-    "name": "Kiorly Work",
-    "tagline": "One staff app for Clinic, Pharmacy and Lab",
+    "name": "Kiorly Team",
+    "tagline": "One staff app for Clinic, Nurse, Pharmacy and Lab",
     "by": "by Kiorex"
   },
   "product": {
@@ -169,10 +169,10 @@
     "demoReset": "Clear local cache"
   },
   "upgrade": {
-    "title": "Unlock Kiorly Work",
+    "title": "Unlock Kiorly Team",
     "subtitle": "{{product}} · {{org}} is on the {{plan}} plan",
-    "body": "Kiorly Work puts your daily workflows in your pocket. It is included from the Pro plan.",
-    "flagOff": "Kiorly Work has been switched off for your organisation by the administrator.",
+    "body": "Kiorly Team puts your daily workflows in your pocket. It is included from the Pro plan.",
+    "flagOff": "Kiorly Team has been switched off for your organisation by the administrator.",
     "cta": "Ask your owner to upgrade",
     "contact": "Contact your Kiorly account owner or support to move to Pro.",
     "included": "What you get on Pro",
@@ -245,7 +245,7 @@
     "unknown": "Code not recognised"
   },
   "lock": {
-    "title": "Kiorly Work is locked",
+    "title": "Kiorly Team is locked",
     "body": "Unlock to see patient and stock data.",
     "unlock": "Unlock"
   },

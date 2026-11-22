@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Kiorly Work",
+    "name": "Kiorly Team",
     "slug": "kiorly-work",
     "version": "0.1.0",
     "scheme": "kiorlywork",
@@ -14,7 +14,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "NSFaceIDUsageDescription": "Kiorly Work uses Face ID to unlock the app and protect patient data on this device.",
+        "NSFaceIDUsageDescription": "Kiorly Team uses Face ID to unlock the app and protect patient data on this device.",
         "UIBackgroundModes": [
           "remote-notification"
         ]
@@ -66,33 +66,33 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash-icon.png",
+          "image": "./assets/splash-blank.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#3730A3",
           "dark": {
             "backgroundColor": "#0F1024",
-            "image": "./assets/splash-icon-dark.png"
+            "image": "./assets/splash-blank.png"
           }
         }
       ],
       [
         "expo-camera",
         {
-          "cameraPermission": "Kiorly Work uses the camera to scan barcodes and QR labels.",
+          "cameraPermission": "Kiorly Team uses the camera to scan barcodes and QR labels.",
           "recordAudioAndroid": false
         }
       ],
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Kiorly Work uses Face ID to unlock the app and protect patient data on this device."
+          "faceIDPermission": "Kiorly Team uses Face ID to unlock the app and protect patient data on this device."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Kiorly Work stamps your location on home-visit check-ins and the safety button."
+          "locationWhenInUsePermission": "Kiorly Team stamps your location on home-visit check-ins and the safety button."
         }
       ],
       [

@@ -61,6 +61,12 @@ function Shell() {
   );
 }
 
+/** AnimatedSplash that stays on screen until the stored sessions have loaded (Shell renders nothing before that). */
+function SplashGate({ onDone, onShown }: { onDone: () => void; onShown: () => void }) {
+  const { ready } = useSessions();
+  return <AnimatedSplash hold={!ready} onDone={onDone} onShown={onShown} />;
+}
+
 export default function RootLayout() {
   const [i18nReady, setI18nReady] = useState(false);
   const [fontsLoaded, fontError] = useFonts({ Jost_400Regular, Jost_500Medium, Jost_600SemiBold, Jost_700Bold, IBMPlexSansArabic_400Regular, IBMPlexSansArabic_500Medium, IBMPlexSansArabic_600SemiBold, IBMPlexSansArabic_700Bold });
@@ -70,7 +76,10 @@ export default function RootLayout() {
   }, []);
   const ready = i18nReady && (fontsLoaded || !!fontError);
   const [splash, setSplash] = useState(true);
-  useEffect(() => { if (ready) void SplashScreen.hideAsync(); }, [ready]);
+  // The native splash is only the flat brand ground (assets/splash-blank.png on #3730A3 / #0F1024, same as AnimatedSplash). It is hidden once the
+  // AnimatedSplash has laid out over it (onShown), so there is never a frame of the bare window between the two; the 3 s fallback guards a missed layout.
+  const hideNative = () => { void SplashScreen.hideAsync(); };
+  useEffect(() => { if (!ready) return; const t = setTimeout(hideNative, 3000); return () => clearTimeout(t); }, [ready]);
   if (!ready) return null;
   return (
     <SafeAreaProvider>
@@ -80,7 +89,7 @@ export default function RootLayout() {
             <ToastProvider>
               <Shell />
             </ToastProvider>
-            {splash ? <AnimatedSplash onDone={() => setSplash(false)} /> : null}
+            {splash ? <SplashGate onDone={() => { setSplash(false); hideNative(); }} onShown={hideNative} /> : null}
           </SessionProvider>
         </ThemeProvider>
       </QueryClientProvider>
