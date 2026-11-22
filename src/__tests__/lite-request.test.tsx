@@ -50,7 +50,7 @@ describe("UpgradeRequestButton", () => {
     await tap("upgrade-request");
     expect(screen.getByText("Sending…")).toBeTruthy();
     expect(screen.getByTestId("upgrade-request").props.accessibilityState.disabled).toBe(true);
-    await act(async () => { resolve({ queued: false, data: { status: "REQUESTED", requestedAt: "2026-11-21T10:00:00.000Z" } }); });
+    await act(async () => { resolve({ queued: false, data: { status: "REQUESTED", requestedAt: new Date(Date.now() - 60_000).toISOString() } }); });
     await waitFor(() => expect(screen.getByTestId("upgrade-request-done")).toBeTruthy());
     expect(screen.getByText(/Requested on/)).toBeTruthy();
     expect(mockMutate).toHaveBeenCalledTimes(1);
@@ -58,7 +58,7 @@ describe("UpgradeRequestButton", () => {
   });
 
   it("optional note: capped at 500 chars, trimmed, sent with the request; omitted when empty", async () => {
-    mockMutate.mockResolvedValue({ queued: false, data: { status: "REQUESTED", requestedAt: "2026-11-21T10:00:00.000Z" } });
+    mockMutate.mockResolvedValue({ queued: false, data: { status: "REQUESTED", requestedAt: new Date(Date.now() - 60_000).toISOString() } });
     await wrap(<UpgradeRequestButton product="clinic" featureKey="clinic.vitals" />);
     const field = screen.getByTestId("upgrade-note");
     expect(field.props.maxLength).toBe(500);
