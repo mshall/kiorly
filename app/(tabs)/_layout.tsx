@@ -29,7 +29,8 @@ export default function TabsLayout() {
     <View style={{ flex: 1 }}>
       <Tabs
         screenListeners={{ tabPress: () => haptic.select() }}
-        screenOptions={{
+        backBehavior="history" /* back from a pushed screen returns to the tab it was opened from (Work, Home...) */
+                screenOptions={{
           headerShown: false, tabBarActiveTintColor: colors.ink, tabBarInactiveTintColor: colors.subtleText, tabBarShowLabel: true,
           tabBarLabelStyle: { fontFamily: fontFamily(i18n.language, "medium"), fontSize: 11 },
           tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border, height: 62 + insets.bottom, paddingTop: 8, paddingBottom: insets.bottom },
@@ -37,6 +38,8 @@ export default function TabsLayout() {
         <Tabs.Screen name="index" options={{ title: t("tabs.home"), tabBarIcon: (p) => <TabIcon name="home" ink={colors.ink} {...p} /> }} />
         <Tabs.Screen name="work" options={{ title: t("tabs.work"), tabBarIcon: (p) => <TabIcon name="list" ink={colors.ink} {...p} /> }} />
         <Tabs.Screen name="inbox" options={{ title: t("tabs.inbox"), tabBarBadge: badge > 0 ? badge : undefined, tabBarBadgeStyle: { backgroundColor: colors.pulse, color: "#fff", fontSize: 10 }, tabBarIcon: (p) => <TabIcon name="bell" ink={colors.ink} {...p} /> }} />
+        {/* `href: null` hidden tabs are not navigable in expo-router 58 (they redirect), so keep the tab mounted and just hide its button */}
+        <Tabs.Screen name="(more)" options={{ title: "", tabBarButton: () => null, tabBarItemStyle: { display: "none" } }} />
         <Tabs.Screen name="me" options={{ title: t("tabs.me"), tabBarBadge: reqs > 0 ? reqs : undefined, tabBarBadgeStyle: { backgroundColor: colors.pulse, color: "#fff", fontSize: 10 }, tabBarAccessibilityLabel: reqs > 0 ? `${t("tabs.me")}. ${t("lite.req.tab", { count: reqs })}` : undefined, tabBarIcon: (p) => <TabIcon name="user" ink={colors.ink} {...p} /> }} />
       </Tabs>
       <View style={{ position: "absolute", top: 0, left: 0, right: 0 }} pointerEvents="none"><View style={{ paddingTop: insets.top }}><OfflineBanner /></View></View>

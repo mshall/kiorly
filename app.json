@@ -45,6 +45,7 @@
     "plugins": [
       "expo-router",
       "expo-dev-client",
+      "./plugins/withDevMenuNoFab.js",
       "expo-secure-store",
       "expo-font",
       "expo-web-browser",

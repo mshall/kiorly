@@ -83,7 +83,7 @@ test.describe('Kiorly Team (Expo web) - clinic roles against the real API and se
     const alerts = (await api(nurse, 'GET', '/mobile/alerts')).body.items;
     expect(alerts.find((a: any) => a.id === `vit_${crit.id}`)).toMatchObject({ kind: 'CRITICAL_VITALS' });
     // the alert is in the app inbox; acknowledge it there
-    await page.goto('/inbox'); // outside the tab stack after the vitals screen: deep link (session restores from storage)
+    await page.goto('/inbox'); // deep link (session restores from storage)
     await page.getByTestId(`alert-vit_${crit.id}`).click();
     await page.getByTestId('alert-ack').click();
     await expect.poll(async () => ((await api(nurse, 'GET', '/mobile/alerts?status=all')).body.items.find((a: any) => a.id === `vit_${crit.id}`) ?? {}).ackedAt, { timeout: 15_000 }).toBeTruthy();

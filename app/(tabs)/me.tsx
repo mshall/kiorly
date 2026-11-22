@@ -15,6 +15,7 @@ import { handleRestart } from "@/i18n/restart";
 import { DevPushPanel } from "@/components/DevPushPanel";
 import { usePushPermission } from "@/lib/pushPermission";
 import { haptic } from "@/lib/haptics";
+import { SignOutSheet, type SignOutTarget } from "@/components/SignOutSheet";
 import { LiteBadge } from "@/components/lite";
 import { isLite } from "@/lite/logic";
 
@@ -24,15 +25,17 @@ export default function Me() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const toast = useToast();
-  const { sessions, products, signOut, signOutAll } = useSessions();
+  const { sessions, products } = useSessions();
   const lock = useLock();
   const [restart, setRestart] = useState(false);
+  const [so, setSo] = useState<{ open: boolean; initial?: SignOutTarget }>({ open: false });
   const push = usePushPermission();
   const lang = (i18n.language.startsWith("ar") ? "ar" : "en") as Lang;
   const row = (icon: IconName, title: string, sub: string, to: string) => <ListRow icon={icon} title={title} subtitle={sub} onPress={() => router.push(to as never)} testID={`me-${to.slice(1)}`} />;
 
   return (
     <Screen style={{ paddingTop: insets.top + 8, gap: 12 }} title={t("me.title")} testID="me">
+      <Button title={t("signOutDlg.open")} variant="danger" icon="logout" onPress={() => setSo({ open: true })} testID="signout-top" accessibilityLabel={t("signOutDlg.open")} />
       <SectionTitle title={t("me.accounts")} />
       {products.map((p) => {
         const s = sessions[p]!; const b = s.bootstrap;
@@ -47,7 +50,7 @@ export default function Me() {
               <View style={{ alignItems: "flex-end", gap: 4 }}><Badge tone={b?.entitlement.enabled ? "success" : "warning"} label={b?.org.plan ?? "-"} /><LiteBadge product={p} /></View>
             </Row>
             {isLite(b) ? <Button small variant="secondary" icon="award" title={t("lite.meSee")} onPress={() => router.push(`/upgrade?product=${p}` as never)} testID={`lite-see-${p}`} /> : null}
-            <Button small variant="secondary" title={t("me.signOut")} onPress={() => void signOut(p)} testID={`signout-${p}`} />
+            <Button small variant="secondary" title={t("me.signOut")} icon="logout" onPress={() => setSo({ open: true, initial: p })} testID={`signout-${p}`} />
           </Card>
         );
       })}
@@ -92,7 +95,8 @@ export default function Me() {
       <Row style={{ justifyContent: "space-between" }}><T variant="small" weight="semibold">{t("me.sync")}</T><SyncChip onPress={() => router.push("/sync")} /></Row>
       {row("sync", t("me.sync"), t("me.syncHint"), "/sync")}
 
-      <Button title={t("me.signOutAll")} variant="danger" onPress={() => void signOutAll().then(() => router.replace("/sign-in"))} testID="signout-all" />
+      <Button title={products.length > 1 ? t("me.signOutAll") : t("signOutDlg.open")} variant="danger" icon="logout" onPress={() => setSo({ open: true, initial: products.length > 1 ? "all" : products[0] })} testID="signout-all" />
+      <SignOutSheet visible={so.open} initial={so.initial} onClose={() => setSo({ open: false })} />
       <View style={{ alignItems: "center", gap: 4, paddingVertical: 8 }}>
         <T variant="caption" muted>{t("app.name")} · {t("me.version", { v: APP_VERSION })}</T>
         <T variant="caption" muted style={{ textAlign: "center" }}>{t("me.privacy")}</T>

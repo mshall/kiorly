@@ -85,3 +85,6 @@ try {
   Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: true }) });
 } catch { /* web */ }
 if (Platform.OS === "android") void Notifications.setNotificationChannelAsync("default", { name: "Default", importance: Notifications.AndroidImportance.MAX }).catch(() => {});
+
+/** Forget the local push token state when the last account signs out (the server row is removed with the device record). */
+export const resetPushDiag = () => setDiag({ provider: "mock", reason: "pending", token: null, message: "" });

@@ -36,6 +36,6 @@ export async function signIn(page: Page, user: string) {
 }
 export async function openWork(page: Page) {
   const tab = page.getByRole('tab', { name: /work/i });
-  if (await tab.isVisible().catch(() => false)) await tab.click(); else await page.goto('/work');   // detail screens hide the tab bar; the session survives a reload
+  if (await tab.isVisible().catch(() => false)) await tab.click(); else await page.goto('/work');   // (tab bar now persists on detail screens)
   await expect(page.getByTestId('work')).toBeVisible();
 }

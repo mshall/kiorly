@@ -18,11 +18,11 @@ const mockPush = jest.fn();
 let mockParams: Record<string, string> = {};
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: mockPush, back: jest.fn(), replace: jest.fn() }), useLocalSearchParams: () => mockParams, Stack: { Screen: () => null } }));
 
-import Schedule from "../../app/clinic/schedule";
-import Prescriptions from "../../app/clinic/prescriptions";
-import QuickVitals from "../../app/clinic/vitals";
-import Revenue from "../../app/clinic/revenue";
-import LabResults from "../../app/clinic/lab-results";
+import Schedule from "../../app/(tabs)/(more)/clinic/schedule";
+import Prescriptions from "../../app/(tabs)/(more)/clinic/prescriptions";
+import QuickVitals from "../../app/(tabs)/(more)/clinic/vitals";
+import Revenue from "../../app/(tabs)/(more)/clinic/revenue";
+import LabResults from "../../app/(tabs)/(more)/clinic/lab-results";
 import { enqueue, getQueue, __resetForTests } from "@/offline/queue";
 
 const bootstrap = (role: string, screens: Record<string, string[]>): Bootstrap => ({ apiVersion: 1, product: "clinic", serverTime: "", user: { id: "u", name: "Dr", email: "e", role, roles: [role] }, org: { id: "o", name: "o", plan: "PRO" }, entitlement: { key: "mobile_staff_app", enabled: true, requiredPlan: "PRO", reason: null }, safetyAlertsOnly: false, device: null, modules: Object.entries(screens).map(([key, s]) => ({ key, enabled: true, screens: s })) });

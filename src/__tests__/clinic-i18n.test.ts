@@ -14,7 +14,7 @@ describe("clinic strings", () => {
   });
   it("defines every static key the screens use", () => {
     const root = path.resolve(__dirname, "../..");
-    const files = [...walk(path.join(root, "app/clinic")), ...walk(path.join(root, "src/modules/clinic"))].filter((f) => /\.tsx?$/.test(f));
+    const files = [...walk(path.join(root, "app/(tabs)/(more)/clinic")), ...walk(path.join(root, "src/modules/clinic"))].filter((f) => /\.tsx?$/.test(f));
     const used = new Set<string>();
     for (const f of files) for (const m of fs.readFileSync(f, "utf8").matchAll(/\bt\(\s*["'`](clinic\.[A-Za-z0-9_.]+)["'`]/g)) used.add(m[1]);
     expect(used.size).toBeGreaterThan(80);

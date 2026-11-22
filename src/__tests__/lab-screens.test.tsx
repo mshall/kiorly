@@ -23,10 +23,10 @@ jest.mock("@/hooks/useAlerts", () => ({
 }));
 jest.mock("@/auth/SessionProvider", () => ({ useSessions: () => ({ sessions: { lab: { email: "sig@demo-lab.test", bootstrap: { user: { role: "AUTHORIZED_SIGNATORY", signatory: true }, modules: [{ key: "lab.validation", enabled: true, screens: ["sign-off"] }], permissions: ["results.medical_validate"] } } } }) }));
 
-import Critical from "../../app/lab/critical";
-import Validation from "../../app/lab/validation";
-import Accession from "../../app/lab/accession";
-import TatScreen from "../../app/lab/tat";
+import Critical from "../../app/(tabs)/(more)/lab/critical";
+import Validation from "../../app/(tabs)/(more)/lab/validation";
+import Accession from "../../app/(tabs)/(more)/lab/accession";
+import TatScreen from "../../app/(tabs)/(more)/lab/tat";
 
 const wrap = (ui: ReactElement) => render(
   <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 390, height: 800 }, insets: { top: 0, left: 0, right: 0, bottom: 0 } }}>

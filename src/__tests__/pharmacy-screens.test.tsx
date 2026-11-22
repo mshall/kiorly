@@ -19,10 +19,10 @@ jest.mock("@/auth/SessionProvider", () => {
   return { useSessions: () => ({ sessions: { pharmacy: { email: "p@x", bootstrap: boot } }, products: ["pharmacy"] }) };
 });
 
-import RxQueue from "../../app/pharmacy/rx/index";
-import RxDetail from "../../app/pharmacy/rx/[id]";
-import Barcode from "../../app/pharmacy/barcode";
-import Expiry from "../../app/pharmacy/expiry";
+import RxQueue from "../../app/(tabs)/(more)/pharmacy/rx/index";
+import RxDetail from "../../app/(tabs)/(more)/pharmacy/rx/[id]";
+import Barcode from "../../app/(tabs)/(more)/pharmacy/barcode";
+import Expiry from "../../app/(tabs)/(more)/pharmacy/expiry";
 
 const wrap = (ui: ReactElement) => {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false } } });

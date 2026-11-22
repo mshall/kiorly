@@ -168,6 +168,18 @@
     "immediately": "Immediately",
     "demoReset": "Clear local cache"
   },
+  "signOutDlg": {
+    "title": "Sign out",
+    "open": "Sign out",
+    "menuHint": "Choose what to sign out of",
+    "confirmOne": "Sign out of {{product}}?",
+    "confirmAll": "Sign out of every account on this device?",
+    "bodyOne": "{{name}} will be signed out of {{product}} on this device and the device stops receiving push notifications for it. Anything not yet synced stays queued only until you sign in again.",
+    "bodyAll": "You will be signed out of all connected products, this device stops receiving push notifications, and you return to the sign-in screen.",
+    "confirm": "Sign out",
+    "avatar": "Account menu, sign out",
+    "account": "Account"
+  },
   "upgrade": {
     "title": "Unlock Kiorly Team",
     "subtitle": "{{product}} · {{org}} is on the {{plan}} plan",

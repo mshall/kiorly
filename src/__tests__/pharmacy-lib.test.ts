@@ -86,7 +86,7 @@ describe("strings", () => {
     const root = path.resolve(__dirname, "../..");
     const files: string[] = [];
     const walk = (d: string) => fs.readdirSync(d, { withFileTypes: true }).forEach((e) => (e.isDirectory() ? walk(path.join(d, e.name)) : /\.tsx?$/.test(e.name) && files.push(path.join(d, e.name))));
-    walk(path.join(root, "app/pharmacy")); walk(path.join(root, "src/modules/pharmacy"));
+    walk(path.join(root, "app/(tabs)/(more)/pharmacy")); walk(path.join(root, "src/modules/pharmacy"));
     const missing: string[] = [];
     for (const f of files) for (const m of fs.readFileSync(f, "utf8").matchAll(/\bt\("pharmacy\.([A-Za-z0-9.]+)"/g)) if (!keys.has(`pharmacy.${m[1]}`)) missing.push(m[1]);
     expect(missing).toEqual([]);

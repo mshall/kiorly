@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { Pressable, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -20,6 +20,7 @@ import LabSummary from "@/modules/lab/HomeSummary";
 import { haptic } from "@/lib/haptics";
 import { LiteHomeBlock } from "@/components/lite";
 import { isLite } from "@/lite/logic";
+import { SignOutSheet } from "@/components/SignOutSheet";
 import { pick } from "@/lib/format";
 
 const SUMMARY = { clinic: ClinicSummary, pharmacy: PharmacySummary, lab: LabSummary } as const;
@@ -39,15 +40,18 @@ export default function Home() {
   const open = alerts.openCount;
   const firstOpen = alerts.items.find((a) => !a.ackedAt);
   const ar = i18n.language.startsWith("ar");
+  const [menu, setMenu] = useState(false);
   const go = (r: string) => { haptic.tap(); router.push(r as never); };
 
   return (
     <Screen padded={false} refresh={<RefreshControl refreshing={false} onRefresh={() => void refresh()} tintColor={colors.ink} />} style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, gap: 14 }} testID="home">
+      <SignOutSheet visible={menu} onClose={() => setMenu(false)} />
       <Row style={{ justifyContent: "space-between" }}>
-        <Row gap={10}><KiorexMark width={44} /><View><T variant="caption" muted>{t("app.name")}</T><T variant="h2" testID="home-greeting">{t(greetingKey(), { name })}</T></View></Row>
-        <Row gap={8}>
+        <Row gap={10} style={{ flex: 1, minWidth: 0 }}><KiorexMark width={40} /><View style={{ flex: 1, minWidth: 0 }}><T variant="caption" muted numberOfLines={1}>{t("app.name")}</T><T variant="h2" numberOfLines={2} testID="home-greeting">{t(greetingKey(), { name })}</T></View></Row>
+        <Row gap={8} style={{ flexShrink: 0 }}>
           <SyncChip onPress={() => go("/sync")} />
           <Pressable onPress={() => go("/search")} testID="open-search" accessibilityRole="button" accessibilityLabel={t("common.search")} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}><Icon name="search" size={20} color={colors.ink} /></Pressable>
+          <Pressable onPress={() => { haptic.tap(); setMenu(true); }} testID="open-account-menu" accessibilityRole="button" accessibilityLabel={t("signOutDlg.avatar")} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}><Icon name="logout" size={20} color={colors.ink} mirror /></Pressable>
         </Row>
       </Row>
 

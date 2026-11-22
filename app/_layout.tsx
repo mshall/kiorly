@@ -49,8 +49,6 @@ function Shell() {
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="sign-in" options={{ headerShown: false, animation: "fade" }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="upgrade" options={{ headerShown: false, presentation: "card" }} />
-          <Stack.Screen name="search" options={{ headerShown: false, animation: "fade_from_bottom" }} />
           <Stack.Screen name="scan" options={{ headerShown: false, presentation: "fullScreenModal" }} />
         </Stack>
         <PushPrimer />

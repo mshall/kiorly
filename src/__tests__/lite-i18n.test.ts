@@ -25,7 +25,7 @@ describe("Lite strings", () => {
   });
   it("defines every static lite.* key the Lite screens use", () => {
     const root = path.resolve(__dirname, "../..");
-    const files = ["src/components/lite.tsx", "app/upgrade.tsx", "app/(tabs)/work.tsx", "app/(tabs)/index.tsx", "app/(tabs)/me.tsx", "app/(tabs)/inbox.tsx"].map((f) => path.join(root, f));
+    const files = ["src/components/lite.tsx", "app/(tabs)/(more)/upgrade.tsx", "app/(tabs)/work.tsx", "app/(tabs)/index.tsx", "app/(tabs)/me.tsx", "app/(tabs)/inbox.tsx"].map((f) => path.join(root, f));
     const used = new Set<string>();
     for (const f of files) for (const m of fs.readFileSync(f, "utf8").matchAll(/\bt\(\s*["'`](lite\.[A-Za-z0-9_.]+)["'`]/g)) used.add(m[1]);
     expect(used.size).toBeGreaterThan(15);
