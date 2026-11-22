@@ -1,7 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
 /**
- * Clinic staff-app specs (clinic-*.spec.ts): Kiorly Work Expo WEB build against the real clinic API and the seeded demo data.
+ * Clinic staff-app specs (clinic-*.spec.ts): Kiorly Team Expo WEB build against the real clinic API and the seeded demo data.
  * Build + serve (env per kiorly-work/.env.example):
  *   cd kiorly-work && EXPO_PUBLIC_CLINIC_API=http://localhost:3010/api/v1 npx expo export -p web --output-dir /tmp/kw-web && node e2e-web/serve.mjs /tmp/kw-web 8093
  *   (or `npx expo start --web --port 8082` and WEB_URL=http://localhost:8082)

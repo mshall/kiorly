@@ -2,7 +2,7 @@ import { test, expect, chromium, type Browser, type Page } from '@playwright/tes
 import { api, apiTiles, expectClean, enterResult, fixture, login, newOrder, ok, openTile, openWork, passQc, signIn, tilesOf, toProcessing, trackConsole, type Fx, type Ord, type Who } from './lab-helpers';
 
 /**
- * Kiorly Work (Expo web) x Kiorly Lab as the real staff roles: phlebotomist, technologist, signatory, reception and the BASIC-lab director.
+ * Kiorly Team (Expo web) x Kiorly Lab as the real staff roles: phlebotomist, technologist, signatory, reception and the BASIC-lab director.
  * Each role signs in through the sign-in screen (org slug + email dev login), sees tiles that equal its /mobile/bootstrap, sees REAL seeded/fixture data
  * (order numbers, accession numbers, analyte names, reagent names), opens each tile, performs one or more real actions in the UI and the effect is read
  * back through the lab API (the same API the lab web app :5191 uses). Fixtures: an own analyte + QC + 1-minute TAT test per run; nothing is reset.

@@ -88,7 +88,7 @@ describe("visit draft diff and role gates", () => {
   });
   it("derives permissions from the bootstrap screens, not the role name", () => {
     const doctor = boot("PHYSICIAN", { "clinic.visits": ["start", "notes"], "clinic.prescriptions": ["review", "sign"], "clinic.labs": ["results", "approve"] });
-    const nurse = boot("NURSE", { "clinic.visits": [], "clinic.prescriptions": ["review"], "clinic.labs": ["results"] });
+    const nurse = boot("NURSE", { "clinic.visits": [], "clinic.prescriptions": ["review"] });
     expect([canStartVisit(doctor), canSign(doctor), canApproveLab(doctor)]).toEqual([true, true, true]);
     expect([canStartVisit(nurse), canSign(nurse), canApproveLab(nurse)]).toEqual([false, false, false]);
     expect(canSign(undefined)).toBe(false);

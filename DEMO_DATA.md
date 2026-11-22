@@ -1,6 +1,6 @@
-# Kiorly Work (staff mobile app): demo data and manual test guide (DEV ONLY)
+# Kiorly Team (staff mobile app): demo data and manual test guide (DEV ONLY)
 
-> **DEV ONLY / synthetic.** Kiorly Work is one Expo app for the staff of Kiorly Clinic, Pharmacy and Lab. It owns **no data**: everything comes from the three product APIs (`/mobile/*`), so the demo is "the three product demos + the mobile seeds". Workspace index: [../DEMO_DATA.md](../DEMO_DATA.md) · shared tables: [../TEST_DATA.md](../TEST_DATA.md) · seed notes: [Docs/TEST_DATA.md](Docs/TEST_DATA.md) · design: [Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md), [Docs/ENTITLEMENTS.md](Docs/ENTITLEMENTS.md), [Docs/OFFLINE_SYNC.md](Docs/OFFLINE_SYNC.md).
+> **DEV ONLY / synthetic.** Kiorly Team is one Expo app for the staff of Kiorly Clinic, Pharmacy and Lab. It owns **no data**: everything comes from the three product APIs (`/mobile/*`), so the demo is "the three product demos + the mobile seeds". Workspace index: [../DEMO_DATA.md](../DEMO_DATA.md) · shared tables: [../TEST_DATA.md](../TEST_DATA.md) · seed notes: [Docs/TEST_DATA.md](Docs/TEST_DATA.md) · design: [Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md), [Docs/ENTITLEMENTS.md](Docs/ENTITLEMENTS.md), [Docs/OFFLINE_SYNC.md](Docs/OFFLINE_SYNC.md).
 > Matrices below come from `GET /mobile/bootstrap` called for every demo login against the running APIs on 21 Nov 2026 (clinic :3010, pharmacy :3100, lab :3200), not from documentation. Passwords are local development values (`Demo@12345`); lab uses dev-login without a password.
 
 ## 1. What this demo is for
@@ -44,7 +44,7 @@ Sign-in is **per product**: the app keeps one session per product, so one person
 | Login | Name | Role | Org / plan | Shows |
 |---|---|---|---|---|
 | `nadia.na@demo.kiorex.test` | Dr Nadia Fouad | PHYSICIAN | Nile Care / PRO | schedule + live queue (today: 4 visits, 1 waiting, 3 completed), prescription **awaiting signature** (`demo_enc_mobile_rx`, Cetirizine 10 mg, patient Hoda), a **critical potassium 6.9 mmol/L** result to approve (`demo_co_mobile_crit`) + a normal result, 1 SOS alert on a home visit |
-| `nurse.na@demo.kiorex.test` | Nurse Nile Care | NURSE | Nile Care / PRO | schedule, patients, lab results (view), vitals, home visits |
+| `nurse.na@demo.kiorex.test` | Nurse Nile Care | NURSE | Nile Care / PRO | schedule, patients, vitals, home visits (no Lab results: physician review queue) |
 | `owner.na@`, `accountant.na@`, `frontdesk1.na@`, `manager.na@`, `callcenter.na@demo.kiorex.test` | Ahmed Fawzy etc. | GROUP_ADMIN / FINANCE_OFFICER / RECEPTIONIST / BRANCH_MANAGER / CALL_CENTER | Nile Care / PRO | per matrix; owner and accountant see the **revenue snapshot** |
 | `mona@nurse-demo.kiorly.test` | Mona Adel | PHYSICIAN (solo nurse) | Demo Home Nursing (Mona) / PRO (NURSE_PRO) | home-visit round (route, depart / arrive / finish / SOS), lab samples, **12 open safety alerts** (SOS, missed check-in, unsafe abort) |
 | `owner@nurse-demo.kiorly.test` | Agency Owner | CLINIC_ADMIN | Demo Care Agency / ENTERPRISE (NURSE_AGENCY) | every module; sees every device and every agency alert |
@@ -151,7 +151,7 @@ Sign-in is **per product**: the app keeps one session per product, so one person
 | Role | Should see | Should NOT see |
 |---|---|---|
 | Physician | schedule, patients, visits, prescriptions, labs, vitals | revenue; home visits (nurse tile) |
-| Nurse (clinic) | schedule, patients, labs (view), vitals, home visits | prescriptions, visits; cannot sign (profession NURSE) |
+| Nurse (clinic) | schedule, patients, vitals, home visits (no labs: result review is a physician job; samples are collected under home visits) | prescriptions, visits; cannot sign (profession NURSE) |
 | Owner / group admin | all clinical + revenue, devices of the whole org | home-visit tile (not a nurse) |
 | Finance officer | schedule + revenue only | patients, any clinical module |
 | Front desk / call centre / dispatcher | schedule, patients | clinical, revenue |

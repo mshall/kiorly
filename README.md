@@ -1,4 +1,4 @@
-# Kiorly Work
+# Kiorly Team
 
 One Expo staff app (iOS, Android, web) for the Kiorly Clinic, Pharmacy and Lab products, sold on the Pro and Enterprise plans (safety alerts reach every plan). Run it with `npm run web` (http://localhost:8082); design notes are in [Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md).
 

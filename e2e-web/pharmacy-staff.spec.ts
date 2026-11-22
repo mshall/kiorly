@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { api, apiLogin, signIn, openWork, trackConsole, PASSWORD } from './pharmacy-helpers';
 
 /**
- * Kiorly Work (Expo web) x Kiorly Pharmacy, as the real staff roles: pharmacist, manager, cashier, BASIC owner.
+ * Kiorly Team (Expo web) x Kiorly Pharmacy, as the real staff roles: pharmacist, manager, cashier, BASIC owner.
  * Each role signs in through the sign-in screen, sees tiles that match its /mobile/bootstrap, sees REAL seeded data (drug names, Rx ids, lots,
  * customers), opens every tile and performs one real action whose effect is then read back from the API (the same API the web app :5190 uses).
  * Fixtures are created per run through the owner API (drugs "E2E-Web-*"); nothing is reset.

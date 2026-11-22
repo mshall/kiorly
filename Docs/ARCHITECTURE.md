@@ -1,4 +1,4 @@
-# Kiorly Work: architecture
+# Kiorly Team: architecture
 
 One Expo (SDK 58, React Native 0.88, expo-router, TypeScript strict) staff app with three product modules: **Clinic** (clinics-management, branch `kiorex`), **Pharmacy** (kiorly-pharmacy) and **Lab** (kiorly-lab). It has its own lockfile and `.npmrc` (`legacy-peer-deps=true`), like `kiorex-platform/apps/mobile`, and reuses its kit: brand theme (`src/brand/theme.ts` from `_brand/theme.ts`), `KiorexLogo`, `Screen/Card/Sheet/Toast`, Jost + IBM Plex Sans Arabic, haptics, skeletons.
 

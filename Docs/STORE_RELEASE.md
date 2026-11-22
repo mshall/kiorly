@@ -3,7 +3,7 @@
 Bundle ids `com.kiorly.work` (iOS and Android) are **placeholders until the Apple/Google accounts exist (NEEDS_HUMAN)**. `eas.json` has development / preview (internal) / production profiles.
 
 ## Before the first build (human steps)
-1. Apple Developer + Google Play Console accounts under the company; confirm app name "Kiorly Work" / "كيورلي وورك" and final bundle ids.
+1. Apple Developer + Google Play Console accounts under the company; confirm app name "Kiorly Team" / "كيورلي تيم" and final bundle ids.
 2. `eas init`, set `EXPO_PUBLIC_CLINIC_API`, `EXPO_PUBLIC_PHARMACY_API`, `EXPO_PUBLIC_LAB_API` per EAS environment (staging first); real HTTPS endpoints only.
 3. Register the Passport public client `kiorly-work` (`kiorlywork://auth/callback`) in `kiorex-account`, flip the sign-in screen to OIDC PKCE.
 4. Provider go-live pass: real Expo push (APNs key, FCM), per product `Docs/NEEDS_HUMAN.md` "Provider go-live"; set `MOBILE_PUSH_MODE=real` in staging.

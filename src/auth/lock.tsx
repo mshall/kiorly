@@ -53,7 +53,7 @@ export function LockProvider({ children, signedIn }: { children: ReactNode; sign
 
   const unlock = useCallback(async () => {
     try {
-      const r = await LocalAuthentication.authenticateAsync({ promptMessage: "Kiorly Work", cancelLabel: "Cancel", disableDeviceFallback: false });
+      const r = await LocalAuthentication.authenticateAsync({ promptMessage: "Kiorly Team", cancelLabel: "Cancel", disableDeviceFallback: false });
       if (r.success) { haptic.success(); setLocked(false); return true; }
     } catch { /* fall through */ }
     haptic.error(); return false;
@@ -61,7 +61,7 @@ export function LockProvider({ children, signedIn }: { children: ReactNode; sign
   const setEnabled = useCallback(async (v: boolean) => {
     if (v) {
       if (!(await biometricsAvailable())) return false;
-      const r = await LocalAuthentication.authenticateAsync({ promptMessage: "Kiorly Work" }).catch(() => ({ success: false }));
+      const r = await LocalAuthentication.authenticateAsync({ promptMessage: "Kiorly Team" }).catch(() => ({ success: false }));
       if (!r.success) return false;
     }
     setEnabledState(v); await prefs.set(K_ENABLED, v ? "1" : "0"); return true;

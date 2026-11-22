@@ -4,7 +4,7 @@ import { api, apiLogin, bookNow, CLINIC, NA, openWork, signIn, sql, tileIds, wat
 const NADIA = 'demo_u_na_nadia';
 const DALIA = 'demo_p_na_8'; // Dalia Ibrahim (demo patient, asthma)
 
-test.describe('Kiorly Work (Expo web) - clinic roles against the real API and seeded demo data', () => {
+test.describe('Kiorly Team (Expo web) - clinic roles against the real API and seeded demo data', () => {
   test('doctor Nadia: tiles, schedule queue, patient search + summary, sign a prescription, approve the critical lab result', async ({ page }) => {
     const errors = watchErrors(page);
     const doc = await apiLogin(NA('nadia')), fd = await apiLogin(NA('frontdesk1'));
@@ -63,7 +63,7 @@ test.describe('Kiorly Work (Expo web) - clinic roles against the real API and se
     const nurse = await apiLogin(NA('nurse'));
     await signIn(page, NA('nurse'));
     await openWork(page);
-    expect(await tileIds(page)).toEqual(['homevisits', 'labs', 'patients', 'schedule', 'vitals']); // no visits, no prescriptions
+    expect(await tileIds(page)).toEqual(['homevisits', 'patients', 'schedule', 'vitals']); // no visits, no prescriptions
     await page.getByTestId('tile-clinic.vitals').click();
     await page.getByTestId('vitals-patient-search').fill('Dalia');
     await page.getByTestId(`pick-${DALIA}`).click();
@@ -174,7 +174,7 @@ test.describe('Kiorly Work (Expo web) - clinic roles against the real API and se
     expect(visit, 'a free home slot').toBeTruthy();
     await signIn(page, 'mona@nurse-demo.kiorly.test');
     await openWork(page);
-    expect(await tileIds(page)).toEqual(['homevisits', 'labs', 'patients', 'revenue', 'schedule', 'vitals']); // nurse profession: no visits / prescriptions
+    expect(await tileIds(page)).toEqual(['homevisits', 'patients', 'revenue', 'schedule', 'vitals']); // nurse profession: no visits / prescriptions
     await page.goto(`/clinic/round/${visit.id}`);
     await expect(page.getByTestId('clinic-round')).toContainText('Hoda Mahmoud');
     await page.getByTestId('round-depart').click();

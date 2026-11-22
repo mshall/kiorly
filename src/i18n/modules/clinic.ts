@@ -1,4 +1,4 @@
-/** Kiorly Work / Clinic module strings (keys under `clinic.*`). Arabic is the default language. */
+/** Kiorly Team / Clinic module strings (keys under `clinic.*`). Arabic is the default language. */
 const en = {
   nextUp: "Next up",
   kpi: { today: "Today's visits", waiting: "Waiting", inExam: "In exam", rx: "Prescriptions to sign", labs: "Lab results to review" },

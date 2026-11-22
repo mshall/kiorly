@@ -1,6 +1,6 @@
 # Entitlements: `mobile_staff_app`
 
-Kiorly Work is a **commercial entitlement**, ON for **PRO and ENTERPRISE**, OFF for Basic/Starter. It is *not* a safety control (ADR-025).
+Kiorly Team is a **commercial entitlement**, ON for **PRO and ENTERPRISE**, OFF for Basic/Starter. It is *not* a safety control (ADR-025).
 
 | Product | Plan source | BASIC (off) | PRO / ENTERPRISE (on) |
 |---|---|---|---|
