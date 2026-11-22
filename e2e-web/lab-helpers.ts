@@ -41,7 +41,7 @@ export async function signIn(page: Page, org: string, role: string) {
   await page.getByTestId('signin-submit').click();
   await page.waitForURL((u) => !u.pathname.startsWith('/sign-in'));
   // PRO/ENTERPRISE land on the tabs; a BASIC org lands on the upgrade screen (no tab bar)
-  await expect(page.getByRole('tab', { name: /work/i }).or(page.getByTestId('upgrade'))).toBeVisible();
+  await expect(page.getByRole("tab", { name: /work/i }).or(page.getByTestId("upgrade")).first()).toBeVisible();
 }
 export async function openWork(page: Page) {
   // module screens are stack screens above the tab bar: go back to the tabs first when a screen is open
