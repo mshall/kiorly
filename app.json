@@ -1,16 +1,16 @@
 {
   "expo": {
     "name": "Kiorly Team",
-    "slug": "kiorly-work",
+    "slug": "kiorly-team",
     "version": "0.1.0",
-    "scheme": "kiorlywork",
+    "scheme": "kiorlyteam",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "backgroundColor": "#F4F6FC",
     "ios": {
-      "bundleIdentifier": "com.kiorly.work",
+      "bundleIdentifier": "com.kiorly.team",
       "supportsTablet": true,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
@@ -21,7 +21,7 @@
       }
     },
     "android": {
-      "package": "com.kiorly.work",
+      "package": "com.kiorly.team",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#3730A3"
@@ -109,7 +109,7 @@
       "typedRoutes": false
     },
     "extra": {
-      "storeAccounts": "NEEDS_HUMAN: bundle ids com.kiorly.work are placeholders until Apple/Google accounts exist",
+      "storeAccounts": "NEEDS_HUMAN: bundle ids com.kiorly.team are placeholders until Apple/Google accounts exist",
       "pushNote": "NEEDS_HUMAN: set extra.eas.projectId (eas init) + upload APNs key / FCM v1 service account to EAS to receive real remote push; until then the app registers a mock token."
     }
   }

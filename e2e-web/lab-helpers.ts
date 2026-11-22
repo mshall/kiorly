@@ -12,7 +12,7 @@ export async function login(org: string, role: string): Promise<Who> {
 }
 /** Lab REST call; `app` adds the staff-app client header (what the Expo build sends), plain calls are what the lab web app (:5191) sends. */
 export async function api(w: Who, method: string, path: string, body?: unknown, o: { app?: boolean; headers?: Record<string, string> } = {}) {
-  const r = await fetch(API + path, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${w.token}`, ...(o.app ? { 'x-kiorly-client': 'kiorly-work/e2e-web' } : {}), ...o.headers }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const r = await fetch(API + path, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${w.token}`, ...(o.app ? { 'x-kiorly-client': 'kiorly-team/e2e-web' } : {}), ...o.headers }, body: body === undefined ? undefined : JSON.stringify(body) });
   const text = await r.text(); let json: any; try { json = text ? JSON.parse(text) : null; } catch { json = text; }
   return { status: r.status, body: json };
 }

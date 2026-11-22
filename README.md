@@ -6,7 +6,7 @@ Demo logins, role x module matrix, Basic/Lite walkthrough and manual test script
 
 ## Development build (local, no EAS account)
 
-The app is a normal Expo SDK 58 project with `expo-dev-client`; native folders (`ios/`, `android/`) are **generated** (`expo prebuild`) and git-ignored. Config lives in `app.json` (bundle id / package `com.kiorly.work`, scheme `kiorlywork`, permissions, `expo-notifications` plugin with `remote-notification` background mode) and `eas.json` (profiles `development`, `development-simulator`, `preview`, `production`; no secrets).
+The app is a normal Expo SDK 58 project with `expo-dev-client`; native folders (`ios/`, `android/`) are **generated** (`expo prebuild`) and git-ignored. Config lives in `app.json` (bundle id / package `com.kiorly.team`, scheme `kiorlyteam`, permissions, `expo-notifications` plugin with `remote-notification` background mode) and `eas.json` (profiles `development`, `development-simulator`, `preview`, `production`; no secrets).
 
 ```bash
 # one-time tooling (this Mac has no Homebrew): CocoaPods into ~/.local/gems
@@ -16,7 +16,7 @@ npx expo run:ios --device "iPhone 18 Pro" --port 8091        # builds with Xcode
 export JAVA_HOME=~/.local/jdk17/jdk-17.0.21.1+2/Contents/Home ANDROID_HOME=~/.local/android/sdk PATH=$ANDROID_HOME/platform-tools:$PATH
 npx expo run:android --port 8092                              # Android emulator reaches the Mac APIs at 10.0.2.2 (see DEMO_DATA.md)
 ```
-Later runs only need Metro: `npx expo start --dev-client --port 8091`, then open `exp+kiorly-work://expo-development-client/?url=<metro url>`.
+Later runs only need Metro: `npx expo start --dev-client --port 8091`, then open `exp+kiorly-team://expo-development-client/?url=<metro url>`.
 `react-native-reanimated` and `react-native-worklets` are pinned to the versions Expo SDK 58 expects (4.7.1 / 0.13.0); a newer reanimated needs worklets 0.14 and breaks `pod install`.
 
 **Layout direction.** First launch is Arabic; `I18nManager.forceRTL` only applies after a JS reload, so `bootstrapI18n()` returns `needsRestart` and `handleRestart()` (src/i18n/restart.ts) calls `reloadAppAsync` once (guarded against loops for 60 s). In Expo Go it cannot reload and shows a one-time "close and reopen" banner instead. Verified on a real dev build: see `_docs/mobile/DEVICE_TEST_REPORT_2026-11-20.md`.
@@ -26,7 +26,7 @@ Later runs only need Metro: `npx expo start --dev-client --port 8091`, then open
 What is real and testable today (no credentials needed): permission flow, token registration (mock token when Expo cannot issue one), token upload to `PUT /mobile/devices/:id/push-token`, one router for every notification (`src/lib/notifications.ts`: critical lab alert, SOS, `order.received`, upgrade request, plus the existing Rx / lab / clinic ids), tap while running / backgrounded / cold start, foreground banner + haptic + inbox refresh, app-icon badge = unread inbox + open alerts.
 
 * **Local simulation (dev builds):** Me > Notifications shows a "Dev: send test notification (local)" card. Each button schedules a local notification (3 s) that comes back through the same listener and router as a remote one; the card also shows the token state (`mock no-project-id` plus the reason) and the last route taken.
-* **Remote-format payloads on the iOS simulator:** `e2e-push/send.sh lab-critical|sos|order-received|upgrade-request` runs `xcrun simctl push booted com.kiorly.work e2e-push/<type>.json`. The fixtures use the Expo push shape: `aps` for the visible alert, the product's `data` object under the `body` key (that is where expo-notifications reads `content.data` for a remote push). Values match the demo seed (`demo_hv_cp1_7` etc.).
+* **Remote-format payloads on the iOS simulator:** `e2e-push/send.sh lab-critical|sos|order-received|upgrade-request` runs `xcrun simctl push booted com.kiorly.team e2e-push/<type>.json`. The fixtures use the Expo push shape: `aps` for the visible alert, the product's `data` object under the `body` key (that is where expo-notifications reads `content.data` for a remote push). Values match the demo seed (`demo_hv_cp1_7` etc.).
 
 | Type | Fixture | Tap opens |
 |---|---|---|

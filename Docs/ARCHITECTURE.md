@@ -31,7 +31,7 @@ Contract identical in the three repos (`clinics-management/Docs/MOBILE.md`, `kio
 Expo web **8082**. APIs: clinic 3010, pharmacy 3100, lab 3200 (never 3000/5173/5175). Override with `EXPO_PUBLIC_{CLINIC,PHARMACY,LAB}_API` (`.env.example`). Lab and pharmacy APIs allow the 8082 origin for Expo web in dev (`CORS_ORIGINS`).
 
 ## Features by requirement
-Light/dark + AR (default, RTL) / EN; haptics; skeletons; pull-to-refresh; bottom sheets; charts (Sparkline, BarChart, Progress); biometric lock; remote sign-out; offline queue + sync chip; push (mock) + inbox; global search; barcode/QR (expo-camera + manual entry); deep links (`kiorlywork://`, expo-router file routes + push `data` routing).
+Light/dark + AR (default, RTL) / EN; haptics; skeletons; pull-to-refresh; bottom sheets; charts (Sparkline, BarChart, Progress); biometric lock; remote sign-out; offline queue + sync chip; push (mock) + inbox; global search; barcode/QR (expo-camera + manual entry); deep links (`kiorlyteam://`, expo-router file routes + push `data` routing).
 
 ## Limits
 Verified on Expo web (Playwright, per role, against the live local APIs), jest-expo and `tsc`, plus an Android 15 emulator and an iPhone 18 Pro simulator (Expo Go, 20-21 Nov 2026; see `_docs/mobile/DEVICE_TEST_REPORT_2026-11-20.md` in the workspace). Native-only paths still unverified on a device: biometrics, camera scanning, push tokens, expo-location accuracy.

@@ -15,7 +15,7 @@ Kiorex super admin can switch it OFF at global/market/org scope (snapshot value 
 
 ## Enforcement
 * Bootstrap tells the app (`entitlement`, `safetyAlertsOnly`, `modules`).
-* Server enforcement: a request with `X-Kiorly-Client: kiorly-work/*` (and every `/mobile/*` route) from an org without the entitlement gets `403 {code:"FEATURE_DISABLED", key:"mobile_staff_app", scope:"org"}`. **Exempt on every plan:** `/auth/*`, `GET /mobile/bootstrap`, `/mobile/alerts*`, `POST /mobile/upgrade-request`, `DELETE /mobile/devices/:id`. Web traffic (no client header) is untouched.
+* Server enforcement: a request with `X-Kiorly-Client: kiorly-team/*` (and every `/mobile/*` route) from an org without the entitlement gets `403 {code:"FEATURE_DISABLED", key:"mobile_staff_app", scope:"org"}`. **Exempt on every plan:** `/auth/*`, `GET /mobile/bootstrap`, `/mobile/alerts*`, `POST /mobile/upgrade-request`, `DELETE /mobile/devices/:id`. Web traffic (no client header) is untouched.
 * App: a 403 FEATURE_DISABLED for this key refreshes bootstrap, shows the notice and the upgrade screen.
 
 ## Safety alerts on every plan

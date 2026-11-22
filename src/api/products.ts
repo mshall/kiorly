@@ -4,7 +4,7 @@ import { theme } from "@/brand/theme";
 export type Product = "clinic" | "pharmacy" | "lab";
 export const PRODUCTS: readonly Product[] = ["clinic", "pharmacy", "lab"] as const;
 export const APP_VERSION: string = (Constants.expoConfig?.version as string | undefined) ?? "0.1.0";
-export const CLIENT_HEADER = `kiorly-work/${APP_VERSION}`;
+export const CLIENT_HEADER = `kiorly-team/${APP_VERSION}`;
 
 // Literal `process.env.EXPO_PUBLIC_*` member reads only: Metro/Babel inline exactly these at build time (an aliased `const env = process.env` is NOT inlined, so every web/production build silently fell back to the localhost defaults).
 

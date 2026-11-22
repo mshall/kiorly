@@ -9,7 +9,7 @@ export async function apiLogin(user: string): Promise<string> {
   return ((await r.json()) as { accessToken: string }).accessToken;
 }
 export async function api(token: string, method: string, path: string, body?: unknown) {
-  const r = await fetch(API + path, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, 'x-kiorly-client': 'kiorly-work/e2e-web' }, body: body === undefined ? undefined : JSON.stringify(body) });
+  const r = await fetch(API + path, { method, headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, 'x-kiorly-client': 'kiorly-team/e2e-web' }, body: body === undefined ? undefined : JSON.stringify(body) });
   const text = await r.text(); let json: any; try { json = text ? JSON.parse(text) : null; } catch { json = text; }
   return { status: r.status, body: json };
 }
