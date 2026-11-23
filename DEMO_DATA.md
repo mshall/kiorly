@@ -20,7 +20,7 @@ cd kiorly-lab/apps/api         && npm run db:seed:mobile       # Lab: chain-lab 
 ```
 The three commands above are only needed when you do not run `scripts/seed-all.sh`. All three are idempotent and guarded (`DEMO_SEED_ALLOWED=true`, non-production). Re-running re-opens the demo alerts.
 
-Run the app (`cd kiorly-team && npm install` once; own lockfile and `.npmrc` with `legacy-peer-deps`):
+Run the app (`cd kiorly && npm install` once; own lockfile and `.npmrc` with `legacy-peer-deps`):
 
 | Target | Command | Notes |
 |---|---|---|
@@ -138,7 +138,7 @@ Sign-in is **per product**: the app keeps one session per product, so one person
 
 **W11. Critical values, validation, QC (signatory).** 1) `signatory@demo-lab.test`: Critical -> the escalated HB 5.9 / K 6.8 / blood-culture alerts -> acknowledge. 2) Validation -> medically validate and release an order awaiting sign-off (online-only). 3) QC: the TSH `1_3s` failure is listed. 4) TAT: the 3 STAT + 1 URGENT breaches. *Expected:* `phleb@` has none of these tiles.
 
-**W12. BASIC / Lite walkthrough (all three products).** 1) Clinic: `owner.basic@demo.kiorex.test`; Pharmacy: `owner.basic@demo.kiorly.local`; Lab: org `basic-lab`, `director@basic-lab.test`. 2) After sign-in each lands on the **upgrade screen** (entitlement `mobile_staff_app` disabled, requires PRO) and the Home shows an upgrade card; Work shows no module tiles. 3) Open the **Inbox / alerts**: clinic shows the open critical-vitals alert, pharmacy the controlled-drug discrepancy, lab the critical HB / STAT breaches. 4) Acknowledge one. *Expected:* it works on every plan. 5) With curl confirm the gate: `GET /mobile/schedule` (clinic) or `/mobile/pharmacy/controlled/pending-witness` with header `X-Kiorly-Client: kiorly-team` returns **403 `FEATURE_DISABLED` key `mobile_staff_app`**, while `GET /mobile/bootstrap` and `GET /mobile/alerts` return 200 (`entitlement.enabled=false`, `safetyAlertsOnly=true`).
+**W12. BASIC / Lite walkthrough (all three products).** 1) Clinic: `owner.basic@demo.kiorex.test`; Pharmacy: `owner.basic@demo.kiorly.local`; Lab: org `basic-lab`, `director@basic-lab.test`. 2) After sign-in each lands on the **upgrade screen** (entitlement `mobile_staff_app` disabled, requires PRO) and the Home shows an upgrade card; Work shows no module tiles. 3) Open the **Inbox / alerts**: clinic shows the open critical-vitals alert, pharmacy the controlled-drug discrepancy, lab the critical HB / STAT breaches. 4) Acknowledge one. *Expected:* it works on every plan. 5) With curl confirm the gate: `GET /mobile/schedule` (clinic) or `/mobile/pharmacy/controlled/pending-witness` with header `X-Kiorly-Client: kiorly` returns **403 `FEATURE_DISABLED` key `mobile_staff_app`**, while `GET /mobile/bootstrap` and `GET /mobile/alerts` return 200 (`entitlement.enabled=false`, `safetyAlertsOnly=true`).
 
 **W13. Flag off for a PRO org.** In the Kiorex ops console (super admin) switch `mobile_staff_app` OFF at org scope (Nile Care or `org_demo_kiorly`). *Expected:* that org's bootstrap returns `reason: FLAG_OFF`, the app shows the same notice + upgrade screen, safety alerts still work. A plan below PRO can never be switched ON by a flag.
 

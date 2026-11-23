@@ -13,7 +13,7 @@ scripts/seed-all.sh                   # idempotent demo data in dependency order
 One service only: `e2e/scripts/up.sh --restart --only=passport|kiorly|kiorex|pharmacy|lab > /tmp/up.log 2>&1`. Never touch ports 3000 / 5173 / 5175. Tests you run change data (a cancel stays cancelled): re-seed for the starting state.
 
 ```bash
-cd kiorly-team
+cd kiorly
 npm run web                 # Expo web :8082 (use phone width)
 npx jest                    # incl. src/__tests__/devTestUsersBundle.test.ts
 npm run check:dev-test-users
@@ -35,7 +35,7 @@ The sign-in has four tiles: Clinic, Nurse, Pharmacy, Lab; the chips are per tile
 
 ### 4.8 Kiorly staff app (W1-W15)
 
-Run `cd kiorly-team && npm run web` and open http://localhost:8082 at phone width.
+Run `cd kiorly && npm run web` and open http://localhost:8082 at phone width.
 
 1. **Bootstrap.** Clinic tile, chip **Doctor (Nile Care)**, Sign in. *Expected:* Home with quick actions and the Work tab tiles.
 2. **Sign a prescription (Dr Nadia).** Work -> Prescriptions -> pending Cetirizine 10 mg for Hoda -> Sign: moves to signed; signing is online-only; `nurse.na@` sees no sign action.
