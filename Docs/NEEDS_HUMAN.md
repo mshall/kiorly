@@ -69,3 +69,24 @@ Counsel's written approval is what lets the agent remove the DRAFT banner. No ag
 
 ## Not on this list (done as drafts, awaiting the items above)
 Arabic and English store text within length limits, the static pages, the Apple and Google questionnaire answers, the screenshot shot list. Screenshots themselves still have to be captured on a built app once staging exists.
+
+## 9. Provider go-live: push, builds, Firebase (config only)
+
+The app needs **no code change** to go from mock push to real push; only build-time config and server env.
+
+**Build config (EAS)** — `eas.json` profiles `development` (dev client, APK), `preview` (internal APK, Release), `production` (AAB, Release, auto-increment); `app.config.ts` layers env over `app.json`:
+
+| Name | Where | Value |
+|---|---|---|
+| `EAS_PROJECT_ID` | EAS env (all profiles) | from `eas init`; required for Expo push tokens (without it the app keeps the mock token) |
+| `GOOGLE_SERVICES_JSON` | EAS **file** secret per environment | Firebase Android config for `com.kiorly.app` (add `.dev` / `.preview` ids if you use `APP_ID_SUFFIX`) |
+| `GOOGLE_SERVICE_INFO_PLIST` | EAS **file** secret per environment | Firebase iOS config for `com.kiorly.app` |
+| `EXPO_PUBLIC_CLINIC_API`, `EXPO_PUBLIC_PHARMACY_API`, `EXPO_PUBLIC_LAB_API`, `EXPO_PUBLIC_PASSPORT_ISSUER` | EAS env per environment | HTTPS API bases / issuer |
+
+Commands: `eas env:create --environment production --name GOOGLE_SERVICES_JSON --type file --visibility secret --value ./google-services.json` (same for the plist and each profile), then `eas build -p android --profile preview` (APK) / `--profile production` (AAB). A `production` build **fails at config time** if either Firebase file is missing. Local placeholder notes: `config/firebase/README.md` (files are git-ignored).
+
+**Credentials human steps:** Firebase project; FCM HTTP v1 service-account key uploaded to EAS (`eas credentials`, Android) and to each product API as `PUSH_FCM_SERVICE_ACCOUNT_JSON` (secret); APNs auth key uploaded to EAS (iOS); Google Play + Apple developer accounts.
+
+**Server flip (per product API: Kiorly Clinic, Pharmacy, Lab):** `PUSH_MODE=real` (Clinic also accepts `MOBILE_PUSH_MODE=real`), `PUSH_EXPO_ENABLED=true` (the app registers Expo push tokens, one path for Android + iOS) and/or `PUSH_FCM_SERVICE_ACCOUNT_JSON`; the API fails to boot with variable names only if neither is set and reports `push real ready` on `/api/v1/health/providers`. Android channels `default|safety|clinical|ops` are created by the app (`src/lib/notificationChannels.ts`) and named per message kind by the API (safety = MAX importance).
+
+**Not run here:** no Android SDK on the build machine, so no Gradle build or emulator run; verified `expo config`, `expo export --platform android`, and (patient app) `expo prebuild --platform android`.
