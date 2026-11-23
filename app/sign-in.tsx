@@ -29,7 +29,7 @@ export default function SignIn() {
   const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [org, setOrg] = useState("");
   const [mfa, setMfa] = useState(""); const [needMfa, setNeedMfa] = useState(false);
   const [busy, setBusy] = useState(false); const [busyPassport, setBusyPassport] = useState(false); const [error, setError] = useState<string | null>(null);
-  const meta = PRODUCT_META[product]; const accent = accentFor(product, scheme);
+  const meta = PRODUCT_META[product];
   const isAr = i18n.language.startsWith("ar");
   // warm the Passport discovery cache so the browser step opens straight from the tap (web popup blockers want it inside the user gesture)
   useEffect(() => { if (PASSPORT_ENABLED) void discover().catch(() => {}); }, []);
@@ -122,7 +122,6 @@ export default function SignIn() {
           </Card>
 
           {DevTestUsers ? <DevTestUsers product={product} entry={entry} onPick={(a) => { setEmail(a.email); setPassword(a.password); setOrg(a.org); }} /> : null}
-          <T variant="caption" muted style={{ textAlign: "center", color: accent }}>{isAr ? "كيورلي من كيوريكس" : "Kiorly by Kiorex"}</T>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
