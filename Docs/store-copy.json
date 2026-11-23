@@ -1,0 +1,19 @@
+{
+  "_note": "DRAFT store copy, single source of truth. Arabic needs a native reviewer pass (NEEDS_HUMAN). Validate with: node Docs/scripts/check-store-limits.mjs",
+  "en": {
+    "title": "Kiorly: Clinic, Pharmacy & Lab",
+    "subtitle": "For clinics, pharmacies & labs",
+    "shortDescription": "Staff app for clinics, pharmacies and labs: schedules, scans and safety alerts.",
+    "description": "Kiorly is the staff app for clinics, pharmacies and labs that run on Kiorly. One sign-in, four workplaces: Clinic, Nurse, Pharmacy and Lab.\n\nCLINIC\n- Today's schedule and your patients\n- Vitals, visit notes and prescriptions\n- Check-in and billing summaries\n\nNURSE\n- Home-visit rounds and check-in at the door\n- Vitals recorded at the bedside\n- A safety button that alerts your team\n\nPHARMACY\n- Verify and dispense prescriptions\n- Scan stock and watch expiry dates and recalled lots\n- Countersign controlled drugs as the second witness\n\nLAB\n- Sample collection rounds with barcode scanning\n- Results awaiting validation\n- Critical-value and turnaround alerts\n\nBUILT FOR WORK ON THE MOVE\n- Safety alerts reach everyone on every plan\n- Sign in with Kiorex Passport or your workplace login\n- Lock the app with Face ID or fingerprint\n- Keep working offline and sync when you are back online\n- Sign out any device remotely\n- Arabic and English with full right-to-left support\n\nWHO IT IS FOR\nKiorly is for staff of organisations that already use Kiorly Clinic, Kiorly Pharmacy or Kiorly Lab. The staff app is included from the Pro plan. Accounts are created by your organisation's owner, so there is no public sign-up. Questions: support@kiorly.com",
+    "whatsNew": "First release of Kiorly: the staff app for clinics, pharmacies and labs, in Arabic and English.",
+    "keywords": "nurse,doctor,staff,patients,prescription,scanner,barcode,home visit,dispense,results,medical,alerts"
+  },
+  "ar": {
+    "title": "كيورلي: عيادة وصيدلية ومعمل",
+    "subtitle": "للعيادات والصيدليات والمعامل",
+    "shortDescription": "تطبيق موظفي العيادات والصيدليات والمعامل: جدول العمل والمسح وتنبيهات السلامة.",
+    "description": "كيورلي هو تطبيق الموظفين للعيادات والصيدليات والمعامل التي تعمل بنظام كيورلي. تسجيل دخول واحد يفتح لك أربع بيئات عمل: العيادة والتمريض والصيدلية والمعمل.\n\nالعيادة\n- جدول اليوم ومرضاك\n- العلامات الحيوية وملاحظات الزيارة والوصفات الطبية\n- تسجيل وصول المرضى وملخصات الفواتير\n\nالتمريض\n- جولات الزيارات المنزلية وتسجيل الوصول عند الباب\n- تسجيل العلامات الحيوية بجانب المريض\n- زر أمان ينبّه فريقك فورًا\n\nالصيدلية\n- مراجعة الوصفات الطبية وصرفها\n- مسح المخزون ومتابعة تواريخ الصلاحية والدفعات المسحوبة\n- التوقيع كشاهد ثانٍ على صرف الأدوية المراقبة\n\nالمعمل\n- جولات سحب العينات مع مسح الباركود\n- النتائج المنتظرة للاعتماد\n- تنبيهات القيم الحرجة وزمن إنجاز التحاليل\n\nمصمم للعمل أثناء التنقل\n- تنبيهات السلامة تصل إلى الجميع في كل الباقات\n- سجّل الدخول عبر كيوريكس باسبورت أو بحساب مكان عملك\n- أقفل التطبيق ببصمة الوجه أو بصمة الإصبع\n- واصل عملك دون اتصال، وتتم المزامنة عند عودة الإنترنت\n- سجّل خروج أي جهاز عن بُعد\n- متوفر بالعربية والإنجليزية مع دعم كامل للكتابة من اليمين إلى اليسار\n\nلمن هذا التطبيق؟\nكيورلي مخصص لموظفي المؤسسات التي تستخدم كيورلي للعيادات أو كيورلي للصيدليات أو كيورلي للمعامل. تطبيق الموظفين مشمول ابتداءً من الباقة الاحترافية. يُنشئ مالك مؤسستك الحسابات، ولذلك لا يوجد تسجيل عام. للاستفسار: support@kiorly.com",
+    "whatsNew": "الإصدار الأول من كيورلي: تطبيق الموظفين للعيادات والصيدليات والمعامل، بالعربية والإنجليزية.",
+    "keywords": "تمريض,طبيب,موظفين,مرضى,وصفة طبية,باركود,زيارة منزلية,صرف,نتائج,تحاليل,تنبيهات,طبي"
+  }
+}
