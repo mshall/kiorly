@@ -40,7 +40,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ios: { ...config.ios, bundleIdentifier: `${config.ios?.bundleIdentifier}${idSuffix}`, ...(iosFile ? { googleServicesFile: iosFile } : {}), infoPlist: { ...config.ios?.infoPlist, UIBackgroundModes: ["remote-notification"] } },
     android: { ...config.android, package: `${config.android?.package}${idSuffix}`, ...(androidFile ? { googleServicesFile: androidFile } : {}), permissions: Array.from(new Set(["POST_NOTIFICATIONS", ...(config.android?.permissions ?? [])])) },
     plugins: plugins as ExpoConfig["plugins"],
-    ...(process.env.EAS_UPDATES_URL ? { updates: { url: process.env.EAS_UPDATES_URL } , runtimeVersion: { policy: "appVersion" as const } } : {}),
+    ...(process.env.EAS_UPDATES_URL ? { updates: { url: process.env.EAS_UPDATES_URL } , runtimeVersion: { policy: "fingerprint" as const } } : {}),
     extra: { ...config.extra, ...(projectId ? { eas: { projectId } } : {}), appProfile: profile },
   };
 };
