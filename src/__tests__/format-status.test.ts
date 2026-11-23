@@ -51,3 +51,15 @@ describe("statusLabel", () => {
     expect(statusLabel(t, undefined)).toBe(""); expect(statusLabel(t, null)).toBe("");
   });
 });
+
+describe("Kiorex pharmacy order: OUT_FOR_DELIVERY", () => {
+  const t = i18n.t.bind(i18n) as never;
+  it("has an Arabic and English status label and action strings in the orders scope", async () => {
+    await i18n.changeLanguage("en");
+    expect(statusLabel(t, "OUT_FOR_DELIVERY", { scope: "pharmacy.orders" })).toBe("Out for delivery");
+    expect(i18n.t("pharmacy.orders.outForDelivery")).toBe("Out for delivery");
+    await i18n.changeLanguage("ar");
+    expect(statusLabel(t, "OUT_FOR_DELIVERY", { scope: "pharmacy.orders" })).toBe("خرج للتوصيل");
+    expect(i18n.t("pharmacy.orders.outForDeliveryDone")).not.toBe("pharmacy.orders.outForDeliveryDone");
+  });
+});

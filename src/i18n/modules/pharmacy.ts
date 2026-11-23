@@ -216,6 +216,8 @@ export const pharmacyStrings = {
     "accept": "Accept order",
     "reject": "Reject order",
     "ready": "Mark ready",
+    "outForDelivery": "Out for delivery",
+    "outForDeliveryDone": "Marked out for delivery",
     "acceptDone": "Order accepted",
     "readyDone": "Marked ready",
     "rejectDone": "Order rejected",
@@ -225,6 +227,7 @@ export const pharmacyStrings = {
       "PARTIALLY_ACCEPTED": "Partly accepted",
       "REJECTED": "Rejected",
       "READY": "Ready",
+      "OUT_FOR_DELIVERY": "Out for delivery",
       "DISPENSED": "Dispensed",
       "CANCELLED": "Cancelled",
       "EXPIRED": "Expired"
@@ -447,6 +450,8 @@ export const pharmacyStrings = {
     "accept": "قبول الطلب",
     "reject": "رفض الطلب",
     "ready": "جاهز للاستلام",
+    "outForDelivery": "خرج للتوصيل",
+    "outForDeliveryDone": "تم تحديد الطلب كخارج للتوصيل",
     "acceptDone": "تم قبول الطلب",
     "readyDone": "تم التحديد كجاهز",
     "rejectDone": "تم رفض الطلب",
@@ -456,6 +461,7 @@ export const pharmacyStrings = {
       "PARTIALLY_ACCEPTED": "مقبول جزئيًا",
       "REJECTED": "مرفوض",
       "READY": "جاهز",
+      "OUT_FOR_DELIVERY": "خرج للتوصيل",
       "DISPENSED": "تم الصرف",
       "CANCELLED": "ملغي",
       "EXPIRED": "منتهي"

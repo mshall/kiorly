@@ -12,9 +12,10 @@ import { errText, money, slaLabel, slaMinutes, slaTone, validReason } from "@/mo
 import { statusLabel } from "@/lib/status";
 
 interface Order { id: string; externalOrderId: string; status: string; hasRx: boolean; customerName?: string; orderValue: string; prepaid: boolean; slaDueAt: string | null; deliveryMethod?: string; lines?: unknown[] }
-const OPEN = ["RECEIVED", "ACCEPTED", "PARTIALLY_ACCEPTED"];
+// READY and OUT_FOR_DELIVERY stay "open": a ready order still needs its hand-over (pickup) or "Out for delivery" step.
+const OPEN = ["RECEIVED", "ACCEPTED", "PARTIALLY_ACCEPTED", "READY", "OUT_FOR_DELIVERY"];
 
-/** Kiorex orders (integrated tenants only). Accept / reject / ready; SLA countdown ticks every 30 s. */
+/** Kiorex orders (integrated tenants only). Accept / reject / ready / out for delivery (DELIVERY orders only); SLA countdown ticks every 30 s. */
 export default function KiorexOrders() {
   const { t, lang } = usePh();
   const toast = useToast();
@@ -27,13 +28,14 @@ export default function KiorexOrders() {
   const [sel, setSel] = useState<Order | null>(null);
   const [rej, setRej] = useState<Order | null>(null); const [reason, setReason] = useState("");
   // OFFLINE: order responses are time-critical and legally visible to the patient; online only.
-  const call = async (o: Order, action: "accept" | "ready", body: object = {}) => {
-    try { await api.post("pharmacy", `/kiorex-orders/${o.id}/${action}`, body); haptic.success(); toast.show(t(`pharmacy.orders.${action}Done`)); await qc.invalidateQueries({ queryKey: ["pharmacy"] }); } catch (e) { toast.show(errText(e, t), "error"); }
+  const call = async (o: Order, action: "accept" | "ready" | "out-for-delivery", body: object = {}) => {
+    try { await api.post("pharmacy", `/kiorex-orders/${o.id}/${action}`, body); haptic.success(); toast.show(t(`pharmacy.orders.${action === "out-for-delivery" ? "outForDelivery" : action}Done`)); await qc.invalidateQueries({ queryKey: ["pharmacy"] }); } catch (e) { toast.show(errText(e, t), "error"); }
   };
   const reject = async () => { if (!rej) return; try { await api.post("pharmacy", `/kiorex-orders/${rej.id}/reject`, { reason: reason.trim() }); toast.show(t("pharmacy.orders.rejectDone")); setRej(null); setReason(""); await qc.invalidateQueries({ queryKey: ["pharmacy"] }); } catch (e) { toast.show(errText(e, t), "error"); } };
   const actions = (o: Order): SheetAction[] => [
     ...(o.status === "RECEIVED" ? [{ label: t("pharmacy.orders.accept"), icon: "check" as const, onPress: () => void call(o, "accept") }, { label: t("pharmacy.orders.reject"), icon: "close" as const, tone: "danger" as const, onPress: () => { setRej(o); setReason(""); } }] : []),
     ...(o.status === "ACCEPTED" || o.status === "PARTIALLY_ACCEPTED" ? [{ label: t("pharmacy.orders.ready"), icon: "box" as const, onPress: () => void call(o, "ready") }] : []),
+    ...(o.status === "READY" && o.deliveryMethod === "DELIVERY" ? [{ label: t("pharmacy.orders.outForDelivery"), icon: "truck" as const, onPress: () => void call(o, "out-for-delivery") }] : []),
   ];
   return (
     <Screen refresh={refresh} testID="kx-orders">
@@ -41,10 +43,10 @@ export default function KiorexOrders() {
       <Segmented value={tab} onChange={setTab} options={[{ value: "open", label: t("pharmacy.orders.open"), count: q.data?.filter((o) => OPEN.includes(o.status)).length }, { value: "done", label: t("pharmacy.orders.history") }]} />
       <QueryView q={q} cached={q.fromCache} isEmpty={(d) => !d.some((o) => OPEN.includes(o.status) === (tab === "open"))} empty={{ icon: "cart", title: t("pharmacy.orders.empty"), hint: t("pharmacy.orders.emptyHint") }}>
         {(d) => <View style={{ gap: 10 }}>{d.filter((o) => OPEN.includes(o.status) === (tab === "open")).map((o) => {
-          const m = OPEN.includes(o.status) ? slaMinutes(o.slaDueAt, now) : null;
+          const m = o.status === "RECEIVED" ? slaMinutes(o.slaDueAt, now) : null;
           return (
             <Card key={o.id} testID={`order-${o.id}`} onPress={() => setSel(o)} style={{ gap: 6 }}>
-              <Row style={{ justifyContent: "space-between" }}><T weight="semibold">{o.customerName ?? o.externalOrderId}</T><Badge tone={o.status === "RECEIVED" ? "warning" : o.status === "READY" || o.status === "DISPENSED" ? "success" : o.status === "REJECTED" || o.status === "CANCELLED" || o.status === "EXPIRED" ? "muted" : "ocean"} label={statusLabel(t, o.status, { scope: "pharmacy.orders" })} /></Row>
+              <Row style={{ justifyContent: "space-between" }}><T weight="semibold">{o.customerName ?? o.externalOrderId}</T><Badge tone={o.status === "RECEIVED" ? "warning" : o.status === "READY" || o.status === "OUT_FOR_DELIVERY" || o.status === "DISPENSED" ? "success" : o.status === "REJECTED" || o.status === "CANCELLED" || o.status === "EXPIRED" ? "muted" : "ocean"} label={statusLabel(t, o.status, { scope: "pharmacy.orders" })} /></Row>
               <T variant="small" muted>{money(o.orderValue, lang)} · {o.prepaid ? t("pharmacy.orders.prepaid") : t("pharmacy.orders.pay")} · {o.deliveryMethod ?? ""}{o.hasRx ? ` · ${t("pharmacy.rx.title")}` : ""}</T>
               {m != null ? <Badge tone={slaTone(m)} label={`${t("pharmacy.orders.sla")} ${slaLabel(m, lang)}`} icon="clock" /> : null}
             </Card>);
