@@ -230,6 +230,9 @@
     "lastSync": "Last sync {{time}}",
     "offlineBanner": "You are offline. Changes are saved on this device.",
     "never": "never",
+    "serverCopy": "Server copy",
+    "mine": "My change",
+    "opStatus": { "pending": "Waiting", "conflict": "Conflict", "failed": "Failed" },
     "queuedToast": "Saved offline"
   },
   "search": {

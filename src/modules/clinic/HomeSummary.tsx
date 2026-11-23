@@ -6,6 +6,7 @@ import { useRead } from "@/hooks/useRead";
 import { StatTile, SkeletonList, ListRow } from "@/components/kit";
 import { Row } from "@/components/ui";
 import { queueView, nameOf } from "./helpers";
+import { formatInt } from "@/lib/format";
 
 interface Summary {
   today: { total: number; scheduled: number; waiting: number; inExam: number; completed: number; cancelled: number } | null;
@@ -27,7 +28,7 @@ export default function HomeSummary(_props: { session: Session }) {
     <View style={{ gap: 10 }} testID="clinic-summary">
       <Row gap={10} style={{ alignItems: "stretch" }}>
         {tt ? <StatTile testID="kpi-today" label={t("clinic.kpi.today")} value={tt.total} icon="calendar" tone="ink" spark={spark} onPress={go("/clinic/schedule")} /> : null}
-        {tt ? <StatTile testID="kpi-waiting" label={t("clinic.kpi.waiting")} value={tt.waiting} icon="clock" tone={tt.waiting ? "warning" : "success"} hint={`${t("clinic.kpi.inExam")}: ${tt.inExam}`} onPress={go("/clinic/schedule")} /> : null}
+        {tt ? <StatTile testID="kpi-waiting" label={t("clinic.kpi.waiting")} value={tt.waiting} icon="clock" tone={tt.waiting ? "warning" : "success"} hint={`${t("clinic.kpi.inExam")}: ${formatInt(tt.inExam, i18n.language)}`} onPress={go("/clinic/schedule")} /> : null}
       </Row>
       <Row gap={10} style={{ alignItems: "stretch" }}>
         {s.pendingPrescriptions != null ? <StatTile testID="kpi-rx" label={t("clinic.kpi.rx")} value={s.pendingPrescriptions} icon="pill" tone={s.pendingPrescriptions ? "ocean" : "success"} onPress={go("/clinic/prescriptions")} /> : null}

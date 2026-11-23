@@ -38,7 +38,7 @@ export default function SyncCentre() {
       <SectionTitle title={t("sync.queue")} />
       {!ops.length ? <EmptyState icon="check" title={t("sync.emptyQueue")} /> : ops.map((o) => (
         <Card key={o.id} testID={`op-${o.id}`} onPress={o.status !== "pending" ? () => setSel(o) : undefined} style={{ gap: 6 }}>
-          <Row style={{ justifyContent: "space-between" }}><T weight="semibold">{o.label}</T><Badge tone={o.status === "conflict" ? "danger" : o.status === "failed" ? "warning" : "ocean"} label={o.status} /></Row>
+          <Row style={{ justifyContent: "space-between" }}><T weight="semibold">{o.label}</T><Badge tone={o.status === "conflict" ? "danger" : o.status === "failed" ? "warning" : "ocean"} label={t(`sync.opStatus.${o.status}`, { defaultValue: o.status })} /></Row>
           <T variant="caption" muted>{t(PRODUCT_META[o.product].nameKey)} · {o.method} {o.path}</T>
           {o.error ? <T variant="caption" muted>{o.error}</T> : null}
         </Card>
@@ -50,8 +50,8 @@ export default function SyncCentre() {
           <>
             <KV k="API" v={`${sel.method} ${sel.path}`} />
             <KV k={t("sync.queue")} v={sel.label} />
-            {sel.serverState ? <View><T variant="caption" muted>Server</T><T variant="caption" style={{ fontFamily: "monospace" }}>{JSON.stringify(sel.serverState, null, 1).slice(0, 600)}</T></View> : null}
-            {sel.body ? <View><T variant="caption" muted>Mine</T><T variant="caption" style={{ fontFamily: "monospace" }}>{JSON.stringify(sel.body, null, 1).slice(0, 600)}</T></View> : null}
+            {sel.serverState ? <View><T variant="caption" muted>{t("sync.serverCopy")}</T><T variant="caption" style={{ fontFamily: "monospace" }}>{JSON.stringify(sel.serverState, null, 1).slice(0, 600)}</T></View> : null}
+            {sel.body ? <View><T variant="caption" muted>{t("sync.mine")}</T><T variant="caption" style={{ fontFamily: "monospace" }}>{JSON.stringify(sel.body, null, 1).slice(0, 600)}</T></View> : null}
           </>
         ) : null}
       </Sheet>
