@@ -1,4 +1,5 @@
-import { DEMO_ACCOUNTS, SIGN_IN_ENTRIES, productOf } from "@/api/products";
+import { SIGN_IN_ENTRIES, productOf } from "@/api/products";
+import { DEMO_ACCOUNTS } from "@/dev/demoAccounts";
 
 describe("sign-in entries", () => {
   it("offers a Nurse front door next to the three products", () => {

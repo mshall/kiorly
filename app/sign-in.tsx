@@ -5,15 +5,18 @@ import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, radius } from "@/theme";
-import { Banner, Button, Card, Chip, Field, Row, T } from "@/components/ui";
+import { Banner, Button, Card, Field, Row, T } from "@/components/ui";
 import { Icon } from "@/components/Icon";
 import { BrandLockup } from "@/components/BrandLockup";
-import { DEMO_ACCOUNTS, PRODUCT_META, SIGN_IN_ENTRIES, accentFor, productOf, type Product, type SignInEntry } from "@/api/products";
+import { PRODUCT_META, SIGN_IN_ENTRIES, accentFor, productOf, type Product, type SignInEntry } from "@/api/products";
 import { useSessions } from "@/auth/SessionProvider";
 import { PASSPORT_ENABLED, PassportError, discover, passportFailureKind } from "@/auth/passport";
 import { ApiError } from "@/api/errors";
 import { haptic } from "@/lib/haptics";
 import { setLanguage, type Lang } from "@/i18n";
+
+// DEV ONLY. Keep the condition an inline literal expression: Metro folds `__DEV__` and EXPO_PUBLIC_* per file, so production bundles drop the require and with it ./dev/* (scripts/check-no-dev-test-users.mjs).
+const DevTestUsers = __DEV__ && process.env.EXPO_PUBLIC_DEV_TEST_USERS !== "false" ? (require("@/dev/DevTestUsers") as typeof import("@/dev/DevTestUsers")).DevTestUsers : null;
 
 export default function SignIn() {
   const { t, i18n } = useTranslation();
@@ -118,16 +121,7 @@ export default function SignIn() {
             ) : null}
           </Card>
 
-          {__DEV__ ? (
-            <Card style={{ gap: 10 }}>
-              <Row style={{ justifyContent: "space-between" }}><T variant="small" weight="semibold">{t("signIn.demo")}</T><T variant="caption" muted>{t("signIn.demoHint")}</T></Row>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-                {DEMO_ACCOUNTS[product].filter((d) => (entry === "nurse" ? d.nurse : entry === "clinic" ? !d.nurse : true)).map((d) => (
-                  <Chip key={d.email} testID={`demo-${d.email}`} label={`${d.label} · ${d.plan}`} onPress={() => { setEmail(d.email); setPassword(d.password ?? ""); setOrg(d.org ?? ""); haptic.tap(); }} />
-                ))}
-              </View>
-            </Card>
-          ) : null}
+          {DevTestUsers ? <DevTestUsers product={product} entry={entry} onPick={(a) => { setEmail(a.email); setPassword(a.password); setOrg(a.org); }} /> : null}
           <T variant="caption" muted style={{ textAlign: "center", color: accent }}>{isAr ? "كيورلي من كيوريكس" : "Kiorly by Kiorex"}</T>
         </View>
       </ScrollView>
