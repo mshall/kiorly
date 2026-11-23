@@ -97,8 +97,13 @@ export default function Me() {
 
       <Button title={products.length > 1 ? t("me.signOutAll") : t("signOutDlg.open")} variant="danger" icon="logout" onPress={() => setSo({ open: true, initial: products.length > 1 ? "all" : products[0] })} testID="signout-all" />
       <SignOutSheet visible={so.open} initial={so.initial} onClose={() => setSo({ open: false })} />
+      <SectionTitle title={t("me.about")} />
+      <Card style={{ gap: 4 }} testID="me-about">
+        <T weight="semibold" testID="about-name">{t("app.name")}</T>
+        <T variant="caption" muted testID="about-by">{t("app.by")}</T>
+        <T variant="caption" muted>{t("me.version", { v: APP_VERSION })}</T>
+      </Card>
       <View style={{ alignItems: "center", gap: 4, paddingVertical: 8 }}>
-        <T variant="caption" muted>{t("app.name")} · {t("me.version", { v: APP_VERSION })}</T>
         <T variant="caption" muted style={{ textAlign: "center" }}>{t("me.privacy")}</T>
       </View>
     </Screen>

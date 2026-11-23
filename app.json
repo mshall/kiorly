@@ -1,27 +1,27 @@
 {
   "expo": {
-    "name": "Kiorly Team",
-    "slug": "kiorly-team",
+    "name": "Kiorly",
+    "slug": "kiorly",
     "version": "0.1.0",
-    "scheme": "kiorlyteam",
+    "scheme": "kiorly",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "backgroundColor": "#F4F6FC",
     "ios": {
-      "bundleIdentifier": "com.kiorly.team",
+      "bundleIdentifier": "com.kiorly.app",
       "supportsTablet": true,
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "NSFaceIDUsageDescription": "Kiorly Team uses Face ID to unlock the app and protect patient data on this device.",
+        "NSFaceIDUsageDescription": "Kiorly uses Face ID to unlock the app and protect patient data on this device.",
         "UIBackgroundModes": [
           "remote-notification"
         ]
       }
     },
     "android": {
-      "package": "com.kiorly.team",
+      "package": "com.kiorly.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#3730A3"
@@ -80,20 +80,20 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Kiorly Team uses the camera to scan barcodes and QR labels.",
+          "cameraPermission": "Kiorly uses the camera to scan barcodes and QR labels.",
           "recordAudioAndroid": false
         }
       ],
       [
         "expo-local-authentication",
         {
-          "faceIDPermission": "Kiorly Team uses Face ID to unlock the app and protect patient data on this device."
+          "faceIDPermission": "Kiorly uses Face ID to unlock the app and protect patient data on this device."
         }
       ],
       [
         "expo-location",
         {
-          "locationWhenInUsePermission": "Kiorly Team stamps your location on home-visit check-ins and the safety button."
+          "locationWhenInUsePermission": "Kiorly stamps your location on home-visit check-ins and the safety button."
         }
       ],
       [
@@ -109,7 +109,7 @@
       "typedRoutes": false
     },
     "extra": {
-      "storeAccounts": "NEEDS_HUMAN: bundle ids com.kiorly.team are placeholders until Apple/Google accounts exist",
+      "storeAccounts": "NEEDS_HUMAN: bundle ids com.kiorly.app are placeholders until Apple/Google accounts exist",
       "pushNote": "NEEDS_HUMAN: set extra.eas.projectId (eas init) + upload APNs key / FCM v1 service account to EAS to receive real remote push; until then the app registers a mock token."
     }
   }

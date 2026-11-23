@@ -1,5 +1,5 @@
 {
-  "name": "kiorly-team-e2e-web",
+  "name": "@kiorly/app-e2e-web",
   "private": true,
   "version": "0.1.0",
   "type": "module",

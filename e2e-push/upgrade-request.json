@@ -1,9 +1,9 @@
 {
-  "Simulator Target Bundle": "com.kiorly.team",
+  "Simulator Target Bundle": "com.kiorly.app",
   "aps": {
     "alert": {
-      "title": "طلب موظف ترقية كيورلي تيم",
-      "body": "طلب أحد أعضاء الفريق تطبيق كيورلي تيم للموظفين (باقة Pro)."
+      "title": "طلب موظف ترقية كيورلي",
+      "body": "طلب أحد أعضاء الفريق تطبيق كيورلي للموظفين (باقة Pro)."
     },
     "sound": "default",
     "badge": 3

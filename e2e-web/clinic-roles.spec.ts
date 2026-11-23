@@ -4,7 +4,7 @@ import { api, apiLogin, bookNow, CLINIC, NA, openWork, signIn, sql, tileIds, wat
 const NADIA = 'demo_u_na_nadia';
 const DALIA = 'demo_p_na_8'; // Dalia Ibrahim (demo patient, asthma)
 
-test.describe('Kiorly Team (Expo web) - clinic roles against the real API and seeded demo data', () => {
+test.describe('Kiorly (Expo web) - clinic roles against the real API and seeded demo data', () => {
   test('doctor Nadia: tiles, schedule queue, patient search + summary, sign a prescription, approve the critical lab result', async ({ page }) => {
     const errors = watchErrors(page);
     const doc = await apiLogin(NA('nadia')), fd = await apiLogin(NA('frontdesk1'));

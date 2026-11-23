@@ -4,11 +4,14 @@ import Svg, { Path, Polyline } from "react-native-svg";
 import { PULSE_D, useProgress } from "./Pulse";
 import { animationsEnabled, nativeDriver, useReducedMotion } from "@/lib/motion";
 import { useTheme } from "@/theme";
+import { useTranslation } from "react-i18next";
+import { T } from "@/components/ui";
 
 /** Brand splash: the two chevrons settle in, then the coral ECG pulse draws across the gap, then the screen fades out.
  *  Mounted above the app once fonts/i18n are ready (the native splash image shows the static mark until then). */
 export function AnimatedSplash({ onDone, onShown, hold = false }: { onDone: () => void; /** first frame of the flat brand ground is on screen: safe to hide the native splash (same colour, so no visible change) */ onShown?: () => void; /** keep the splash up (e.g. stored sessions still loading) */ hold?: boolean }) {
   const { scheme } = useTheme();
+  const { t } = useTranslation();
   const reduced = useReducedMotion();
   const p = useProgress(1100, false, !reduced);
   const fade = useRef(new Animated.Value(1)).current;
@@ -36,6 +39,8 @@ export function AnimatedSplash({ onDone, onShown, hold = false }: { onDone: () =
           <Path d={PULSE_D} fill="none" stroke="#F08A75" strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={800} strokeDashoffset={800 * (1 - Math.max(0, (p - 0.2) / 0.8))} />
         </Svg>
       </View>
+      {/* "by Kiorex" is shown ONLY here and on the About card (never in the icon label or the store name, ADR-037). */}
+      <View style={{ position: "absolute", bottom: 56, opacity: chev }} testID="splash-by"><T variant="small" color="#C7D2FE">{t("app.by")}</T></View>
     </Animated.View>
   );
 }

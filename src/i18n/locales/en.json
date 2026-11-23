@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Kiorly Team",
+    "name": "Kiorly",
     "tagline": "One staff app for Clinic, Nurse, Pharmacy and Lab",
     "by": "by Kiorex"
   },
@@ -74,7 +74,13 @@
     "orgHint": "e.g. demo-lab",
     "submit": "Sign in",
     "passport": "Sign in with Kiorex Passport",
-    "passportSoon": "Passport sign-in for staff is being enabled. Use your product login for now.",
+    "passportHint": "Uses your verified phone number. Your owner links it to your staff account.",
+    "passportOr": "or",
+    "passportCancelled": "Sign-in was cancelled.",
+    "passportFailed": "Kiorex Passport could not sign you in. Try again.",
+    "passportNetwork": "Cannot reach Kiorex Passport. Check your connection.",
+    "passportNotLinked": "This Kiorex Passport is not linked to a {{product}} staff account. Ask your owner to add your verified phone number.",
+    "passportUnsupported": "{{product}} does not accept Kiorex Passport sign-in yet. Use your product login.",
     "demo": "Demo accounts",
     "demoHint": "Development only",
     "invalid": "Wrong email or password",
@@ -181,10 +187,10 @@
     "account": "Account"
   },
   "upgrade": {
-    "title": "Unlock Kiorly Team",
+    "title": "Unlock Kiorly",
     "subtitle": "{{product}} · {{org}} is on the {{plan}} plan",
-    "body": "Kiorly Team puts your daily workflows in your pocket. It is included from the Pro plan.",
-    "flagOff": "Kiorly Team has been switched off for your organisation by the administrator.",
+    "body": "Kiorly puts your daily workflows in your pocket. It is included from the Pro plan.",
+    "flagOff": "Kiorly has been switched off for your organisation by the administrator.",
     "cta": "Ask your owner to upgrade",
     "contact": "Contact your Kiorly account owner or support to move to Pro.",
     "included": "What you get on Pro",
@@ -260,7 +266,7 @@
     "unknown": "Code not recognised"
   },
   "lock": {
-    "title": "Kiorly Team is locked",
+    "title": "Kiorly is locked",
     "body": "Unlock to see patient and stock data.",
     "unlock": "Unlock"
   },

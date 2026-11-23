@@ -34,6 +34,10 @@ export interface Session {
   product: Product;
   token: string;
   refreshToken?: string;
+  /** How the session was opened: product login (default) or Kiorex Passport OIDC + PKCE (token = Passport access token, refresh/idToken = Passport's). */
+  auth?: "password" | "passport";
+  /** Passport id_token, kept only for RP-initiated sign-out (`id_token_hint`). SecureStore only. */
+  idToken?: string;
   userName: string;
   email: string;
   deviceId: string;        // client-generated install id

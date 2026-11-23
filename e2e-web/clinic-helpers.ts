@@ -3,7 +3,7 @@ import { expect, type Page } from '@playwright/test';
 
 export const API = process.env.API_URL ?? 'http://localhost:3010/api/v1';
 export const PW = 'Demo@12345';
-const APP = { 'x-kiorly-client': 'kiorly-team/1.0-e2e-web' };
+const APP = { 'x-kiorly-client': 'kiorly/1.0-e2e-web' };
 
 export async function api(token: string | undefined, method: string, path: string, body?: unknown) {
   const r = await fetch(API + path, { method, headers: { 'content-type': 'application/json', ...APP, ...(token ? { authorization: `Bearer ${token}` } : {}) }, body: body === undefined ? undefined : JSON.stringify(body) });

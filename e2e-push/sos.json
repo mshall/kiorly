@@ -1,5 +1,5 @@
 {
-  "Simulator Target Bundle": "com.kiorly.team",
+  "Simulator Target Bundle": "com.kiorly.app",
   "aps": {
     "alert": {
       "title": "نداء استغاثة من زيارة منزلية",

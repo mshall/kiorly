@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
+import * as WebBrowser from "expo-web-browser";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { useFonts } from "expo-font";
@@ -23,6 +24,8 @@ import { startNetworkWatcher } from "@/offline/network";
 import { SyncDriver } from "@/offline/SyncDriver";
 import { NotificationDriver } from "@/hooks/NotificationDriver";
 
+// Web: when this page is the Passport redirect inside the sign-in / sign-out popup, hand the URL to the opener and close (no-op elsewhere).
+WebBrowser.maybeCompleteAuthSession();
 void SplashScreen.preventAutoHideAsync();
 startNetworkWatcher();
 
@@ -50,6 +53,8 @@ function Shell() {
           <Stack.Screen name="sign-in" options={{ headerShown: false, animation: "fade" }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="scan" options={{ headerShown: false, presentation: "fullScreenModal" }} />
+          <Stack.Screen name="auth/callback" options={{ headerShown: false }} />
+          <Stack.Screen name="auth/logout" options={{ headerShown: false }} />
         </Stack>
         <PushPrimer />
         <DirectionBanner />

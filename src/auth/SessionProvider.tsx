@@ -5,6 +5,7 @@ import * as Device from "expo-device";
 import { useQueryClient } from "@tanstack/react-query";
 import { api, configureClient } from "@/api/client";
 import { login as doLogin, refreshTokens, type Credentials } from "@/api/auth";
+import { endPassportSession, refreshTokens as refreshPassport, revokeRefreshToken, signInWithPassport } from "@/auth/passport";
 import { APP_VERSION, PRODUCTS, type Product } from "@/api/products";
 import type { Bootstrap, Session } from "@/api/types";
 import type { ApiError } from "@/api/errors";
@@ -21,6 +22,8 @@ interface Ctx {
   notice: SessionNotice;
   dismissNotice: () => void;
   signIn: (p: Product, c: Credentials) => Promise<Bootstrap>;
+  /** Kiorex Passport (OIDC authorization code + PKCE) sign-in for one product; the product API verifies the Passport access token. */
+  signInPassport: (p: Product, lang?: string) => Promise<Bootstrap>;
   signOut: (p: Product) => Promise<void>;
   signOutAll: () => Promise<void>;
   refreshBootstrap: (p: Product) => Promise<Bootstrap | null>;
@@ -95,6 +98,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       },
       refresh: async (p) => {
         const s = ref.current[p]; if (!s?.refreshToken) return false;
+        if (s.auth === "passport") {
+          const t = await refreshPassport(s.refreshToken, { previousIdToken: s.idToken });
+          if (!t) return false;
+          await commit(p, { ...s, token: t.accessToken, refreshToken: t.refreshToken ?? s.refreshToken, idToken: t.idToken ?? s.idToken });
+          return true;
+        }
         const r = await refreshTokens(p, s.refreshToken);
         if (!r) return false;
         await commit(p, { ...s, token: r.token, refreshToken: r.refreshToken ?? s.refreshToken });
@@ -122,14 +131,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     })();
   }, [refreshBootstrap]);
 
-  const signIn = useCallback(async (p: Product, c: Credentials) => {
-    const res = await doLogin(p, c);
-    const base: Session = { product: p, token: res.token, refreshToken: res.refreshToken, userName: c.email, email: c.email.trim().toLowerCase(), deviceId: await installId(), signedInAt: new Date().toISOString() };
+  /** Shared tail of both sign-ins: bootstrap with the fresh token, register the device, persist. */
+  const establish = useCallback(async (p: Product, base: Session): Promise<Bootstrap> => {
     ref.current = { ...ref.current, [p]: base };
     let b: Bootstrap;
-    try { b = await api.get<Bootstrap>(p, "/mobile/bootstrap", { auth: { token: res.token }, quiet: true }); }
+    try { b = await api.get<Bootstrap>(p, "/mobile/bootstrap", { auth: { token: base.token }, quiet: true }); }
     catch (e) { delete ref.current[p]; throw e; }
-    let s: Session = { ...base, userName: b.user.name || c.email, bootstrap: b };
+    // a Passport session learns the staff e-mail only from the product (offline queue owner = same key as a password login of the same person)
+    let s: Session = { ...base, userName: b.user.name || base.userName, email: base.auth === "passport" && b.user.email ? b.user.email.trim().toLowerCase() : base.email, bootstrap: b };
     try { s = await ensureDevice(p, s, b); } catch (e) { const err = e as ApiError; if (!err.isFeatureDisabled) { delete ref.current[p]; throw e; } }
     await commit(p, s);
     setNotice(null);
@@ -137,18 +146,36 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     return b;
   }, [commit, ensureDevice]);
 
+  const signIn = useCallback(async (p: Product, c: Credentials) => {
+    const res = await doLogin(p, c);
+    return establish(p, { product: p, auth: "password", token: res.token, refreshToken: res.refreshToken, userName: c.email, email: c.email.trim().toLowerCase(), deviceId: await installId(), signedInAt: new Date().toISOString() });
+  }, [establish]);
+
+  const signInPassport = useCallback(async (p: Product, lang?: string) => {
+    const { tokens, claims } = await signInWithPassport({ lang });
+    const label = String(claims.name ?? claims.phone_number ?? claims.sub ?? "");
+    return establish(p, { product: p, auth: "passport", token: tokens.accessToken, refreshToken: tokens.refreshToken, idToken: tokens.idToken, userName: label, email: String(claims.sub ?? label).toLowerCase(), deviceId: await installId(), signedInAt: new Date().toISOString() });
+  }, [establish]);
+
   const signOut = useCallback(async (p: Product) => {
     const s = ref.current[p];
     if (s?.deviceRecordId) { try { await api.del(p, `/mobile/devices/${s.deviceRecordId}`, { quiet: true }); } catch { /* offline: server device stays until revoked remotely */ } }
     await clear(p);
+    // Passport sessions: revoke this grant's refresh token, and end the Passport (SSO) session with id_token_hint once no other product still signs in through it.
+    // Offline / dismissed browser never blocks sign-out: the local session is already gone.
+    if (s?.auth === "passport") {
+      if (s.refreshToken) await revokeRefreshToken(s.refreshToken);
+      const stillUsed = Object.values(ref.current).some((o) => o?.auth === "passport");
+      if (!stillUsed) await endPassportSession(s.idToken);
+    }
   }, [clear]);
   const signOutAll = useCallback(async () => { for (const p of PRODUCTS) if (ref.current[p]) await signOut(p); }, [signOut]);
 
   const value = useMemo<Ctx>(() => ({
-    ready, sessions, notice, dismissNotice: () => setNotice(null), signIn, signOut, signOutAll, refreshBootstrap,
+    ready, sessions, notice, dismissNotice: () => setNotice(null), signIn, signInPassport, signOut, signOutAll, refreshBootstrap,
     products: PRODUCTS.filter((p) => !!sessions[p]),
     bootstrapOf: (p) => sessions[p]?.bootstrap,
     isEntitled: (p) => !!sessions[p]?.bootstrap?.entitlement.enabled,
-  }), [ready, sessions, notice, signIn, signOut, signOutAll, refreshBootstrap]);
+  }), [ready, sessions, notice, signIn, signInPassport, signOut, signOutAll, refreshBootstrap]);
   return <SessionCtx.Provider value={value}>{children}</SessionCtx.Provider>;
 }

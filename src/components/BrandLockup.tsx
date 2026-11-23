@@ -4,7 +4,7 @@ import { T } from "@/components/ui";
 import { KiorexMark } from "@/components/Logo";
 import { useTheme } from "@/theme";
 
-/** App lockup: Kiorex mark | hairline | "Kiorly" bold + "Team" light coral (the name comes from i18n `app.name`, split on the first space, so a rename lands by itself),
+/** App lockup: Kiorex mark | hairline | the app name from i18n `app.name` (bold; a second word, if the name ever has one, is set light coral),
  *  with an optional tagline underneath. For use on the indigo/ocean gradient (`light`) or on a plain surface. Row order follows the layout direction, so Arabic mirrors correctly. */
 export function BrandLockup({ light = true, tagline = true, markWidth = 52, testID }: { light?: boolean; tagline?: boolean; markWidth?: number; testID?: string }) {
   const { t } = useTranslation();
