@@ -66,6 +66,9 @@
     "gateBody": "This capability is waiting for approval before it can be used."
   },
   "signIn": {
+    "method": "Sign-in method",
+    "methodPassport": "Kiorex Passport",
+    "methodPassword": "Password",
     "title": "Sign in",
     "subtitle": "Choose your workplace product",
     "email": "Email",

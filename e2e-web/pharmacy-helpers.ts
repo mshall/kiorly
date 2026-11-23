@@ -30,6 +30,7 @@ export async function signIn(page: Page, user: string) {
   await page.goto('/sign-in');
   await page.getByRole('button', { name: 'English' }).click();
   await page.getByTestId('product-pharmacy').click();
+  await page.getByTestId('signin-method-password').click(); // Kiorex Passport is the default method, the password form is behind the toggle
   await page.getByTestId('signin-email').fill(`${user}@demo.kiorly.local`);
   await page.getByTestId('signin-password').fill(PASSWORD);
   await page.getByTestId('signin-submit').click();

@@ -77,7 +77,10 @@ test.describe('Kiorly x Kiorex Passport (mock Passport + mock clinic API)', () =
   test('Sign in with Kiorex Passport: PKCE code flow, Passport access token is the bearer, device registered, lands in the app', async ({ page, context, baseURL }) => {
     const m = await mockStack(context, new URL(baseURL!).origin);
     await openSignIn(page);
-    await expect(page.getByTestId('signin-submit')).toBeVisible(); // the dev password login is still there
+    await expect(page.getByTestId('signin-method-passport')).toHaveAttribute('aria-selected', 'true'); // Kiorex Passport is the default method
+    await page.getByTestId('signin-method-password').click(); // the dev password login is still there, behind the toggle
+    await expect(page.getByTestId('signin-submit')).toBeVisible();
+    await page.getByTestId('signin-method-passport').click();
     await page.getByTestId('signin-passport').click();
     await expect(page.getByRole('tab', { name: /Work/ })).toBeVisible({ timeout: 20_000 });
 
@@ -127,6 +130,7 @@ test.describe('Kiorly x Kiorex Passport (mock Passport + mock clinic API)', () =
     await expect(page.getByTestId('signin-error')).toContainText('not linked to a Clinic staff account', { timeout: 20_000 });
     expect(m.apiCalls.find((c) => c.path === '/mobile/bootstrap')?.auth).toBe(`Bearer ${m.issued[0]!.access}`);
     expect(await page.evaluate(() => sessionStorage.getItem('kw-session-clinic'))).toBeNull();
+    await page.getByTestId('signin-method-password').click();
     await expect(page.getByTestId('signin-submit')).toBeVisible(); // still on sign-in, password login available
   });
 

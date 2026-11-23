@@ -6,11 +6,13 @@ import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme, radius } from "@/theme";
 import { Banner, Button, Card, Field, Row, T } from "@/components/ui";
+import { Segmented } from "@/components/kit";
 import { Icon } from "@/components/Icon";
 import { BrandLockup } from "@/components/BrandLockup";
 import { PRODUCT_META, SIGN_IN_ENTRIES, accentFor, productOf, type Product, type SignInEntry } from "@/api/products";
 import { useSessions } from "@/auth/SessionProvider";
 import { PASSPORT_ENABLED, PassportError, discover, passportFailureKind } from "@/auth/passport";
+import { initialSignInEntry, initialSignInMethod, loadSignInEntry, loadSignInMethod, rememberSignInEntry, rememberSignInMethod, type SignInMethod } from "@/auth/signInMethod";
 import { ApiError } from "@/api/errors";
 import { haptic } from "@/lib/haptics";
 import { setLanguage, type Lang } from "@/i18n";
@@ -24,12 +26,17 @@ export default function SignIn() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { signIn, signInPassport, products } = useSessions();
-  const [entry, setEntry] = useState<SignInEntry>("clinic");
+  const [entry, setEntry] = useState<SignInEntry>(() => initialSignInEntry(SIGN_IN_ENTRIES, "clinic"));
+  useEffect(() => { let on = true; void loadSignInEntry(SIGN_IN_ENTRIES, "clinic").then((e) => { if (on) setEntry(e); }); return () => { on = false; }; }, []);
   const product: Product = productOf(entry);
   const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [org, setOrg] = useState("");
   const [mfa, setMfa] = useState(""); const [needMfa, setNeedMfa] = useState(false);
   const [busy, setBusy] = useState(false); const [busyPassport, setBusyPassport] = useState(false); const [error, setError] = useState<string | null>(null);
   const meta = PRODUCT_META[product];
+  // Two methods only: Kiorex Passport (default) and Password. The last method that signed this device in is preselected (falls back to Passport).
+  const [method, setMethod] = useState<SignInMethod>(() => initialSignInMethod(PASSPORT_ENABLED));
+  useEffect(() => { let on = true; void loadSignInMethod(PASSPORT_ENABLED).then((m) => { if (on) setMethod(m); }); return () => { on = false; }; }, []);
+  const showPassport = PASSPORT_ENABLED && method === "passport";
   const isAr = i18n.language.startsWith("ar");
   // warm the Passport discovery cache so the browser step opens straight from the tap (web popup blockers want it inside the user gesture)
   useEffect(() => { if (PASSPORT_ENABLED) void discover().catch(() => {}); }, []);
@@ -38,7 +45,7 @@ export default function SignIn() {
     setError(null); setBusy(true);
     try {
       const b = await signIn(product, { email, password, org, mfaCode: mfa || undefined });
-      haptic.success();
+      haptic.success(); void rememberSignInMethod("password"); void rememberSignInEntry(entry);
       router.replace(b.entitlement.enabled ? (entry === "nurse" ? "/clinic/rounds" : "/(tabs)") as never : (`/upgrade?product=${product}` as never));
     } catch (e) {
       haptic.error();
@@ -51,7 +58,7 @@ export default function SignIn() {
     setError(null); setBusyPassport(true);
     try {
       const b = await signInPassport(product, i18n.language);
-      haptic.success();
+      haptic.success(); void rememberSignInMethod("passport"); void rememberSignInEntry(entry);
       router.replace(b.entitlement.enabled ? (entry === "nurse" ? "/clinic/rounds" : "/(tabs)") as never : (`/upgrade?product=${product}` as never));
     } catch (e) {
       if (e instanceof PassportError) {
@@ -106,22 +113,29 @@ export default function SignIn() {
               })}
             </View>
             {entry === "nurse" ? <T variant="caption" muted testID="nurse-hint">{t("signIn.nurseHint")}</T> : null}
-            {error ? <Banner tone="danger" body={error} testID="signin-error" /> : null}
-            <Field label={t("signIn.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" testID="signin-email" />
-            {meta.login === "devlogin"
-              ? <Field label={t("signIn.org")} value={org} onChangeText={setOrg} autoCapitalize="none" placeholder={t("signIn.orgHint")} testID="signin-org" />
-              : <Field label={t("signIn.password")} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoComplete="password" testID="signin-password" onSubmitEditing={() => valid && void submit()} />}
-            {needMfa ? <Field label={t("signIn.mfa")} value={mfa} onChangeText={setMfa} keyboardType="number-pad" testID="signin-mfa" /> : null}
-            <Button title={t("signIn.submit")} onPress={() => void submit()} loading={busy} disabled={!valid} testID="signin-submit" />
             {PASSPORT_ENABLED ? (
-              <>
-                <Button title={t("signIn.passport")} variant="secondary" onPress={() => void submitPassport()} loading={busyPassport} disabled={busy} icon="shield" testID="signin-passport" />
-                <T variant="caption" muted style={{ textAlign: "center" }}>{t("signIn.passportHint")}</T>
-              </>
+              <Segmented testID="signin-method" accessibilityLabel={t("signIn.method")} value={method} onChange={(m) => { setMethod(m); setError(null); setNeedMfa(false); }}
+                options={[{ value: "passport", label: t("signIn.methodPassport") }, { value: "password", label: t("signIn.methodPassword") }]} />
             ) : null}
+            {error ? <Banner tone="danger" body={error} testID="signin-error" /> : null}
+            {showPassport ? (
+              <View style={{ gap: 10 }} testID="signin-passport-panel">
+                <Button title={t("signIn.passport")} onPress={() => void submitPassport()} loading={busyPassport} icon="shield" testID="signin-passport" />
+                <T variant="caption" muted style={{ textAlign: "center" }}>{t("signIn.passportHint")}</T>
+              </View>
+            ) : (
+              <View style={{ gap: 14 }} testID="signin-password-panel">
+                <Field label={t("signIn.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" testID="signin-email" />
+                {meta.login === "devlogin"
+                  ? <Field label={t("signIn.org")} value={org} onChangeText={setOrg} autoCapitalize="none" placeholder={t("signIn.orgHint")} testID="signin-org" />
+                  : <Field label={t("signIn.password")} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoComplete="password" testID="signin-password" onSubmitEditing={() => valid && void submit()} />}
+                {needMfa ? <Field label={t("signIn.mfa")} value={mfa} onChangeText={setMfa} keyboardType="number-pad" testID="signin-mfa" /> : null}
+                <Button title={t("signIn.submit")} onPress={() => void submit()} loading={busy} disabled={!valid} testID="signin-submit" />
+              </View>
+            )}
           </Card>
 
-          {DevTestUsers ? <DevTestUsers product={product} entry={entry} onPick={(a) => { setEmail(a.email); setPassword(a.password); setOrg(a.org); }} /> : null}
+          {DevTestUsers ? <DevTestUsers product={product} entry={entry} onPick={(a) => { setMethod("password"); setEmail(a.email); setPassword(a.password); setOrg(a.org); }} /> : null}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

@@ -90,7 +90,7 @@ export default function Me() {
         <Segmented value={lang} onChange={async (l) => { haptic.tap(); if (await setLanguage(l)) setRestart((await handleRestart({ force: false })) === "manual"); else setRestart(false); }} options={[{ value: "ar", label: t("me.arabic") }, { value: "en", label: t("me.english") }]} />
         {restart ? <Banner tone="ink" body={t("me.restartHint")} /> : null}
         <T variant="small" weight="semibold">{t("me.theme")}</T>
-        <Segmented value={pref} onChange={setPref} options={[{ value: "system", label: t("me.system") }, { value: "light", label: t("me.light") }, { value: "dark", label: t("me.dark") }]} />
+        <Segmented value={pref} onChange={setPref} options={[{ value: "light", label: t("me.light") }, { value: "dark", label: t("me.dark") }, { value: "system", label: t("me.system") }]} testID="theme" accessibilityLabel={t("me.theme")} />
       </Card>
       <Row style={{ justifyContent: "space-between" }}><T variant="small" weight="semibold">{t("me.sync")}</T><SyncChip onPress={() => router.push("/sync")} /></Row>
       {row("sync", t("me.sync"), t("me.syncHint"), "/sync")}

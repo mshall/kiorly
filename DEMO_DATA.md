@@ -30,7 +30,7 @@ Run the app (`cd kiorly-team && npm install` once; own lockfile and `.npmrc` wit
 | **Physical phone** | `npm start`, scan the QR in Expo Go (or an EAS dev client) | use the Mac's LAN IP in the three `EXPO_PUBLIC_*_API` variables; pharmacy (`:3100`) and lab (`:3200`) APIs listen on `127.0.0.1` only, so start them with a LAN bind first. Push is mock. |
 
 * Defaults come from `.env.example` (3010 / 3100 / 3200). `.env.local` is a local, git-ignored override and overrides `.env.example`: on 21 Nov 2026 it holds the same three URLs (3010 / 3100 / 3200) as `.env.example`; earlier it pointed at an alternate stack (3011 / 3190 / 3250), so if sign-in hits nothing, check that file first.
-* The sign-in screen has **demo chips** (dev builds) that fill the e-mail, password and lab org slug for you.
+* The sign-in screen keeps the four entry tiles (Clinic, Nurse, Pharmacy, Lab); under them two methods: **Kiorex Passport** (preselected) and **Password**. The last tile and method used are remembered on the device. It has **demo chips** (dev builds) that fill the e-mail, password and lab org slug for you.
 * Bundle ids `com.kiorly.app` are placeholders until the store accounts exist (NEEDS_HUMAN).
 
 ## 3. Personas (sign-in screen: pick the tile (Clinic, Nurse, Pharmacy or Lab), then the chip or type e-mail + password; Lab: org slug + e-mail)

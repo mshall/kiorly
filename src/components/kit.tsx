@@ -114,15 +114,16 @@ export function Progress({ value, tone = "ink", height = 8 }: { value: number; t
 }
 
 /** Segmented control / chip row. */
-export function Segmented<V extends string>({ options, value, onChange }: { options: { value: V; label: string; count?: number }[]; value: V; onChange: (v: V) => void }) {
+/** `testID` goes on the tablist, each tab gets `${testID}-${value}`. */
+export function Segmented<V extends string>({ options, value, onChange, testID, accessibilityLabel }: { options: { value: V; label: string; count?: number }[]; value: V; onChange: (v: V) => void; testID?: string; accessibilityLabel?: string }) {
   const { colors } = useTheme();
   const { i18n } = useTranslation();
   return (
-    <View accessibilityRole="tablist" style={{ flexDirection: "row", backgroundColor: colors.subtle, borderRadius: radius, padding: 3, gap: 2 }}>
+    <View accessibilityRole="tablist" accessibilityLabel={accessibilityLabel} testID={testID} style={{ flexDirection: "row", backgroundColor: colors.subtle, borderRadius: radius, padding: 3, gap: 2 }}>
       {options.map((o) => {
         const sel = o.value === value;
         return (
-          <Pressable key={o.value} accessibilityRole="tab" accessibilityState={{ selected: sel }} onPress={() => { if (!sel) { haptic.select(); onChange(o.value); } }} style={{ flex: 1, minHeight: 36, borderRadius: radius - 3, alignItems: "center", justifyContent: "center", backgroundColor: sel ? colors.surface : "transparent", ...(sel ? elevation(1) : {}) }}>
+          <Pressable key={o.value} testID={testID ? `${testID}-${o.value}` : undefined} accessibilityRole="tab" accessibilityState={{ selected: sel }} aria-selected={sel} onPress={() => { if (!sel) { haptic.select(); onChange(o.value); } }} style={{ flex: 1, minHeight: 36, borderRadius: radius - 3, alignItems: "center", justifyContent: "center", backgroundColor: sel ? colors.surface : "transparent", ...(sel ? elevation(1) : {}) }}>
             <T variant="small" weight={sel ? "semibold" : "medium"} color={sel ? colors.ink : colors.muted} numberOfLines={1}>{o.label}{o.count != null ? ` · ${localizeDigits(o.count, i18n.language)}` : ""}</T>
           </Pressable>
         );

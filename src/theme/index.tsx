@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { useColorScheme } from "react-native";
+import { Appearance, Platform, useColorScheme } from "react-native";
 import { prefs } from "@/lib/storage";
 
 // Kiorex design tokens: vendored from _brand (src/brand/theme.ts, generated from tokens.json). Indigo primary, Ocean secondary, coral Pulse accent only.
@@ -28,15 +28,25 @@ export const radiusLg = 20;
 export const MIN_TOUCH = 44;
 
 export type ThemePref = "system" | "light" | "dark";
+/** LIGHT is the default theme (founder, 24 Nov 2026), never "follow the system". Only an explicit Light / Dark / System choice is stored and restored. */
+export const DEFAULT_THEME_PREF: ThemePref = "light";
+export const THEME_KEY = "kx-theme";
+export const parseThemePref = (v: unknown): ThemePref | null => (v === "light" || v === "dark" || v === "system" ? v : null);
+/** Expo web: AsyncStorage is localStorage, so the stored choice is read synchronously and the first paint already has the right theme. Native restores it asynchronously behind the splash. */
+const initialPref = (): ThemePref => {
+  if (Platform.OS === "web") { try { return parseThemePref(globalThis.localStorage?.getItem(THEME_KEY)) ?? DEFAULT_THEME_PREF; } catch { /* storage blocked */ } }
+  return DEFAULT_THEME_PREF;
+};
 interface Ctx { colors: Palette; scheme: "light" | "dark"; pref: ThemePref; setPref: (p: ThemePref) => void }
-const ThemeCtx = createContext<Ctx>({ colors: light, scheme: "light", pref: "system", setPref: () => {} });
-const KEY = "kx-theme";
+const ThemeCtx = createContext<Ctx>({ colors: light, scheme: "light", pref: DEFAULT_THEME_PREF, setPref: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const system = useColorScheme();
-  const [pref, setPrefState] = useState<ThemePref>("system");
-  useEffect(() => { void prefs.get(KEY).then((v) => { if (v === "light" || v === "dark" || v === "system") setPrefState(v); }); }, []);
-  const setPref = useCallback((p: ThemePref) => { setPrefState(p); void prefs.set(KEY, p); }, []);
+  const [pref, setPrefState] = useState<ThemePref>(initialPref);
+  useEffect(() => { void prefs.get(THEME_KEY).then((v) => { const p = parseThemePref(v); if (p) setPrefState(p); }); }, []);
+  // native chrome (keyboard, alerts, status bar defaults) follows the chosen theme; "system" hands control back to the OS
+  useEffect(() => { try { Appearance.setColorScheme?.(pref === "system" ? "unspecified" : pref); } catch { /* not supported */ } }, [pref]);
+  const setPref = useCallback((p: ThemePref) => { setPrefState(p); void prefs.set(THEME_KEY, p); }, []);
   const scheme = pref === "system" ? (system === "dark" ? "dark" : "light") : pref;
   const value = useMemo(() => ({ colors: scheme === "dark" ? dark : light, scheme, pref, setPref }), [scheme, pref, setPref]);
   return <ThemeCtx.Provider value={value}>{children}</ThemeCtx.Provider>;

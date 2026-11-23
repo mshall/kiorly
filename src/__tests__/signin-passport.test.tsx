@@ -5,6 +5,7 @@ import i18n from "@/i18n";
 import { ThemeProvider } from "@/theme";
 import { ToastProvider } from "@/components/ui";
 import { ApiError } from "@/api/errors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const mockReplace = jest.fn(); const mockSignIn = jest.fn(); const mockSignInPassport = jest.fn();
 jest.mock("expo-router", () => ({ useRouter: () => ({ push: jest.fn(), replace: mockReplace }) }));
@@ -17,16 +18,18 @@ const wrap = (ui: ReactElement) => render(
   <SafeAreaProvider initialMetrics={{ frame: { x: 0, y: 0, width: 390, height: 800 }, insets: { top: 0, left: 0, right: 0, bottom: 0 } }}><ThemeProvider><ToastProvider>{ui}</ToastProvider></ThemeProvider></SafeAreaProvider>);
 const entitled = { entitlement: { enabled: true } };
 
-beforeEach(async () => { jest.clearAllMocks(); await act(async () => { await i18n.changeLanguage("en"); }); });
+beforeEach(async () => { jest.clearAllMocks(); await AsyncStorage.clear(); await act(async () => { await i18n.changeLanguage("en"); }); });
 
 describe("sign-in screen: Kiorex Passport", () => {
   it("shows an ENABLED Passport button (no 'being enabled' placeholder) next to the dev password login", async () => {
     await wrap(<SignIn />);
     const btn = screen.getByTestId("signin-passport");
     expect(btn.props.accessibilityState?.disabled ?? false).toBe(false);
-    expect(screen.getByTestId("signin-submit")).toBeTruthy(); // password / chip login is untouched
+    await fireEvent.press(screen.getByTestId("signin-method-password")); // the password / chip login is untouched, one tap away
+    expect(screen.getByTestId("signin-submit")).toBeTruthy();
     expect(screen.getByTestId("signin-email")).toBeTruthy();
     expect(screen.queryByText(/being enabled/i)).toBeNull();
+    await fireEvent.press(screen.getByTestId("signin-method-passport"));
     expect(screen.getByText("Sign in with Kiorex Passport")).toBeTruthy();
   });
   it("signs in through Passport for the selected product and lands in the app", async () => {
