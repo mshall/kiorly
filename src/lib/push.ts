@@ -7,6 +7,7 @@ import { api } from "@/api/client";
 import type { Product } from "@/api/products";
 import type { Session } from "@/api/types";
 import { makeTapDeduper, type TestNotification } from "@/lib/notifications";
+import { ensureNotificationChannels } from "@/lib/notificationChannels";
 
 /** Push registration. Providers are mocked (CLAUDE.md): the API stores a mock push row = in-app inbox; on a real build the Expo token is sent with provider "expo"
  *  (go-live task in each product's Docs/NEEDS_HUMAN.md). On web / simulators we register a deterministic mock token so the full path is exercised. */
@@ -84,7 +85,7 @@ export async function scheduleTestNotification(n: TestNotification, lang: string
 try {
   Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: true }) });
 } catch { /* web */ }
-if (Platform.OS === "android") void Notifications.setNotificationChannelAsync("default", { name: "Default", importance: Notifications.AndroidImportance.MAX }).catch(() => {});
+void ensureNotificationChannels(Platform.OS, Notifications).catch(() => {});
 
 /** Forget the local push token state when the last account signs out (the server row is removed with the device record). */
 export const resetPushDiag = () => setDiag({ provider: "mock", reason: "pending", token: null, message: "" });

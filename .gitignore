@@ -9,3 +9,9 @@ web-build
 # Continuous Native Generation output (expo prebuild / run:ios / run:android); regenerate, never commit
 /ios
 /android
+
+# Firebase client config (secrets: EAS file env vars / local drop-in, never committed)
+config/firebase/google-services.json
+config/firebase/GoogleService-Info.plist
+google-services.json
+GoogleService-Info.plist
