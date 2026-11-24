@@ -48,7 +48,7 @@ export function partnerGrowthStrings(n: Nouns): { en: Dict; ar: Dict } {
       limitReached: "وصلت إلى حد الروابط في باقتك. أوقف رابطًا أو اسأل كيورلي عن باقة أكبر.", needsOnline: "يتطلب هذا اتصالًا بالإنترنت.", actionsTitle: "الرابط",
     },
     perf: {
-      title: "آخر 30 يومًا", none: `لا ${n.ar.units} من كيوريكس بعد.`, fromLinks: "من روابطك", fromKiorex: "وجدك على كيوريكس", orders: n.ar.units, completed: "المكتملة",
+      title: "آخر 30 يومًا", none: `لا ${n.ar.units} عبر كيوريكس بعد.`, fromLinks: "من روابطك", fromKiorex: "وجدك على كيوريكس", orders: n.ar.units, completed: "المكتملة",
       share: `{{percent}}% من ${n.ar.units} كيوريكس جاءت من روابطك.`, conversion: `من الزيارة إلى ${n.ar.unit}`, pending: `تظهر هنا ${n.ar.units} روابطك عندما يرسل كيوريكس مصدر كل واحد منها.`,
       note: "أعداد فقط. لا أسماء عملاء ولا مبالغ.",
     },
