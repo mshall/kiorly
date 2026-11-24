@@ -1,0 +1,65 @@
+# Kiorly staff app CI (Expo, Clinic / Nurse / Pharmacy / Lab modules). App-code gates only; store builds (EAS) are not part of this repo's workflows.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: typecheck + jest
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unit + component tests (Clinic, Nurse, Pharmacy, Lab modules, alerts, offline queue, RTL)
+        run: npm test -- --ci
+
+  audit:
+    name: npm audit (production + all)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Production dependencies (must be clean)
+        run: npm audit --omit=dev
+      - name: All dependencies (must be clean)
+        run: npm audit
+
+  bundle:
+    name: web export hygiene (no dev-only feature, no localhost)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - name: Builds a production and a development web export; fails on the dev quick-pick panel, synthetic logins or a local address in production
+        run: npm run check:dev-test-users

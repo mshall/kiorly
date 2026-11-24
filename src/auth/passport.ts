@@ -11,7 +11,7 @@ import * as Crypto from "expo-crypto";
  */
 
 // Literal `process.env.EXPO_PUBLIC_*` reads only (Metro inlines exactly these).
-export const PASSPORT_ISSUER: string = (process.env.EXPO_PUBLIC_PASSPORT_ISSUER ?? "http://localhost:4400").replace(/\/+$/, "");
+export const PASSPORT_ISSUER: string = (process.env.EXPO_PUBLIC_PASSPORT_ISSUER ?? (__DEV__ ? "http://localhost:4400" : "")).replace(/\/+$/, "");
 /** Public client id registered in kiorex-account (`kiorly`; the legacy `kiorly-team` client stays registered for old dev builds). */
 export const PASSPORT_CLIENT_ID: string = process.env.EXPO_PUBLIC_PASSPORT_CLIENT_ID ?? "kiorly";
 /** Set EXPO_PUBLIC_PASSPORT=off to hide the button (the dev password / chip login is always available in dev builds). */
