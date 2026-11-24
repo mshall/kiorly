@@ -14,8 +14,8 @@ import { useTheme } from "@/theme";
 import { haptic } from "@/lib/haptics";
 import { formatInt, formatMoney, localizeDigits } from "@/lib/format";
 import { copyText, openSms, openWeb, openWhatsapp, shareLink } from "@/lib/shareLink";
-import { ClinicError, Title, useLang } from "@/modules/clinic/shared";
-import { conversion, featuredLink, linkName, nextLinkQuota, pct, providerShare, shareMessage, type GrowthLink, type GrowthOverview, type GrowthQr } from "@/modules/clinic/growth";
+import { ClinicError, Title, useClinicBoot, useLang } from "@/modules/clinic/shared";
+import { conversion, featuredLink, isNurseEdition, linkName, nextLinkQuota, pct, providerShare, shareMessage, type GrowthLink, type GrowthOverview, type GrowthQr } from "@/modules/clinic/growth";
 
 const CHANNELS = ["WHATSAPP_SHARE", "QR_DESK", "SOCIAL", "WEB_LINK"] as const;
 
@@ -43,6 +43,9 @@ export default function Growth() {
   const { lang, ar } = useLang();
   const { colors } = useTheme();
   const toast = useToast();
+  const { boot } = useClinicBoot();
+  const [payloadNurse, setPayloadNurse] = useState(false);
+  const nurse = isNurseEdition(boot?.org.edition) || payloadNurse;
   const q = useRead<GrowthOverview>("clinic", "/mobile/growth");
   const refresh = usePullRefresh(q);
   const [qrFor, setQrFor] = useState<{ id?: string; name: string } | null>(null);
@@ -54,7 +57,7 @@ export default function Growth() {
 
   const nm = (o: GrowthOverview) => (ar ? o.clinic?.nameAr : o.clinic?.nameEn) ?? "";
   const share = async (name: string, url: string) => {
-    const r = await shareLink(shareMessage(name, url, lang), url);
+    const r = await shareLink(shareMessage(name, url, lang, nurse), url);
     if (r === "failed") { haptic.error(); toast.show(t("clinic.growth.profile.shareFailed"), "error"); }
     else if (r === "copied") { haptic.success(); toast.show(t("clinic.growth.profile.copied"), "success"); }
     else if (r === "shared") haptic.success();
@@ -99,7 +102,7 @@ export default function Growth() {
               return (
                 <FadeIn>
                   <View style={{ gap: 12 }}>
-                    <T muted>{t("clinic.growth.intro")}</T>
+                    <T muted testID="growth-intro">{t(isNurseEdition(boot?.org.edition, o.product) ? "clinic.growth.introNurse" : "clinic.growth.intro")}</T>
                     {o.level === "doctor" ? <Banner tone="ink" body={t("clinic.growth.doctorNote")} testID="growth-doctor-note" /> : null}
 
                     <Card style={{ gap: 12 }} testID="growth-profile">
@@ -109,8 +112,8 @@ export default function Growth() {
                           <T selectable forceLatin testID="growth-profile-url" style={{ color: colors.ink }}>{url}</T>
                           <Row gap={8} style={{ flexWrap: "wrap" }}>
                             <Button small icon="share" title={t("clinic.growth.profile.share")} onPress={() => void share(name, url)} testID="growth-share" />
-                            <Button small variant="secondary" title={t("clinic.growth.profile.whatsapp")} onPress={() => void openWhatsapp(shareMessage(name, url, lang))} testID="growth-whatsapp" />
-                            <Button small variant="secondary" icon="phone" title={t("clinic.growth.profile.sms")} onPress={() => void openSms(shareMessage(name, url, lang))} testID="growth-sms" />
+                            <Button small variant="secondary" title={t("clinic.growth.profile.whatsapp")} onPress={() => void openWhatsapp(shareMessage(name, url, lang, nurse))} testID="growth-whatsapp" />
+                            <Button small variant="secondary" icon="phone" title={t("clinic.growth.profile.sms")} onPress={() => void openSms(shareMessage(name, url, lang, nurse))} testID="growth-sms" />
                             <Button small variant="secondary" icon="copy" title={t("clinic.growth.profile.copy")} onPress={() => void copy(url)} testID="growth-copy" />
                           </Row>
                         </>
@@ -133,6 +136,7 @@ export default function Growth() {
                         ["slots", "/clinic/growth-slots", o.level !== "read"],
                         ["statements", "/clinic/growth-statements", o.level === "admin"],
                         ["verification", "/clinic/growth-verification", o.level === "admin"],
+                        ["b2b", "/clinic/growth-b2b", o.level === "admin"],
                       ] as const).filter(([, , show]) => show).map(([k, path]) => (
                         <Pressable key={k} testID={`growth-hub-${k}`} accessibilityRole="button" accessibilityLabel={t(`clinic.growth.hub.${k}`)} onPress={() => { haptic.select(); router.push(path as never); }}
                           style={({ pressed }) => ({ minHeight: 56, justifyContent: "center", gap: 2, paddingVertical: 6, backgroundColor: pressed ? colors.soft : "transparent" })}>
@@ -232,8 +236,8 @@ export default function Growth() {
                     <ActionSheet visible={!!actions} onClose={() => setActions(null)} title={actions?.label ?? t("clinic.growth.links.actionsTitle")}
                       actions={actions ? [
                         { label: t("clinic.growth.profile.share"), icon: "share", onPress: () => void share(name, actions.shortUrl) },
-                        { label: t("clinic.growth.profile.whatsapp"), icon: "phone", onPress: () => void openWhatsapp(shareMessage(name, actions.shortUrl, lang)) },
-                        { label: t("clinic.growth.profile.sms"), icon: "phone", onPress: () => void openSms(shareMessage(name, actions.shortUrl, lang)) },
+                        { label: t("clinic.growth.profile.whatsapp"), icon: "phone", onPress: () => void openWhatsapp(shareMessage(name, actions.shortUrl, lang, nurse)) },
+                        { label: t("clinic.growth.profile.sms"), icon: "phone", onPress: () => void openSms(shareMessage(name, actions.shortUrl, lang, nurse)) },
                         { label: t("clinic.growth.profile.copy"), icon: "copy", onPress: () => void copy(actions.shortUrl) },
                         { label: t("clinic.growth.profile.qr"), icon: "scan", onPress: () => setQrFor({ id: actions.id, name: actions.label }), disabled: actions.status !== "ACTIVE" },
                         ...(o.can.pause ? [{ label: t(actions.status === "ACTIVE" ? "clinic.growth.links.pause" : "clinic.growth.links.resume"), icon: "clock" as const, onPress: () => void setStatus(actions) }] : []),

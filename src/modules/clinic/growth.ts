@@ -17,6 +17,8 @@ export interface GrowthCommission {
   byDecision: Record<string, number>; totals: { expectedFromDecisions: string; activeCharges: string; reversedOrWaived: string }; reconciled: boolean; statement: string;
 }
 export interface GrowthOverview {
+  /** Optional: `NURSE` when the Clinic marks the Nurse edition in the payload (request to the Clinic owner). */
+  product?: "CLINIC" | "NURSE";
   level: GrowthLevel;
   can: { create: boolean; pause: boolean; widget: boolean };
   plan: { key: string; maxActiveLinks: number; linksUsed: number } | null;
@@ -34,8 +36,12 @@ export interface GrowthOverview {
 export interface GrowthQr { url: string; svg: string; linkId: string | null }
 
 /** Text pre-filled into WhatsApp / SMS / the share sheet. The URL is always last so chat apps preview it. */
-export const shareMessage = (name: string, url: string, lang: string) =>
-  lang.startsWith("ar") ? `احجز موعدك مع ${name} عبر كيوريكس: ${url}` : `Book with ${name} on Kiorex: ${url}`;
+export const shareMessage = (name: string, url: string, lang: string, nurse = false) =>
+  nurse
+    ? (lang.startsWith("ar") ? `احجز زيارة منزلية مع ${name} عبر كيوريكس: ${url}` : `Book a home visit with ${name} on Kiorex: ${url}`) // GRW-P4-B3: Nurse edition wording
+    : lang.startsWith("ar") ? `احجز موعدك مع ${name} عبر كيوريكس: ${url}` : `Book with ${name} on Kiorex: ${url}`;
+/** GRW-P4-B3: the Nurse edition of Kiorly Clinic serves the same Growth tab; its wording is about home visits. The edition comes from the bootstrap (`org.edition`) or the Growth payload (`product`, when the Clinic sends it). */
+export const isNurseEdition = (edition?: string | null, product?: string | null) => String(edition ?? "").toUpperCase() === "NURSE" || String(product ?? "").toUpperCase() === "NURSE";
 
 export const whatsappUrl = (text: string) => `https://wa.me/?text=${encodeURIComponent(text)}`;
 /** `sms:?&body=` works on iOS, `sms:?body=` on Android; the iOS form is also accepted by Android messaging apps. */

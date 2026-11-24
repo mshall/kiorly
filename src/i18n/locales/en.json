@@ -324,6 +324,10 @@
       "growth": {
         "title": "Growth",
         "desc": "Share your link and QR, see what brings patients"
+      },
+      "b2b": {
+        "title": "Refer a company",
+        "desc": "Tell Kiorex about a company (tracking only)"
       }
     },
     "pharmacy": {
@@ -362,6 +366,10 @@
       "orders": {
         "title": "Kiorex orders",
         "desc": "New order alerts"
+      },
+      "growth": {
+        "title": "Growth",
+        "desc": "Share your Kiorex link and QR, see orders from it"
       }
     },
     "lab": {
@@ -400,6 +408,10 @@
       "reagents": {
         "title": "Reagents",
         "desc": "Low stock and expiry"
+      },
+      "growth": {
+        "title": "Growth",
+        "desc": "Share your Kiorex link and QR, see bookings from it"
       }
     }
   },
@@ -494,6 +506,9 @@
           "default": "Share your Kiorex link and QR code, and see which links bring patients.",
           "manager": "See which links and Kiorex searches bring new patients, and what each costs you.",
           "doctor": "Share your own Kiorex profile link and see how many patients it brings."
+        },
+        "b2b": {
+          "default": "Refer a company that could offer its staff a Kiorex benefit."
         }
       },
       "pharmacy": {
@@ -531,6 +546,9 @@
         },
         "orders": {
           "default": "Get alerts for new Kiorex orders and respond on time."
+        },
+        "growth": {
+          "default": "Share your Kiorex link and QR code, and see how many orders your own link brings."
         }
       },
       "lab": {
@@ -571,6 +589,9 @@
           "default": "See low and expiring reagents.",
           "tech": "Know which reagents are low before a run fails.",
           "manager": "Reorder reagents before the bench runs out."
+        },
+        "growth": {
+          "default": "Share your Kiorex link and QR code, and see how many bookings your own link brings."
         }
       }
     },

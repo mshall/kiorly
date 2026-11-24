@@ -14,6 +14,8 @@ export const TILES: Tile[] = [
   { key: "clinic.homevisits", product: "clinic", route: "/clinic/rounds", icon: "navigation", quick: true },
   { key: "clinic.revenue", product: "clinic", route: "/clinic/revenue", icon: "chart" },
   { key: "clinic.growth", product: "clinic", route: "/clinic/growth", icon: "share" },
+  /** GRW-P4-C "Refer a company" (tracking only). Shown when the Clinic bootstrap returns `clinic.b2b`; the Growth hub also links it for owners. */
+  { key: "clinic.b2b", product: "clinic", route: "/clinic/growth-b2b", icon: "users" },
   { key: "pharmacy.rx", product: "pharmacy", route: "/pharmacy/rx", icon: "clipboard", quick: true },
   { key: "pharmacy.barcode", product: "pharmacy", route: "/pharmacy/barcode", icon: "scan", quick: true },
   { key: "pharmacy.receiving", product: "pharmacy", route: "/pharmacy/receiving", icon: "truck" },
@@ -23,6 +25,7 @@ export const TILES: Tile[] = [
   { key: "pharmacy.shift", product: "pharmacy", route: "/pharmacy/shift", icon: "receipt" },
   { key: "pharmacy.customers", product: "pharmacy", route: "/pharmacy/customers", icon: "users" },
   { key: "pharmacy.orders", product: "pharmacy", route: "/pharmacy/orders", icon: "cart" },
+  { key: "pharmacy.growth", product: "pharmacy", route: "/pharmacy/growth", icon: "share" },
   { key: "lab.phlebotomy", product: "lab", route: "/lab/phlebotomy", icon: "syringe", quick: true },
   { key: "lab.accession", product: "lab", route: "/lab/accession", icon: "scan", quick: true },
   { key: "lab.critical", product: "lab", route: "/lab/critical", icon: "alert" },
@@ -32,6 +35,7 @@ export const TILES: Tile[] = [
   { key: "lab.tat", product: "lab", route: "/lab/tat", icon: "clock" },
   { key: "lab.orders", product: "lab", route: "/lab/orders", icon: "file" },
   { key: "lab.reagents", product: "lab", route: "/lab/reagents", icon: "thermometer" },
+  { key: "lab.growth", product: "lab", route: "/lab/growth", icon: "share" },
 ];
 
 export const tileByKey = (k: string) => TILES.find((t) => t.key === k);
