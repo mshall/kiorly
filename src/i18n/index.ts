@@ -4,6 +4,7 @@ import { initReactI18next } from "react-i18next";
 import en from "./locales/en.json";
 import ar from "./locales/ar.json";
 import { clinicStrings } from "./modules/clinic";
+import { clinicB2bStrings } from "./modules/clinic-b2b";
 import { pharmacyStrings } from "./modules/pharmacy";
 import { labStrings } from "./modules/lab";
 import { statusStrings } from "./modules/status";
@@ -15,7 +16,7 @@ const KEY = "kw-lang";
 type Dict = Record<string, unknown>;
 const merge = (...parts: Dict[]): Dict => parts.reduce((acc, p) => { for (const k of Object.keys(p)) { const a = acc[k]; const b = p[k]; acc[k] = a && b && typeof a === "object" && typeof b === "object" ? merge(a as Dict, b as Dict) : b; } return acc; }, {} as Dict);
 /** Core strings + one bundle per product module (src/i18n/modules/<product>.ts, keys under `<product>.*`). */
-export const resources = { en: { translation: merge(en as Dict, clinicStrings.en, pharmacyStrings.en, labStrings.en, statusStrings.en) }, ar: { translation: merge(ar as Dict, clinicStrings.ar, pharmacyStrings.ar, labStrings.ar, statusStrings.ar) } };
+export const resources = { en: { translation: merge(en as Dict, clinicStrings.en, clinicB2bStrings.en, pharmacyStrings.en, labStrings.en, statusStrings.en) }, ar: { translation: merge(ar as Dict, clinicStrings.ar, clinicB2bStrings.ar, pharmacyStrings.ar, labStrings.ar, statusStrings.ar) } };
 export const isRtlLang = (l: string) => l.startsWith("ar");
 
 /**

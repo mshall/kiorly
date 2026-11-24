@@ -1,0 +1,38 @@
+/** GRW-P4-C "Refer a company" strings of the staff app (keys under `clinic.growth.b2b`), merged into the clinic bundle by src/i18n/index.ts. No promise of a reward, fee share or price: none exists. */
+const en = {
+  title: "Refer a company",
+  intro: "Know a company that could offer its staff a Kiorex benefit? Tell Kiorex. Kiorex follows up with the company directly.",
+  noReward: "Tracking only: a company referral earns no reward, credit or fee share for your organisation.",
+  name: "Company name",
+  size: "Number of staff",
+  sizes: { UNKNOWN: "I do not know", "1_49": "1 to 49", "50_199": "50 to 199", "200_999": "200 to 999", "1000_PLUS": "1,000 or more" },
+  contactRef: "Your own reference for the contact (optional)",
+  contactHint: "Never a name, phone number or e-mail address.",
+  send: "Send to Kiorex",
+  sent: "Sent. Kiorex will follow up with the company.",
+  listTitle: "Companies you referred",
+  empty: "You have not referred a company yet.",
+  status: { SUBMITTED: "Sent to Kiorex" },
+  problem: { NAME: "Enter the company name (2 to 120 characters).", PERSONAL: "Refer a company, not a person. Remove any name, phone number or e-mail address.", REF_LENGTH: "The reference is at most 80 characters." },
+  error: { B2B_DUPLICATE: "You already referred this company recently.", B2B_RATE_LIMITED: "You have reached today's limit. Try again tomorrow.", B2B_PERSONAL_DATA: "Refer a company, not a person.", GROWTH_FORBIDDEN: "Your role cannot refer a company.", GENERIC: "Could not send. Try again." },
+  needsConnection: "This needs a connection.",
+};
+const ar: typeof en = {
+  title: "إحالة شركة",
+  intro: "هل تعرف شركة يمكنها تقديم ميزة من كيوركس لموظفيها؟ أخبر كيوركس، وسيتواصل مع الشركة مباشرة.",
+  noReward: "للتتبع فقط: إحالة شركة لا تمنح مؤسستك مكافأة ولا رصيدًا ولا حصة من الرسوم.",
+  name: "اسم الشركة",
+  size: "عدد الموظفين",
+  sizes: { UNKNOWN: "لا أعرف", "1_49": "من 1 إلى 49", "50_199": "من 50 إلى 199", "200_999": "من 200 إلى 999", "1000_PLUS": "1000 أو أكثر" },
+  contactRef: "مرجعك الخاص لجهة الاتصال (اختياري)",
+  contactHint: "لا تكتب اسمًا ولا رقم هاتف ولا بريدًا إلكترونيًا.",
+  send: "إرسال إلى كيوركس",
+  sent: "تم الإرسال. سيتواصل كيوركس مع الشركة.",
+  listTitle: "الشركات التي أحلتها",
+  empty: "لم تُحل أي شركة بعد.",
+  status: { SUBMITTED: "أُرسلت إلى كيوركس" },
+  problem: { NAME: "أدخل اسم الشركة (من حرفين إلى 120 حرفًا).", PERSONAL: "أحِل شركة وليس شخصًا. احذف أي اسم أو رقم هاتف أو بريد إلكتروني.", REF_LENGTH: "المرجع 80 حرفًا كحد أقصى." },
+  error: { B2B_DUPLICATE: "سبق أن أحلت هذه الشركة مؤخرًا.", B2B_RATE_LIMITED: "وصلت إلى الحد اليومي. حاول غدًا.", B2B_PERSONAL_DATA: "أحِل شركة وليس شخصًا.", GROWTH_FORBIDDEN: "دورك لا يسمح بإحالة شركة.", GENERIC: "تعذّر الإرسال. حاول مرة أخرى." },
+  needsConnection: "يلزم اتصال بالإنترنت.",
+};
+export const clinicB2bStrings = { en: { clinic: { growth: { b2b: en } } } as Record<string, unknown>, ar: { clinic: { growth: { b2b: ar } } } as Record<string, unknown> };
