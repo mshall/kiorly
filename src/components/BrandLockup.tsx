@@ -1,27 +1,16 @@
 import { View } from "react-native";
 import { useTranslation } from "react-i18next";
 import { T } from "@/components/ui";
-import { KiorexMark } from "@/components/Logo";
-import { useTheme } from "@/theme";
+import { KiorlyLockup } from "@/components/Logo";
 
-/** App lockup: Kiorex mark | hairline | the app name from i18n `app.name` (bold; a second word, if the name ever has one, is set light coral),
- *  with an optional tagline underneath. For use on the indigo/ocean gradient (`light`) or on a plain surface. Row order follows the layout direction, so Arabic mirrors correctly. */
-export function BrandLockup({ light = true, tagline = true, markWidth = 52, testID }: { light?: boolean; tagline?: boolean; markWidth?: number; testID?: string }) {
+/** App lockup on a plain light/dark surface: the Kiorly lockup (mark | coral rule | KIORLY, artwork from _brand), optionally with the tagline underneath.
+ *  Row order follows the layout direction, so Arabic mirrors correctly (the Arabic lockup draws the mark on the right). */
+export function BrandLockup({ tagline = false, height = 30, light = false, testID }: { tagline?: boolean; height?: number; light?: boolean; testID?: string }) {
   const { t } = useTranslation();
-  const { colors } = useTheme();
-  const full = t("app.name"); const i = full.indexOf(" ");
-  const first = i < 0 ? full : full.slice(0, i); const rest = i < 0 ? "" : full.slice(i + 1);
-  const main = light ? "#FFFFFF" : colors.text;
   return (
-    <View testID={testID} accessible accessibilityRole="header" accessibilityLabel={full} style={{ flexDirection: "row", alignItems: "center", gap: 12, flexShrink: 1 }}>
-      <KiorexMark width={markWidth} light={light} />
-      <View aria-hidden style={{ width: 1, alignSelf: "stretch", marginVertical: 4, backgroundColor: light ? "rgba(255,255,255,0.35)" : colors.border }} />
-      <View style={{ flexShrink: 1, gap: 2 }}>
-        <T variant="title" numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8} color={main} style={{ lineHeight: 30, ...{} }}>
-          <T variant="title" weight="bold" color={main}>{first}</T>{rest ? <T variant="title" weight="regular" color={light ? "#FFB4A0" : colors.pulse}>{` ${rest}`}</T> : null}
-        </T>
-        {tagline ? <T variant="caption" numberOfLines={2} color={light ? "#D6DBFF" : colors.muted}>{t("app.tagline")}</T> : null}
-      </View>
+    <View testID={testID} accessible accessibilityRole="header" accessibilityLabel={t("app.name")} style={{ flexShrink: 1, gap: 6, alignItems: "flex-start" }}>
+      <KiorlyLockup height={height} light={light} />
+      {tagline ? <T variant="caption" muted numberOfLines={2} testID="brand-tagline">{t("app.tagline")}</T> : null}
     </View>
   );
 }

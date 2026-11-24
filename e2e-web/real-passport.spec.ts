@@ -35,7 +35,7 @@ for (const c of CASES) {
     const boots: { url: string; status: number; bearer: boolean }[] = [];
     page.on('response', (r) => { if (r.url().includes('/mobile/bootstrap')) boots.push({ url: r.url(), status: r.status(), bearer: /^Bearer ey/.test(r.request().headers().authorization ?? '') }); });
     await page.goto('/');
-    await page.getByRole('button', { name: 'English' }).click();
+    await page.getByTestId('language-menu').click(); await page.getByTestId('language-menu-en').click(); // one language control: open the menu, pick English
     await page.getByTestId(`product-${c.entry}`).click();
     await passportPopup(page, context, c.phone, true);
     await expect(page.getByRole('tab', { name: /Work/ })).toBeVisible({ timeout: 30_000 });

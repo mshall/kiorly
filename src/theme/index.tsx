@@ -23,9 +23,27 @@ export const light: Palette = build("light");
 export const dark: Palette = build("dark");
 export const elevation = (level: 0 | 1 | 2 | 3 | 4, scheme: "light" | "dark" = "light") => brandShadow(level, scheme);
 export const motion = { fast: brand.motion.duration.fast, base: brand.motion.duration.base, slow: brand.motion.duration.slow, pulse: brand.motion.duration.pulse };
-export const radius = 14;
-export const radiusLg = 20;
-export const MIN_TOUCH = 44;
+
+// ---- Shared design tokens: IDENTICAL names and values in Kiorly (staff) and Kiorex (patient) so the two apps read as siblings. Indigo is the primary everywhere,
+// Ocean the secondary accent, coral only the pulse / alert accent. Keep this block byte-identical in both theme files.
+/** 8-pt grid (4 only for hairline gaps). */
+export const space = { 0: 0, 1: 4, 2: 8, 3: 12, 4: 16, 5: 24, 6: 32, 7: 40, 8: 48 } as const;
+/** Corner radii: controls 12, cards 16, sheets 24, pills full. */
+export const radii = { sm: 8, md: 12, lg: 16, xl: 24, full: 999 } as const;
+/** Type scale (size / line height / weight). `T` renders these variants. */
+export const typeScale = {
+  large: { size: 34, line: 42, weight: "bold" }, display: { size: 30, line: 38, weight: "bold" }, title: { size: 24, line: 32, weight: "semibold" }, h2: { size: 18, line: 26, weight: "semibold" },
+  body: { size: 16, line: 24, weight: "regular" }, small: { size: 14, line: 20, weight: "regular" }, caption: { size: 12, line: 16, weight: "regular" }, label: { size: 14, line: 20, weight: "medium" },
+} as const;
+/** Layout constants: 16 pt gutters, 44 pt touch targets, 56 pt header bar. */
+export const layout = { gutter: 16, touch: 44, headerH: 56, maxContent: 560 } as const;
+/** Soft layered card shadow: three stacked layers on web (CSS), the level-3 elevation on native (RN allows one shadow per view). */
+export const layeredShadow = (scheme: "light" | "dark" = "light") => Platform.OS === "web"
+  ? ({ boxShadow: scheme === "dark" ? "0 1px 2px rgba(0,0,10,.5), 0 10px 28px rgba(0,0,10,.5), 0 0 0 1px rgba(232,234,251,.06)" : "0 1px 2px rgba(30,27,75,.06), 0 8px 24px rgba(30,27,75,.08), 0 24px 48px -16px rgba(30,27,75,.10), 0 0 0 1px rgba(30,27,75,.04)" } as object)
+  : brandShadow(3, scheme);
+export const radius = radii.md;
+export const radiusLg = radii.xl;
+export const MIN_TOUCH = layout.touch;
 
 export type ThemePref = "system" | "light" | "dark";
 /** LIGHT is the default theme (founder, 24 Nov 2026), never "follow the system". Only an explicit Light / Dark / System choice is stored and restored. */

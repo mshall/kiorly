@@ -1,14 +1,14 @@
 import { useCallback, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useQueryClient } from "@tanstack/react-query";
 import { RefreshControl } from "react-native";
-import { useTheme, radius } from "@/theme";
-import { Badge, Banner, Button, Card, Row, Screen, T } from "@/components/ui";
+import { layout, radii, space, useTheme } from "@/theme";
+import { Badge, Banner, Button, Card, IconButton, Row, Screen, T } from "@/components/ui";
 import { Icon } from "@/components/Icon";
-import { KiorexMark } from "@/components/Logo";
+import { BrandHeader } from "@/components/BrandHeader";
 import { FadeIn, SectionTitle, SyncChip, greetingKey } from "@/components/kit";
 import { useSessions } from "@/auth/SessionProvider";
 import { PRODUCT_META, accentFor, type Product } from "@/api/products";
@@ -43,17 +43,22 @@ export default function Home() {
   const [menu, setMenu] = useState(false);
   const go = (r: string) => { haptic.tap(); router.push(r as never); };
 
+  const orgName = (first?.bootstrap?.org ? (pick(first.bootstrap.org as object, "name", i18n.language) as string) : "") || first?.bootstrap?.org.name || "";
   return (
-    <Screen padded={false} refresh={<RefreshControl refreshing={false} onRefresh={() => void refresh()} tintColor={colors.ink} />} style={{ paddingTop: insets.top + 8, paddingHorizontal: 16, gap: 14 }} testID="home">
+    <View style={{ flex: 1, backgroundColor: colors.ground }}>
+    <BrandHeader>
+      <IconButton icon="search" label={t("common.search")} testID="open-search" onPress={() => go("/search")} />
+      <IconButton icon="logout" mirror label={t("signOutDlg.avatar")} testID="open-account-menu" onPress={() => setMenu(true)} />
+    </BrandHeader>
+    <Screen padded={false} refresh={<RefreshControl refreshing={false} onRefresh={() => void refresh()} tintColor={colors.ink} />} style={{ paddingTop: space[2], paddingHorizontal: layout.gutter, gap: space[4] }} testID="home">
       <SignOutSheet visible={menu} onClose={() => setMenu(false)} />
-      <Row style={{ justifyContent: "space-between" }}>
-        <Row gap={10} style={{ flex: 1, minWidth: 0 }}><KiorexMark width={40} /><View style={{ flex: 1, minWidth: 0 }}><T variant="caption" muted numberOfLines={1}>{t("app.name")}</T><T variant="h2" numberOfLines={2} testID="home-greeting">{t(greetingKey(), { name })}</T></View></Row>
-        <Row gap={8} style={{ flexShrink: 0 }}>
+      <View style={{ paddingHorizontal: space[1], gap: space[1] }}>
+        <T variant="display" numberOfLines={2} accessibilityRole="header" testID="home-greeting">{t(greetingKey(), { name })}</T>
+        <Row gap={space[2]} style={{ justifyContent: "space-between", marginTop: space[1] }}>
+          {orgName ? <T color={colors.muted} numberOfLines={1} style={{ flex: 1 }}>{orgName}</T> : <View style={{ flex: 1 }} />}
           <SyncChip onPress={() => go("/sync")} />
-          <Pressable onPress={() => go("/search")} testID="open-search" accessibilityRole="button" accessibilityLabel={t("common.search")} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}><Icon name="search" size={20} color={colors.ink} /></Pressable>
-          <Pressable onPress={() => { haptic.tap(); setMenu(true); }} testID="open-account-menu" accessibilityRole="button" accessibilityLabel={t("signOutDlg.avatar")} style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, alignItems: "center", justifyContent: "center" }}><Icon name="logout" size={20} color={colors.ink} mirror /></Pressable>
         </Row>
-      </Row>
+      </View>
 
       {notice ? (
         <Banner tone="warning" testID="session-notice" body={t(`notice.${notice.reason}`, { product: t(PRODUCT_META[notice.product].nameKey) })}><Button small variant="secondary" title={t("common.done")} onPress={dismissNotice} /></Banner>
@@ -89,7 +94,7 @@ export default function Home() {
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
                     {tiles.filter((x) => x.quick).map((x) => (
                       <Pressable key={x.key} testID={`quick-${x.key}`} onPress={() => go(x.route)} accessibilityRole="button" accessibilityLabel={t(`tiles.${x.key}.title`)}
-                        style={{ flexBasis: "47%", flexGrow: 1, minHeight: 72, borderRadius: radius + 2, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border, padding: 12, gap: 8, borderTopWidth: 3, borderTopColor: accent }}>
+                        style={({ pressed }) => ({ flexBasis: "47%", flexGrow: 1, minHeight: 80, borderRadius: radii.lg, backgroundColor: pressed ? colors.soft : colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: pressed ? colors.ink : colors.border, padding: space[4], gap: space[2] })}>
                         <Icon name={x.icon} size={22} color={accent} />
                         <T variant="small" weight="semibold" numberOfLines={2}>{t(`tiles.${x.key}.title`)}</T>
                       </Pressable>
@@ -111,5 +116,6 @@ export default function Home() {
       <Button title={t("home.searchAll")} variant="secondary" icon="search" onPress={() => go("/search")} />
       <Button title={t("scan.title")} variant="secondary" icon="scan" onPress={() => go("/scan")} testID="home-scan" />
     </Screen>
+    </View>
   );
 }

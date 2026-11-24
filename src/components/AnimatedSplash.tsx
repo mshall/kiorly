@@ -35,7 +35,7 @@ export function AnimatedSplash({ onDone, onShown, hold = false }: { onDone: () =
       <View style={{ opacity: chev, transform: [{ scale: 0.92 + 0.08 * chev }] }}>
         <Svg width={220} height={150} viewBox="150 190 800 520">
           <Polyline points="373,237 505,440 373,643" fill="none" stroke="#FFFFFF" strokeWidth={38} />
-          <Polyline points="720,237 588,440 720,643" fill="none" stroke="#7DD3FC" strokeWidth={38} />
+          <Polyline points="720,237 588,440 720,643" fill="none" stroke="#A5B4FC" strokeWidth={38} />
           <Path d={PULSE_D} fill="none" stroke="#F08A75" strokeWidth={13} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={800} strokeDashoffset={800 * (1 - Math.max(0, (p - 0.2) / 0.8))} />
         </Svg>
       </View>

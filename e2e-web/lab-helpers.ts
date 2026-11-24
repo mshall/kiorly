@@ -34,7 +34,7 @@ export function trackConsole(page: Page, extraBenign: RegExp[] = []) {
 /** Sign in through the real sign-in screen (Lab product: org slug + email, dev login, no password). English UI. */
 export async function signIn(page: Page, org: string, role: string) {
   await page.goto('/sign-in');
-  await page.getByRole('button', { name: 'English' }).click();
+  await page.getByTestId('language-menu').click(); await page.getByTestId('language-menu-en').click(); // one language control: open the menu, pick English
   await page.getByTestId('product-lab').click();
   await page.getByTestId('signin-method-password').click(); // Kiorex Passport is the default method, the password form is behind the toggle
   await page.getByTestId('signin-email').fill(`${role}@${org}.test`);

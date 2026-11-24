@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { KeyboardAvoidingView, Pressable, ScrollView, View } from "react-native";
+import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme, radius } from "@/theme";
-import { Banner, Button, Card, Field, Row, T } from "@/components/ui";
+import { layeredShadow, radii, space, useTheme } from "@/theme";
+import { Banner, Button, Field, T } from "@/components/ui";
 import { Segmented } from "@/components/kit";
 import { Icon } from "@/components/Icon";
-import { BrandLockup } from "@/components/BrandLockup";
+import { BrandHeader } from "@/components/BrandHeader";
+import { LanguageMenu } from "@/components/LanguageMenu";
 import { PRODUCT_META, SIGN_IN_ENTRIES, accentFor, productOf, type Product, type SignInEntry } from "@/api/products";
 import { useSessions } from "@/auth/SessionProvider";
 import { PASSPORT_ENABLED, PassportError, discover, passportFailureKind } from "@/auth/passport";
 import { initialSignInEntry, initialSignInMethod, loadSignInEntry, loadSignInMethod, rememberSignInEntry, rememberSignInMethod, type SignInMethod } from "@/auth/signInMethod";
 import { ApiError } from "@/api/errors";
 import { haptic } from "@/lib/haptics";
-import { setLanguage, type Lang } from "@/i18n";
 
 // DEV ONLY. Keep the condition an inline literal expression: Metro folds `__DEV__` and EXPO_PUBLIC_* per file, so production bundles drop the require and with it ./dev/* (scripts/check-no-dev-test-users.mjs).
 const DevTestUsers = __DEV__ && process.env.EXPO_PUBLIC_DEV_TEST_USERS !== "false" ? (require("@/dev/DevTestUsers") as typeof import("@/dev/DevTestUsers")).DevTestUsers : null;
@@ -37,7 +37,6 @@ export default function SignIn() {
   const [method, setMethod] = useState<SignInMethod>(() => initialSignInMethod(PASSPORT_ENABLED));
   useEffect(() => { let on = true; void loadSignInMethod(PASSPORT_ENABLED).then((m) => { if (on) setMethod(m); }); return () => { on = false; }; }, []);
   const showPassport = PASSPORT_ENABLED && method === "passport";
-  const isAr = i18n.language.startsWith("ar");
   // warm the Passport discovery cache so the browser step opens straight from the tap (web popup blockers want it inside the user gesture)
   useEffect(() => { if (PASSPORT_ENABLED) void discover().catch(() => {}); }, []);
 
@@ -74,69 +73,62 @@ export default function SignIn() {
   };
   const valid = meta.login === "devlogin" ? email.includes("@") && org.length > 1 : email.includes("@") && password.length > 0;
 
+  const tint = scheme === "dark" ? "rgba(139,133,240,0.14)" : "rgba(55,48,163,0.07)";
   return (
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior="padding" /* Android 15 is edge-to-edge: the window no longer resizes for the keyboard, so pad on both platforms */>
+      {/* the only decoration: a whisper of indigo at the very top of the screen, fading to the ground colour (no banner) */}
+      <LinearGradient pointerEvents="none" aria-hidden colors={[tint, "rgba(0,0,0,0)"]} style={{ position: "absolute", top: 0, left: 0, right: 0, height: 280 }} />
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
-        <LinearGradient colors={scheme === "dark" ? ["#1B1A4E", "#0A3A57"] : ["#3730A3", "#0369A1"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ paddingTop: insets.top + 20, paddingBottom: 60, paddingHorizontal: 24 }}>
-          <Row gap={12} style={{ justifyContent: "space-between", alignItems: "flex-start" }} testID="signin-header">
-            <BrandLockup testID="brand-lockup" tagline={false} />
-            <Row gap={6}>
-              {(["ar", "en"] as Lang[]).map((l) => (
-                <Pressable key={l} onPress={() => void setLanguage(l)} accessibilityRole="button" accessibilityLabel={l === "ar" ? "العربية" : "English"} style={{ paddingHorizontal: 12, height: 34, borderRadius: 17, justifyContent: "center", backgroundColor: i18n.language === l ? "#FFFFFF" : "rgba(255,255,255,0.16)" }}>
-                  <T variant="small" weight="semibold" color={i18n.language === l ? "#3730A3" : "#FFFFFF"}>{l === "ar" ? "ع" : "EN"}</T>
-                </Pressable>
-              ))}
-            </Row>
-          </Row>
-          <View style={{ height: 1, backgroundColor: "rgba(255,255,255,0.22)", marginTop: 18, marginBottom: 10 }} aria-hidden />
-          <T variant="small" color="#D6DBFF" testID="brand-tagline">{t("app.tagline")}</T>
-        </LinearGradient>
+        <BrandHeader testID="signin-header" lockupTestID="brand-lockup"><LanguageMenu testID="language-menu" /></BrandHeader>
 
-        <View style={{ marginTop: -32, paddingHorizontal: 16, paddingBottom: insets.bottom + 24, gap: 14 }}>
-          <Card style={{ gap: 14 }}>
-            <T variant="h2">{t("signIn.title")}</T>
-            <T variant="small" muted>{t("signIn.subtitle")}</T>
-            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }} testID="product-grid">
-              {SIGN_IN_ENTRIES.map((e) => {
-                const p = productOf(e); const sel = e === entry; const a = accentFor(p, scheme); const done = products.includes(p);
-                return (
-                  <Pressable key={e} testID={`product-${e}`} onPress={() => { haptic.select(); setEntry(e); setError(null); setNeedMfa(false); }} accessibilityRole="radio" accessibilityState={{ selected: sel }}
-                    accessibilityLabel={`${t(e === "nurse" ? "product.nurse" : PRODUCT_META[p].nameKey)}${done ? `, ${t("signIn.connected")}` : ""}`}
-                    style={{ flexGrow: 1, flexBasis: "46%", minWidth: 120, minHeight: 56, borderRadius: radius, paddingHorizontal: 12, paddingVertical: 8, flexDirection: "row", alignItems: "center", gap: 10, borderWidth: sel ? 2 : 1, borderColor: sel ? a : colors.border, backgroundColor: sel ? colors.subtle : colors.surface }}>
-                    <Icon name={e === "nurse" ? "heart" : PRODUCT_META[p].icon} size={24} color={a} />
-                    <View style={{ flex: 1 }}>
-                      <T variant="small" weight="semibold">{t(e === "nurse" ? "product.nurse" : PRODUCT_META[p].nameKey)}</T>
-                      {done ? <T variant="caption" color={colors.success}>{t("signIn.connected")}</T> : null}
-                    </View>
-                  </Pressable>
-                );
-              })}
-            </View>
-            {entry === "nurse" ? <T variant="caption" muted testID="nurse-hint">{t("signIn.nurseHint")}</T> : null}
-            {PASSPORT_ENABLED ? (
-              <Segmented testID="signin-method" accessibilityLabel={t("signIn.method")} value={method} onChange={(m) => { setMethod(m); setError(null); setNeedMfa(false); }}
-                options={[{ value: "passport", label: t("signIn.methodPassport") }, { value: "password", label: t("signIn.methodPassword") }]} />
-            ) : null}
-            {error ? <Banner tone="danger" body={error} testID="signin-error" /> : null}
-            {showPassport ? (
-              <View style={{ gap: 10 }} testID="signin-passport-panel">
-                <Button title={t("signIn.passport")} onPress={() => void submitPassport()} loading={busyPassport} icon="shield" testID="signin-passport" />
-                <T variant="caption" muted style={{ textAlign: "center" }}>{t("signIn.passportHint")}</T>
-              </View>
-            ) : (
-              <View style={{ gap: 14 }} testID="signin-password-panel">
-                <Field label={t("signIn.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" testID="signin-email" />
-                {meta.login === "devlogin"
-                  ? <Field label={t("signIn.org")} value={org} onChangeText={setOrg} autoCapitalize="none" placeholder={t("signIn.orgHint")} testID="signin-org" />
-                  : <Field label={t("signIn.password")} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoComplete="password" testID="signin-password" onSubmitEditing={() => valid && void submit()} />}
-                {needMfa ? <Field label={t("signIn.mfa")} value={mfa} onChangeText={setMfa} keyboardType="number-pad" testID="signin-mfa" /> : null}
-                <Button title={t("signIn.submit")} onPress={() => void submit()} loading={busy} disabled={!valid} testID="signin-submit" />
-              </View>
-            )}
-          </Card>
-
-          {DevTestUsers ? <DevTestUsers product={product} entry={entry} onPick={(a) => { setMethod("password"); setEmail(a.email); setPassword(a.password); setOrg(a.org); }} /> : null}
+        <View style={{ paddingHorizontal: 24, paddingTop: space[5], paddingBottom: space[4], gap: space[2] }}>
+          <T variant="display" accessibilityRole="header" testID="signin-title">{t("signIn.title")}</T>
+          <T variant="small" color={colors.muted} testID="brand-tagline">{t("app.tagline")}</T>
         </View>
+
+        <View style={{ marginHorizontal: space[4], marginBottom: space[4], padding: space[5], gap: space[4], borderRadius: radii.xl, backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, ...layeredShadow(scheme) }} testID="signin-card">
+          <T variant="label" muted>{t("signIn.subtitle")}</T>
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }} testID="product-grid" accessibilityRole="radiogroup">
+            {SIGN_IN_ENTRIES.map((e) => {
+              const p = productOf(e); const sel = e === entry; const a = accentFor(p, scheme); const done = products.includes(p);
+              return (
+                <Pressable key={e} testID={`product-${e}`} onPress={() => { haptic.select(); setEntry(e); setError(null); setNeedMfa(false); }} accessibilityRole="radio" accessibilityState={{ selected: sel, checked: sel }}
+                  accessibilityLabel={`${t(e === "nurse" ? "product.nurse" : PRODUCT_META[p].nameKey)}${done ? `, ${t("signIn.connected")}` : ""}`}
+                  style={({ pressed }) => ({ flexGrow: 1, flexBasis: "45%", minWidth: 120, minHeight: 64, borderRadius: radii.lg, paddingHorizontal: space[3], paddingVertical: space[2], flexDirection: "row", alignItems: "center", gap: space[3], borderWidth: 1.5, borderColor: sel ? colors.ink : colors.border, backgroundColor: sel ? colors.soft : pressed ? colors.raised : colors.surface })}>
+                  <Icon name={e === "nurse" ? "heart" : PRODUCT_META[p].icon} size={24} color={a} />
+                  <View style={{ flex: 1 }}>
+                    <T variant="small" weight="semibold" numberOfLines={1}>{t(e === "nurse" ? "product.nurse" : PRODUCT_META[p].nameKey)}</T>
+                    {done ? <T variant="caption" color={colors.success}>{t("signIn.connected")}</T> : null}
+                  </View>
+                  {sel ? <View aria-hidden style={{ width: 18, height: 18, borderRadius: 9, backgroundColor: colors.ink, alignItems: "center", justifyContent: "center" }}><Icon name="check" size={12} color={colors.onInk} /></View> : null}
+                </Pressable>
+              );
+            })}
+          </View>
+          {entry === "nurse" ? <T variant="caption" muted testID="nurse-hint">{t("signIn.nurseHint")}</T> : null}
+          {PASSPORT_ENABLED ? (
+            <Segmented testID="signin-method" accessibilityLabel={t("signIn.method")} value={method} onChange={(m) => { setMethod(m); setError(null); setNeedMfa(false); }}
+              options={[{ value: "passport", label: t("signIn.methodPassport") }, { value: "password", label: t("signIn.methodPassword") }]} />
+          ) : null}
+          {error ? <Banner tone="danger" body={error} testID="signin-error" /> : null}
+          {showPassport ? (
+            <View style={{ gap: space[3] }} testID="signin-passport-panel">
+              <Button title={t("signIn.passport")} onPress={() => void submitPassport()} loading={busyPassport} icon="shield" testID="signin-passport" />
+              <T variant="caption" muted style={{ textAlign: "center" }}>{t("signIn.passportHint")}</T>
+            </View>
+          ) : (
+            <View style={{ gap: space[4] }} testID="signin-password-panel">
+              <Field label={t("signIn.email")} value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" autoComplete="email" testID="signin-email" />
+              {meta.login === "devlogin"
+                ? <Field label={t("signIn.org")} value={org} onChangeText={setOrg} autoCapitalize="none" placeholder={t("signIn.orgHint")} testID="signin-org" />
+                : <Field label={t("signIn.password")} value={password} onChangeText={setPassword} secureTextEntry autoCapitalize="none" autoComplete="password" testID="signin-password" onSubmitEditing={() => valid && void submit()} />}
+              {needMfa ? <Field label={t("signIn.mfa")} value={mfa} onChangeText={setMfa} keyboardType="number-pad" testID="signin-mfa" /> : null}
+              <Button title={t("signIn.submit")} onPress={() => void submit()} loading={busy} disabled={!valid} testID="signin-submit" />
+            </View>
+          )}
+        </View>
+
+        {DevTestUsers ? <View style={{ paddingHorizontal: space[4], paddingBottom: insets.bottom + space[5] }}><DevTestUsers product={product} entry={entry} onPick={(a) => { setMethod("password"); setEmail(a.email); setPassword(a.password); setOrg(a.org); }} /></View> : <View style={{ height: insets.bottom + space[5] }} />}
       </ScrollView>
     </KeyboardAvoidingView>
   );

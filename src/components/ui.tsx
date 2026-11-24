@@ -1,11 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
-  ActivityIndicator, Animated, Easing, Modal, PanResponder, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
+  ActivityIndicator, Animated, Easing, Modal, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View,
   type ViewProps, type StyleProp, type TextInputProps, type TextProps, type TextStyle, type ViewStyle, type RefreshControlProps,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
-import { elevation, fontFamily, MIN_TOUCH, radius, useTheme, type Weight } from "@/theme";
+import { elevation, fontFamily, MIN_TOUCH, radii, radius, typeScale, useTheme, type Weight } from "@/theme";
 import { haptic } from "@/lib/haptics";
 import { animationsEnabled, nativeDriver, useReducedMotion } from "@/lib/motion";
 import { PulseLine } from "./Pulse";
@@ -14,10 +14,7 @@ import { type InputHandle, KeyboardAvoider, ScrollIntoViewContext, useKeyboardVi
 
 // ---- Text ----
 type Variant = "large" | "display" | "title" | "h2" | "body" | "small" | "caption" | "label";
-const SIZES: Record<Variant, { size: number; weight: Weight; line: number }> = {
-  large: { size: 34, weight: "bold", line: 42 }, display: { size: 30, weight: "bold", line: 38 }, title: { size: 24, weight: "semibold", line: 32 }, h2: { size: 18, weight: "semibold", line: 26 },
-  body: { size: 16, weight: "regular", line: 24 }, small: { size: 14, weight: "regular", line: 20 }, caption: { size: 12, weight: "regular", line: 16 }, label: { size: 14, weight: "medium", line: 20 },
-};
+const SIZES: Record<Variant, { size: number; weight: Weight; line: number }> = typeScale; // shared type scale (theme)
 export function T({ variant = "body", weight, muted, color, forceLatin, style, ...p }: TextProps & { variant?: Variant; weight?: Weight; muted?: boolean; color?: string; forceLatin?: boolean }) {
   const { colors } = useTheme();
   const { i18n } = useTranslation();
@@ -78,7 +75,7 @@ export function splitLayoutStyle(style: StyleProp<ViewStyle>): { outer: ViewStyl
 export function Card({ children, style, onPress, accessibilityLabel, testID }: { children: ReactNode; style?: StyleProp<ViewStyle>; onPress?: () => void; accessibilityLabel?: string; testID?: string }) {
   const { colors, scheme } = useTheme();
   const ps = usePressScale(0.985);
-  const base: ViewStyle = { backgroundColor: colors.surface, borderRadius: radius + 2, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, padding: 16, ...elevation(1, scheme) };
+  const base: ViewStyle = { backgroundColor: colors.surface, borderRadius: radii.lg, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, padding: 16, ...elevation(1, scheme) };
   if (onPress) {
     // Layout props (flex/width/margin/alignSelf…) belong on the OUTER animated wrapper: it is the flex child of the parent. Left on the
     // inner Pressable only, a `flex: 1` card collapses to its content width (stat tiles truncated to "زيارات…").
@@ -113,13 +110,25 @@ export function Button({ title, onPress, variant = "primary", disabled, loading,
         disabled={off} onPress={() => { haptic.tap(); onPress?.(); }} onPressIn={ps.onPressIn} onPressOut={ps.onPressOut}
         style={({ pressed }) => ({
           minHeight: small ? MIN_TOUCH : 52, borderRadius: radius, paddingHorizontal: 20, alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 8,
-          backgroundColor: pressed && variant === "primary" ? colors.inkHover : bg, borderWidth: variant === "secondary" ? 1.5 : 0, borderColor: colors.ink, opacity: off ? 0.5 : 1,
+          backgroundColor: pressed ? (variant === "primary" ? colors.inkHover : variant === "secondary" || variant === "ghost" ? colors.soft : bg) : bg, borderWidth: variant === "secondary" ? 1.5 : 0, borderColor: colors.ink, opacity: off ? 0.5 : 1,
         })}
       >
         {loading ? <ActivityIndicator color={fg} /> : icon ? <Icon name={icon} size={20} color={fg} /> : null}
         <T variant="label" weight="semibold" numberOfLines={1} style={{ color: fg, fontSize: 16, flexShrink: 1 }}>{title}</T>
       </Pressable>
     </Animated.View>
+  );
+}
+
+/** Quiet 44 pt round icon button for header controls: surface fill, hairline border, indigo tint while pressed. */
+export function IconButton({ icon, onPress, label, testID, mirror, badge }: { icon: IconName; onPress: () => void; label: string; testID?: string; mirror?: boolean; badge?: boolean }) {
+  const { colors } = useTheme();
+  return (
+    <Pressable testID={testID} onPress={() => { haptic.tap(); onPress(); }} accessibilityRole="button" accessibilityLabel={label} hitSlop={4}
+      style={({ pressed }) => ({ width: MIN_TOUCH, height: MIN_TOUCH, borderRadius: MIN_TOUCH / 2, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: pressed ? colors.ink : colors.border, backgroundColor: pressed ? colors.soft : colors.surface })}>
+      <Icon name={icon} size={20} color={colors.ink} mirror={mirror} />
+      {badge ? <View aria-hidden style={{ position: "absolute", top: 9, end: 10, width: 8, height: 8, borderRadius: 4, backgroundColor: colors.pulse }} /> : null}
+    </Pressable>
   );
 }
 
@@ -160,7 +169,7 @@ export function Field({ label, style, onFocus, onBlur, ...p }: TextInputProps & 
       <TextInput
         ref={inputRef as never}
         accessibilityLabel={label ?? p.placeholder} placeholderTextColor={colors.muted}
-        style={[{ minHeight: 50, borderRadius: radius, borderWidth: 1.5, borderColor: focused ? colors.ink : colors.border, backgroundColor: colors.surface, color: colors.text, paddingHorizontal: 14, fontSize: 16, fontFamily: fontFamily(i18n.language, "regular"), textAlign: i18n.language.startsWith("ar") ? "right" : "left" }, style]}
+        style={[{ minHeight: 50, borderRadius: radius, borderWidth: 1.5, borderColor: focused ? colors.ink : colors.border, ...(focused && Platform.OS === "web" ? ({ boxShadow: `0 0 0 4px ${colors.soft}`, outlineStyle: "none" } as object) : null), backgroundColor: colors.surface, color: colors.text, paddingHorizontal: 14, fontSize: 16, fontFamily: fontFamily(i18n.language, "regular"), textAlign: i18n.language.startsWith("ar") ? "right" : "left" }, style]}
         onFocus={(e) => { setFocused(true); scrollIntoView(inputRef.current); onFocus?.(e); }} onBlur={(e) => { setFocused(false); onBlur?.(e); }}
         {...p}
       />

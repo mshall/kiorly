@@ -10,6 +10,7 @@ const P: Record<string, (c: string) => React.ReactNode> = {
   user: (c) => <><Circle cx="12" cy="8" r="4" stroke={c} /><Path d="M4 21c0-4 4-6 8-6s8 2 8 6" stroke={c} /></>,
   search: (c) => <><Circle cx="11" cy="11" r="7" stroke={c} /><Line x1="21" y1="21" x2="16.5" y2="16.5" stroke={c} /></>,
   chevron: (c) => <Polyline points="9 6 15 12 9 18" stroke={c} />,
+  chevronDown: (c) => <Polyline points="6 9 12 15 18 9" stroke={c} />,
   back: (c) => <Polyline points="15 6 9 12 15 18" stroke={c} />,
   check: (c) => <Polyline points="5 12 10 17 19 7" stroke={c} />,
   close: (c) => <><Line x1="6" y1="6" x2="18" y2="18" stroke={c} /><Line x1="18" y1="6" x2="6" y2="18" stroke={c} /></>,

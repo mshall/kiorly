@@ -123,7 +123,7 @@ export function Segmented<V extends string>({ options, value, onChange, testID, 
       {options.map((o) => {
         const sel = o.value === value;
         return (
-          <Pressable key={o.value} testID={testID ? `${testID}-${o.value}` : undefined} accessibilityRole="tab" accessibilityState={{ selected: sel }} aria-selected={sel} onPress={() => { if (!sel) { haptic.select(); onChange(o.value); } }} style={{ flex: 1, minHeight: 36, borderRadius: radius - 3, alignItems: "center", justifyContent: "center", backgroundColor: sel ? colors.surface : "transparent", ...(sel ? elevation(1) : {}) }}>
+          <Pressable key={o.value} testID={testID ? `${testID}-${o.value}` : undefined} accessibilityRole="tab" accessibilityState={{ selected: sel }} aria-selected={sel} onPress={() => { if (!sel) { haptic.select(); onChange(o.value); } }} style={{ flex: 1, minHeight: 44, borderRadius: radius - 3, alignItems: "center", justifyContent: "center", backgroundColor: sel ? colors.surface : "transparent", ...(sel ? elevation(1) : {}) }}>
             <T variant="small" weight={sel ? "semibold" : "medium"} color={sel ? colors.ink : colors.muted} numberOfLines={1}>{o.label}{o.count != null ? ` · ${localizeDigits(o.count, i18n.language)}` : ""}</T>
           </Pressable>
         );

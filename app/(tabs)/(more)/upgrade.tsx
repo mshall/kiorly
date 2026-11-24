@@ -1,9 +1,8 @@
 import { Pressable, View } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@/theme";
+import { radii, space, useTheme } from "@/theme";
 import { Badge, Banner, Button, Card, Row, Screen, T } from "@/components/ui";
 import { Icon, type IconName } from "@/components/Icon";
 import { FadeIn } from "@/components/kit";
@@ -44,13 +43,13 @@ export default function Upgrade() {
   const mine = alerts.items.filter((a) => a.product === p && !a.ackedAt).length;
   return (
     <Screen padded={false} testID="upgrade" style={{ paddingBottom: 32 }}>
-      <LinearGradient colors={scheme === "dark" ? ["#1B1A4E", "#0A3A57"] : ["#3730A3", "#0369A1"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ paddingTop: insets.top + 12, paddingBottom: 60, paddingHorizontal: 20 }}>
-        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))} accessibilityRole="button" accessibilityLabel={t("common.back")} style={{ width: 44, height: 44, justifyContent: "center" }}><Icon name="back" color="#fff" mirror /></Pressable>
-        <View style={{ width: 64, height: 64, borderRadius: 20, backgroundColor: "rgba(255,255,255,0.18)", alignItems: "center", justifyContent: "center", marginTop: 8 }}><Icon name="award" size={32} color="#fff" /></View>
-        <T variant="display" color="#fff" style={{ marginTop: 14 }} testID="upgrade-title">{t("upgrade.title")}</T>
-        <T color="#D6DBFF" style={{ marginTop: 4 }}>{t("upgrade.subtitle", { product: name, org: (i18n.language.startsWith("ar") && b?.org.nameAr) || b?.org.name || "", plan: planLabel })}</T>
-      </LinearGradient>
-      <View style={{ marginTop: -36, paddingHorizontal: 16, gap: 14 }}>
+      <View style={{ paddingTop: insets.top + space[2], paddingHorizontal: space[5], paddingBottom: space[5] }}>
+        <Pressable onPress={() => (router.canGoBack() ? router.back() : router.replace("/(tabs)"))} accessibilityRole="button" accessibilityLabel={t("common.back")} style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center", marginStart: -space[2], backgroundColor: pressed ? colors.soft : "transparent" })}><Icon name="back" color={colors.ink} mirror /></Pressable>
+        <View style={{ width: 56, height: 56, borderRadius: radii.lg, backgroundColor: colors.soft, alignItems: "center", justifyContent: "center", marginTop: space[3] }}><Icon name="award" size={28} color={colors.ink} /></View>
+        <T variant="display" style={{ marginTop: space[4] }} accessibilityRole="header" testID="upgrade-title">{t("upgrade.title")}</T>
+        <T color={colors.muted} style={{ marginTop: space[1] }}>{t("upgrade.subtitle", { product: name, org: (i18n.language.startsWith("ar") && b?.org.nameAr) || b?.org.name || "", plan: planLabel })}</T>
+      </View>
+      <View style={{ paddingHorizontal: 16, gap: 14 }}>
         <FadeIn>
           <Card style={{ gap: 12 }} testID="upgrade-feature">
             {flagOff ? <Banner tone="warning" body={t("upgrade.flagOff")} testID="upgrade-flagoff" /> : (

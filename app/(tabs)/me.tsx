@@ -10,8 +10,8 @@ import { ListRow, Segmented, SectionTitle, SyncChip } from "@/components/kit";
 import { useSessions } from "@/auth/SessionProvider";
 import { useLock } from "@/auth/lock";
 import { PRODUCT_META, APP_VERSION, accentFor } from "@/api/products";
-import { setLanguage, type Lang } from "@/i18n";
-import { handleRestart } from "@/i18n/restart";
+import { LanguageMenu } from "@/components/LanguageMenu";
+import { BrandLockup } from "@/components/BrandLockup";
 import { DevPushPanel } from "@/components/DevPushPanel";
 import { usePushPermission } from "@/lib/pushPermission";
 import { haptic } from "@/lib/haptics";
@@ -30,12 +30,11 @@ export default function Me() {
   const [restart, setRestart] = useState(false);
   const [so, setSo] = useState<{ open: boolean; initial?: SignOutTarget }>({ open: false });
   const push = usePushPermission();
-  const lang = (i18n.language.startsWith("ar") ? "ar" : "en") as Lang;
   const row = (icon: IconName, title: string, sub: string, to: string) => <ListRow icon={icon} title={title} subtitle={sub} onPress={() => router.push(to as never)} testID={`me-${to.slice(1)}`} />;
 
   return (
     <Screen style={{ paddingTop: insets.top + 8, gap: 12 }} title={t("me.title")} testID="me">
-      <Button title={t("signOutDlg.open")} variant="danger" icon="logout" onPress={() => setSo({ open: true })} testID="signout-top" accessibilityLabel={t("signOutDlg.open")} />
+      <Button title={t("signOutDlg.open")} variant="secondary" icon="logout" onPress={() => setSo({ open: true })} testID="signout-top" accessibilityLabel={t("signOutDlg.open")} />
       <SectionTitle title={t("me.accounts")} />
       {products.map((p) => {
         const s = sessions[p]!; const b = s.bootstrap;
@@ -86,8 +85,7 @@ export default function Me() {
 
       <SectionTitle title={t("me.preferences")} />
       <Card style={{ gap: 12 }}>
-        <T variant="small" weight="semibold">{t("me.language")}</T>
-        <Segmented value={lang} onChange={async (l) => { haptic.tap(); if (await setLanguage(l)) setRestart((await handleRestart({ force: false })) === "manual"); else setRestart(false); }} options={[{ value: "ar", label: t("me.arabic") }, { value: "en", label: t("me.english") }]} />
+        <LanguageMenu variant="row" onChanged={setRestart} testID="me-language" />
         {restart ? <Banner tone="ink" body={t("me.restartHint")} /> : null}
         <T variant="small" weight="semibold">{t("me.theme")}</T>
         <Segmented value={pref} onChange={setPref} options={[{ value: "light", label: t("me.light") }, { value: "dark", label: t("me.dark") }, { value: "system", label: t("me.system") }]} testID="theme" accessibilityLabel={t("me.theme")} />
@@ -99,6 +97,7 @@ export default function Me() {
       <SignOutSheet visible={so.open} initial={so.initial} onClose={() => setSo({ open: false })} />
       <SectionTitle title={t("me.about")} />
       <Card style={{ gap: 4 }} testID="me-about">
+        <View style={{ marginBottom: 8 }}><BrandLockup height={40} /></View>
         <T weight="semibold" testID="about-name">{t("app.name")}</T>
         <T variant="caption" muted testID="about-by">{t("app.by")}</T>
         <T variant="caption" muted>{t("me.version", { v: APP_VERSION })}</T>

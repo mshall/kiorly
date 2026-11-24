@@ -32,7 +32,7 @@ export function watchErrors(page: Page) {
 /** Sign in through the real sign-in screen (English), clinic product. */
 export async function signIn(page: Page, email: string) {
   await page.goto('/');
-  await page.getByRole('button', { name: 'English' }).click();
+  await page.getByTestId('language-menu').click(); await page.getByTestId('language-menu-en').click(); // one language control: open the menu, pick English
   await page.getByTestId('signin-method-password').click(); // Kiorex Passport is the default method, the password form is behind the toggle
   await page.getByTestId('signin-email').fill(email);
   await page.getByTestId('signin-password').fill(PW);
