@@ -18,15 +18,25 @@ const merge = (...parts: Dict[]): Dict => parts.reduce((acc, p) => { for (const 
 export const resources = { en: { translation: merge(en as Dict, clinicStrings.en, pharmacyStrings.en, labStrings.en, statusStrings.en) }, ar: { translation: merge(ar as Dict, clinicStrings.ar, pharmacyStrings.ar, labStrings.ar, statusStrings.ar) } };
 export const isRtlLang = (l: string) => l.startsWith("ar");
 
-void i18n.use(initReactI18next).init({
+/**
+ * i18next 27 dropped `interpolation.format`; the supported hook is a `formatter` module. With `alwaysFormat` every interpolated value goes through it: numbers get Arabic-Indic digits in
+ * Arabic ("{{count}} أصناف"), string params (names, order numbers, lot ids) pass through untouched. `{{x, number}}` style formats are not used in this app's strings.
+ */
+const digitFormatter = {
+  type: "formatter" as const,
+  init() {},
+  add() {},
+  addCached() {},
+  format: (value: unknown, _fmt?: string, lng?: string) => (typeof value === "number" && lng?.startsWith("ar") ? localizeDigits(value, lng) : (value as string)),
+};
+
+void i18n.use(initReactI18next).use(digitFormatter).init({
   resources,
   lng: "ar", // Arabic-first (KX-03 §03)
   fallbackLng: "en",
-  // Hermes in Expo Go has no Intl.PluralRules; i18next then falls back to v3 plurals anyway but logs a red console.error. Choose it explicitly (same behaviour, no error).
-  compatibilityJSON: typeof Intl !== "undefined" && typeof Intl.PluralRules === "function" ? "v4" : "v3",
   // Numbers interpolated into Arabic strings ("{{count}} أصناف") use Arabic-Indic digits; string params (names, order numbers, lot ids) are passed through untouched.
-  interpolation: { escapeValue: false, alwaysFormat: true, format: (value: unknown, _fmt?: string, lng?: string) => (typeof value === "number" && lng?.startsWith("ar") ? localizeDigits(value, lng) : (value as string)) },
-  initImmediate: false,
+  interpolation: { escapeValue: false, alwaysFormat: true },
+  initAsync: false,
 });
 
 /** Applies layout direction. Returns true when a native restart is required for the direction to flip. */
