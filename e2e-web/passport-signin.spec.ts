@@ -71,7 +71,7 @@ async function mockStack(ctx: BrowserContext, webOrigin: string, opts: { linked?
   return m;
 }
 
-const openSignIn = async (page: Page) => { await page.goto('/'); await page.getByTestId('language-menu').click(); await page.getByTestId('language-menu-en').click(); // one language control: open the menu, pick English await expect(page.getByTestId('signin-passport')).toBeVisible(); };
+const openSignIn = async (page: Page) => { await page.goto('/'); await page.getByTestId('language-menu').click(); await page.getByTestId('language-menu-en').click(); /* one language control: open the menu, pick English */ await expect(page.getByTestId('signin-passport')).toBeVisible(); };
 
 test.describe('Kiorly x Kiorex Passport (mock Passport + mock clinic API)', () => {
   test('Sign in with Kiorex Passport: PKCE code flow, Passport access token is the bearer, device registered, lands in the app', async ({ page, context, baseURL }) => {

@@ -7,7 +7,7 @@ import { test, expect, type Page } from '@playwright/test';
  *  - LIGHT is the default theme (a dark OS does not change it); an explicit Dark / System choice is stored (`kx-theme`) and restored on reload.
  */
 const METHOD_KEY = 'kiorly.signin.method'; const THEME_KEY = 'kx-theme';
-const openSignIn = async (page: Page) => { await page.goto('/sign-in'); await expect(page.getByTestId('signin-method')).toBeVisible({ timeout: 30_000 }); await page.getByTestId('language-menu').click(); await page.getByTestId('language-menu-en').click(); // one language control: open the menu, pick English };
+const openSignIn = async (page: Page) => { await page.goto('/sign-in'); await expect(page.getByTestId('signin-method')).toBeVisible({ timeout: 30_000 }); await page.getByTestId('language-menu').click(); await page.getByTestId('language-menu-en').click(); /* one language control: open the menu, pick English */ };
 /** Colour of the first opaque ancestor behind the sign-in card (the screen background). */
 const groundColour = (page: Page) => page.evaluate(() => {
   let el: Element | null = document.elementFromPoint(8, window.innerHeight - 8);
