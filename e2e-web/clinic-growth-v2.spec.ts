@@ -35,7 +35,9 @@ test.describe('Kiorly (Expo web) - Growth v2 (GRW-P2-C) against the real Clinic 
     const slots = await api(owner, 'GET', '/mobile/growth/slots?days=3');
     expect([200, 404, 409]).toContain(slots.status); // 409 when the seeded clinician has no bookable in-clinic type
     await signIn(page, NA('owner'));
-    await page.goto('/clinic/growth-slots');
+    await openWork(page);
+    await page.getByTestId('tile-clinic.growth').click(); // a reload would drop the in-memory session: navigate inside the app
+    await page.getByTestId('growth-hub-slots').click();
     await expect(page.getByTestId('clinic-growth-slots')).toBeVisible();
     if (slots.status === 200 && slots.body.items.length) {
       expect(slots.body.items.length).toBeLessThanOrEqual(5);
@@ -57,9 +59,12 @@ test.describe('Kiorly (Expo web) - Growth v2 (GRW-P2-C) against the real Clinic 
     expect(v.status).toBe(200);
     expect(['VERIFIED', 'UPDATE_UNDER_REVIEW']).toContain(v.body.badge);
     await signIn(page, NA('owner'));
-    await page.goto('/clinic/growth-statements');
+    await openWork(page);
+    await page.getByTestId('tile-clinic.growth').click();
+    await page.getByTestId('growth-hub-statements').click();
     await expect(page.getByTestId('statements-totals')).toBeVisible();
-    await page.goto('/clinic/growth-verification');
+    await page.goBack();
+    await page.getByTestId('growth-hub-verification').click();
     await expect(page.getByTestId('verification-form')).toBeVisible();
     // a doctor shares their own profile but never sees fees or verification
     const doc = await apiLogin(NA('nadia'));
