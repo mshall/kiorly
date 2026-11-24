@@ -23,6 +23,7 @@ import { ApiError } from "@/api/errors";
 import { startNetworkWatcher } from "@/offline/network";
 import { SyncDriver } from "@/offline/SyncDriver";
 import { NotificationDriver } from "@/hooks/NotificationDriver";
+import { useDeepLinkReplay } from "@/hooks/useDeepLinkReplay";
 
 // Web: when this page is the Passport redirect inside the sign-in / sign-out popup, hand the URL to the opener and close (no-op elsewhere).
 WebBrowser.maybeCompleteAuthSession();
@@ -37,6 +38,7 @@ function Shell() {
   const { i18n } = useTranslation();
   const { colors, scheme } = useTheme();
   const { products, ready } = useSessions();
+  useDeepLinkReplay();
   const common = {
     headerStyle: { backgroundColor: colors.surface }, headerShadowVisible: false, animation: "slide_from_right" as const, headerTintColor: colors.ink,
     headerTitleStyle: { fontFamily: fontFamily(i18n.language, "semibold"), color: colors.text }, contentStyle: { backgroundColor: colors.ground }, headerBackButtonDisplayMode: "minimal" as const,

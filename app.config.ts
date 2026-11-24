@@ -17,6 +17,16 @@ import type { ConfigContext, ExpoConfig } from "expo/config";
  * A production build without the Firebase files fails HERE with a clear message instead of shipping an app that can never register for push.
  * Placeholders are documented in config/firebase/README.md; the real files are git-ignored.
  */
+// ---- GRW-P1-H: Universal Links / App Links for www.kiorly.com (kept in this file: Expo's config loader cannot resolve sibling TS modules) ----
+// NATIVE REBUILD REQUIRED to take effect (associated domains entitlement + verified intent filter). Verification needs the Apple Team ID and the Play signing
+// SHA-256 published at https://www.kiorly.com/.well-known/ (kiorex-account config/app-links, NEEDS_HUMAN D9). Only `/open/*` is claimed: `/signin/*` stays in the
+// association template but the app does not claim it, so a Passport redirect to the web sign-in callback is never captured by the app.
+export const STAFF_LINK_HOST_DEFAULT = "www.kiorly.com";
+export const STAFF_ANDROID_PATH_PREFIXES = ["/open/"] as const;
+export const staffLinkHost = (env: NodeJS.ProcessEnv = process.env): string => { const h = (env.STAFF_LINK_HOST ?? STAFF_LINK_HOST_DEFAULT).trim().toLowerCase(); return /^[a-z0-9.-]+$/.test(h) ? h : STAFF_LINK_HOST_DEFAULT; };
+export const staffAssociatedDomains = (host = staffLinkHost()) => [`applinks:${host}`];
+export const staffIntentFilters = (host = staffLinkHost()) => [{ action: "VIEW", autoVerify: true, data: STAFF_ANDROID_PATH_PREFIXES.map((pathPrefix) => ({ scheme: "https", host, pathPrefix })), category: ["BROWSABLE", "DEFAULT"] }];
+
 const exists = (p: string) => { try { return fs.existsSync(p); } catch { return false; } };
 const pick = (envName: string, local: string): string | undefined => process.env[envName] || (exists(local) ? local : undefined);
 
@@ -37,8 +47,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: `${config.name}${process.env.APP_NAME_SUFFIX ?? ""}`,
     slug: config.slug ?? "kiorly",
-    ios: { ...config.ios, bundleIdentifier: `${config.ios?.bundleIdentifier}${idSuffix}`, ...(iosFile ? { googleServicesFile: iosFile } : {}), infoPlist: { ...config.ios?.infoPlist, UIBackgroundModes: ["remote-notification"] } },
-    android: { ...config.android, package: `${config.android?.package}${idSuffix}`, ...(androidFile ? { googleServicesFile: androidFile } : {}), permissions: Array.from(new Set(["POST_NOTIFICATIONS", ...(config.android?.permissions ?? [])])) },
+    ios: { ...config.ios, associatedDomains: staffAssociatedDomains(), bundleIdentifier: `${config.ios?.bundleIdentifier}${idSuffix}`, ...(iosFile ? { googleServicesFile: iosFile } : {}), infoPlist: { ...config.ios?.infoPlist, UIBackgroundModes: ["remote-notification"] } },
+    android: { ...config.android, intentFilters: staffIntentFilters(), package: `${config.android?.package}${idSuffix}`, ...(androidFile ? { googleServicesFile: androidFile } : {}), permissions: Array.from(new Set(["POST_NOTIFICATIONS", ...(config.android?.permissions ?? [])])) },
     plugins: plugins as ExpoConfig["plugins"],
     ...(process.env.EAS_UPDATES_URL ? { updates: { url: process.env.EAS_UPDATES_URL } , runtimeVersion: { policy: "fingerprint" as const } } : {}),
     extra: { ...config.extra, ...(projectId ? { eas: { projectId } } : {}), appProfile: profile },
