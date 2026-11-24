@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Badge, Banner, Button, Card, Chip, Field, Row, Screen, Sheet, T, useToast } from "@/components/ui";
 import { ActionSheet, FadeIn, KV, QueryView, SectionTitle, StatTile } from "@/components/kit";
@@ -38,6 +39,7 @@ function QrCard({ linkId, caption, testID }: { linkId?: string; caption: string;
 
 export default function Growth() {
   const { t } = useTranslation();
+  const router = useRouter();
   const { lang, ar } = useLang();
   const { colors } = useTheme();
   const toast = useToast();
@@ -124,6 +126,21 @@ export default function Growth() {
                         <T variant="caption" muted style={{ textAlign: "center" }}>{t("clinic.growth.qr.hint")}</T>
                       </Card>
                     ) : null}
+
+                    <Card style={{ gap: 4 }} testID="growth-hub">
+                      {([
+                        ["share", "/clinic/growth-share", o.level !== "read"],
+                        ["slots", "/clinic/growth-slots", o.level !== "read"],
+                        ["statements", "/clinic/growth-statements", o.level === "admin"],
+                        ["verification", "/clinic/growth-verification", o.level === "admin"],
+                      ] as const).filter(([, , show]) => show).map(([k, path]) => (
+                        <Pressable key={k} testID={`growth-hub-${k}`} accessibilityRole="button" accessibilityLabel={t(`clinic.growth.hub.${k}`)} onPress={() => { haptic.select(); router.push(path as never); }}
+                          style={({ pressed }) => ({ minHeight: 56, justifyContent: "center", gap: 2, paddingVertical: 6, backgroundColor: pressed ? colors.soft : "transparent" })}>
+                          <T weight="semibold">{t(`clinic.growth.hub.${k}`)}</T>
+                          <T variant="caption" muted>{t(`clinic.growth.hub.${k}Hint`)}</T>
+                        </Pressable>
+                      ))}
+                    </Card>
 
                     <Card style={{ gap: 10 }} testID="growth-links">
                       <Row style={{ justifyContent: "space-between" }}>

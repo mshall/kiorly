@@ -19,8 +19,8 @@ export async function shareLink(message: string, url: string): Promise<ShareOutc
   try {
     if (Platform.OS === "web") {
       const nav = (globalThis as { navigator?: { share?: (d: { text: string; url: string }) => Promise<void> } }).navigator;
-      if (nav?.share) { await nav.share({ text: message, url }); return "shared"; }
-      return (await copyText(url)) ? "copied" : "failed";
+      if (nav?.share) { await nav.share(url ? { text: message, url } : ({ text: message } as { text: string; url: string })); return "shared"; }
+      return (await copyText(url || message)) ? "copied" : "failed";
     }
     const r = await Share.share({ message });
     return r.action === Share.dismissedAction ? "dismissed" : "shared";

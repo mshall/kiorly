@@ -14,6 +14,12 @@ describe("staff app deep links (GRW-P1-H)", () => {
     expect(r("https://www.kiorly.com/open/patient:P-42").route).toBe("/clinic/patient/P-42");
     expect(r("https://www.kiorly.com/open/rx:rx_9").route).toBe("/pharmacy/rx/rx_9");
     expect(r("https://www.kiorly.com/open/growth:me")).toMatchObject({ kind: "open", route: "/clinic/growth", requiresSignIn: true }); // GRW-P1-L
+    // GRW-P2-C: the closed set of Growth screens; any other id (including prototype names) opens the hub, never a path taken from the link
+    for (const [id, route] of [["share", "/clinic/growth-share"], ["slots", "/clinic/growth-slots"], ["statements", "/clinic/growth-statements"], ["verification", "/clinic/growth-verification"]]) {
+      expect(r(`kiorly://open/growth:${id}`)).toMatchObject({ kind: "open", route, requiresSignIn: true });
+      expect(r(`https://www.kiorly.com/open/growth:${id}`)).toMatchObject({ route });
+    }
+    for (const id of ["constructor", "__proto__", "toString", "x..y"]) expect(r(`kiorly://open/growth:${id}`).route === "/clinic/growth" || r(`kiorly://open/growth:${id}`).kind === "home").toBe(true);
     expect(r("https://www.kiorly.com/open/round:r1").route).toBe("/clinic/round/r1");
     expect(r("kiorly://open/visit:apt_123").route).toBe("/clinic/visit/apt_123");
   });

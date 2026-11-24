@@ -10,14 +10,17 @@ export const HOME: StaffLinkTarget = { kind: "home", route: "/", requiresSignIn:
 const SCHEMES = ["kiorly"];
 const ID_RE = /^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$/;
 
+/** GRW-P2-C: `kiorly://open/growth:share|slots|statements|verification` open the matching Growth screen; any other id opens the hub (a closed table, never a path from the link). */
+const GROWTH_SCREENS: Readonly<Record<string, string>> = Object.freeze({ share: "/clinic/growth-share", slots: "/clinic/growth-slots", statements: "/clinic/growth-statements", verification: "/clinic/growth-verification" });
+
 /** route key -> in-app path template. Add a key here only together with a screen that checks the session and the caller's role. */
 export const OPEN_ROUTE_KEYS: Readonly<Record<string, (id: string) => string>> = {
   visit: (id) => `/clinic/visit/${id}`,
   patient: (id) => `/clinic/patient/${id}`,
   round: (id) => `/clinic/round/${id}`,
   rx: (id) => `/pharmacy/rx/${id}`,
-  /** GRW-P1-L: `kiorly://open/growth:me` (the id is ignored: the screen shows the signed-in user's own links; the module key and role are checked by the API). */
-  growth: () => "/clinic/growth",
+  /** GRW-P1-L: `kiorly://open/growth:me` (the hub shows the signed-in user's own links; the module key and role are checked by the API). */
+  growth: (id) => (Object.prototype.hasOwnProperty.call(GROWTH_SCREENS, id) ? GROWTH_SCREENS[id]! : "/clinic/growth"),
 };
 export const configuredHosts = (env: string | undefined = process.env.EXPO_PUBLIC_LINK_HOSTS): string[] =>
   (env ?? "www.kiorly.com").split(",").map((h) => h.trim().toLowerCase()).filter((h) => /^[a-z0-9.-]+(:\d{1,5})?$/.test(h));
