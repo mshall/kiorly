@@ -16,6 +16,8 @@ export const OPEN_ROUTE_KEYS: Readonly<Record<string, (id: string) => string>> =
   patient: (id) => `/clinic/patient/${id}`,
   round: (id) => `/clinic/round/${id}`,
   rx: (id) => `/pharmacy/rx/${id}`,
+  /** GRW-P1-L: `kiorly://open/growth:me` (the id is ignored: the screen shows the signed-in user's own links; the module key and role are checked by the API). */
+  growth: () => "/clinic/growth",
 };
 export const configuredHosts = (env: string | undefined = process.env.EXPO_PUBLIC_LINK_HOSTS): string[] =>
   (env ?? "www.kiorly.com").split(",").map((h) => h.trim().toLowerCase()).filter((h) => /^[a-z0-9.-]+(:\d{1,5})?$/.test(h));

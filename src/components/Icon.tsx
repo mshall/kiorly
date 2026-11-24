@@ -60,6 +60,9 @@ const P: Record<string, (c: string) => React.ReactNode> = {
   truck: (c) => <><Rect x="1" y="6" width="14" height="10" rx="1" stroke={c} /><Path d="M15 9h4l3 3v4h-7z" stroke={c} /><Circle cx="6" cy="18" r="2" stroke={c} /><Circle cx="18" cy="18" r="2" stroke={c} /></>,
   syringe: (c) => <><Path d="M18 2l4 4M20 4l-9 9M15 7l5 5M9 15l-5 5M7 13l4 4-4 1-1-1z" stroke={c} /></>,
   award: (c) => <><Circle cx="12" cy="9" r="6" stroke={c} /><Path d="M8.5 14L7 22l5-3 5 3-1.5-8" stroke={c} /></>,
+  share: (c) => <><Circle cx="18" cy="5" r="3" stroke={c} /><Circle cx="6" cy="12" r="3" stroke={c} /><Circle cx="18" cy="19" r="3" stroke={c} /><Line x1="8.6" y1="10.6" x2="15.4" y2="6.4" stroke={c} /><Line x1="8.6" y1="13.4" x2="15.4" y2="17.6" stroke={c} /></>,
+  link: (c) => <><Path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1" stroke={c} /><Path d="M14 10a4 4 0 00-5.7 0l-3 3A4 4 0 0011 18.7l1-1" stroke={c} /></>,
+  copy: (c) => <><Rect x="9" y="9" width="12" height="12" rx="2" stroke={c} /><Path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke={c} /></>,
   info: (c) => <><Circle cx="12" cy="12" r="9" stroke={c} /><Line x1="12" y1="11" x2="12" y2="16" stroke={c} /><Line x1="12" y1="8" x2="12.01" y2="8" stroke={c} /></>,
 };
 

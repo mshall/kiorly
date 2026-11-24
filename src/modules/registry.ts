@@ -13,6 +13,7 @@ export const TILES: Tile[] = [
   { key: "clinic.vitals", product: "clinic", route: "/clinic/vitals", icon: "activity", quick: true },
   { key: "clinic.homevisits", product: "clinic", route: "/clinic/rounds", icon: "navigation", quick: true },
   { key: "clinic.revenue", product: "clinic", route: "/clinic/revenue", icon: "chart" },
+  { key: "clinic.growth", product: "clinic", route: "/clinic/growth", icon: "share" },
   { key: "pharmacy.rx", product: "pharmacy", route: "/pharmacy/rx", icon: "clipboard", quick: true },
   { key: "pharmacy.barcode", product: "pharmacy", route: "/pharmacy/barcode", icon: "scan", quick: true },
   { key: "pharmacy.receiving", product: "pharmacy", route: "/pharmacy/receiving", icon: "truck" },

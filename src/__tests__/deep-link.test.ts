@@ -13,6 +13,7 @@ describe("staff app deep links (GRW-P1-H)", () => {
     expect(r("https://www.kiorly.com/open/visit:apt_123")).toEqual({ kind: "open", route: "/clinic/visit/apt_123", requiresSignIn: true });
     expect(r("https://www.kiorly.com/open/patient:P-42").route).toBe("/clinic/patient/P-42");
     expect(r("https://www.kiorly.com/open/rx:rx_9").route).toBe("/pharmacy/rx/rx_9");
+    expect(r("https://www.kiorly.com/open/growth:me")).toMatchObject({ kind: "open", route: "/clinic/growth", requiresSignIn: true }); // GRW-P1-L
     expect(r("https://www.kiorly.com/open/round:r1").route).toBe("/clinic/round/r1");
     expect(r("kiorly://open/visit:apt_123").route).toBe("/clinic/visit/apt_123");
   });
@@ -22,7 +23,7 @@ describe("staff app deep links (GRW-P1-H)", () => {
     expect(r("https://www.kiorly.com/auth/callback?code=a&state=b").kind).toBe("home");
   });
   it("route keys are a closed list of key:id pairs, never URLs", () => {
-    expect(Object.keys(OPEN_ROUTE_KEYS).sort()).toEqual(["patient", "round", "rx", "visit"]);
+    expect(Object.keys(OPEN_ROUTE_KEYS).sort()).toEqual(["growth", "patient", "round", "rx", "visit"]);
     for (const u of [
       "https://www.kiorly.com/open/https:evil.example", "https://www.kiorly.com/open/visit:https%3A%2F%2Fevil.example", "https://www.kiorly.com/open/visit:..%2F..%2Fx", "https://www.kiorly.com/open/visit:a/b",
       "https://www.kiorly.com/open/unknown:abc", "https://www.kiorly.com/open/visit", "https://www.kiorly.com/open/visit:", "https://www.kiorly.com/open/visit:%252e%252e", "https://www.kiorly.com/open/visit:" + "a".repeat(70),

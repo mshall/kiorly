@@ -20,7 +20,7 @@ test.describe('Kiorly (Expo web) - clinic roles against the real API and seeded 
     await expect(page.getByTestId('home-greeting')).toContainText('Nadia'); // honorific "Dr" is skipped
     await expect(page.getByTestId('kpi-today')).toBeVisible();
     await openWork(page);
-    expect(await tileIds(page)).toEqual(['labs', 'patients', 'prescriptions', 'schedule', 'visits', 'vitals']); // no revenue, no home visits
+    expect(await tileIds(page)).toEqual(['growth', 'labs', 'patients', 'prescriptions', 'schedule', 'visits', 'vitals']); // growth (own link), no revenue, no home visits
     // schedule: the live queue has the seeded patient we just checked in
     await page.getByTestId('tile-clinic.schedule').click();
     await expect(page.getByTestId('clinic-schedule')).toBeVisible();
@@ -174,7 +174,7 @@ test.describe('Kiorly (Expo web) - clinic roles against the real API and seeded 
     expect(visit, 'a free home slot').toBeTruthy();
     await signIn(page, 'mona@nurse-demo.kiorly.test');
     await openWork(page);
-    expect(await tileIds(page)).toEqual(['homevisits', 'patients', 'revenue', 'schedule', 'vitals']); // nurse profession: no visits / prescriptions
+    expect(await tileIds(page)).toEqual(['growth', 'homevisits', 'patients', 'revenue', 'schedule', 'vitals']); // solo owner: growth tab; nurse profession: no visits / prescriptions
     await page.goto(`/clinic/round/${visit.id}`);
     await expect(page.getByTestId('clinic-round')).toContainText('Hoda Mahmoud');
     await page.getByTestId('round-depart').click();

@@ -241,7 +241,11 @@
     "never": "never",
     "serverCopy": "Server copy",
     "mine": "My change",
-    "opStatus": { "pending": "Waiting", "conflict": "Conflict", "failed": "Failed" },
+    "opStatus": {
+      "pending": "Waiting",
+      "conflict": "Conflict",
+      "failed": "Failed"
+    },
     "queuedToast": "Saved offline"
   },
   "search": {
@@ -316,6 +320,10 @@
       "revenue": {
         "title": "Revenue",
         "desc": "Today and the last 7 days"
+      },
+      "growth": {
+        "title": "Growth",
+        "desc": "Share your link and QR, see what brings patients"
       }
     },
     "pharmacy": {
@@ -481,6 +489,11 @@
         "revenue": {
           "default": "See today's revenue and the last 7 days.",
           "manager": "Check today's and this week's revenue from your phone, wherever you are."
+        },
+        "growth": {
+          "default": "Share your Kiorex link and QR code, and see which links bring patients.",
+          "manager": "See which links and Kiorex searches bring new patients, and what each costs you.",
+          "doctor": "Share your own Kiorex profile link and see how many patients it brings."
         }
       },
       "pharmacy": {
