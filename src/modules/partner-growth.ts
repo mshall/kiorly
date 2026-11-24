@@ -11,7 +11,7 @@ export interface PartnerLink {
 export interface PartnerOrigin { orders: number; completed: number; completionRate: number | null }
 export interface PartnerRecommendation { id: "CREATE_FIRST_LINK" | "PRINT_COUNTER_CARD" | "BRANCH_NOT_LISTED" | "LINKS_UNUSED" | "HIGH_REJECTION"; severity: "high" | "medium" | "low"; params: Record<string, number>; action: string }
 export interface PartnerOverview {
-  product: "PHARMACY" | "LAB"; level: PartnerLevel; can: { create: boolean; pause: boolean; revoke?: boolean }; plan: { key?: string; maxActiveLinks: number; linksUsed: number } | null;
+  product: "PHARMACY" | "LAB"; level: PartnerLevel; can: { view?: boolean; create: boolean; update?: boolean; revoke?: boolean }; plan: { key?: string; maxActiveLinks: number; linksUsed: number } | null;
   profileUrl: string; links: PartnerLink[];
   performance: { days: number; links: { visits: number; orders: number; completed: number; visitToOrder: number | null; orderToCompleted: number | null }; providerOriginated: PartnerOrigin; marketplaceOriginated: PartnerOrigin; acquisitionPending: boolean };
   recommendations: PartnerRecommendation[]; statement: { configured: boolean; note: string }; organisation: string; webGrowthPath: string; webGrowthUrl?: string | null;

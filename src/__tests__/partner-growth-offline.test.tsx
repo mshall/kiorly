@@ -29,7 +29,7 @@ const setLang = (l: string) => act(async () => { await i18n.changeLanguage(l); }
 const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2"><rect width="1" height="1" fill="#000"/></svg>';
 const origin = (orders: number, completed: number) => ({ orders, completed, completionRate: orders ? completed / orders : null });
 const overview = (product: "PHARMACY" | "LAB", over: Partial<PartnerOverview> = {}): PartnerOverview => ({
-  product, level: "admin", can: { create: true, pause: true, revoke: false }, plan: { key: "PRO", maxActiveLinks: 25, linksUsed: 1 }, profileUrl: `http://localhost:5180/ar/eg/${product.toLowerCase()}/nile`,
+  product, level: "admin", can: { view: true, create: true, update: true, revoke: false }, plan: { key: "PRO", maxActiveLinks: 25, linksUsed: 1 }, profileUrl: `http://localhost:5180/ar/eg/${product.toLowerCase()}/nile`,
   links: [{ id: "l1", code: "ABCD2345", label: "Counter card", ownerScope: "DESK", channelKind: "QR_DESK", status: "ACTIVE", shortUrl: "http://localhost:5173/q/ABCD2345", last30: { visits: 40, orders: 10, completed: 6 } }],
   performance: { days: 30, links: { visits: 40, orders: 10, completed: 6, visitToOrder: 0.25, orderToCompleted: 0.6 }, providerOriginated: origin(10, 6), marketplaceOriginated: origin(5, 3), acquisitionPending: false },
   recommendations: [{ id: "PRINT_COUNTER_CARD", severity: "low", params: {}, action: "links" }], statement: { configured: false, note: "none" }, organisation: "Nile", webGrowthPath: "/growth", webGrowthUrl: "http://localhost:5173/growth", ...over,

@@ -74,7 +74,7 @@ test.describe('pharmacist (CHAIN / ENTERPRISE)', () => {
     await expect(page.getByTestId('kpi-cash')).toContainText(/EGP|ج\.م/);
     await openWork(page);
     expect(await tilesOf(page)).toEqual(await apiTiles('pharmacist'));
-    expect((await tilesOf(page)).length).toBe(9);
+    expect((await tilesOf(page)).length).toBe(10);
   });
 
   test('Rx queue shows seeded and fixture prescriptions with patient names', async () => {
@@ -189,7 +189,7 @@ test.describe('cashier (CHAIN): till work only', () => {
     await openWork(page);
     const tiles = await tilesOf(page);
     expect(tiles).toEqual(await apiTiles('cashier'));
-    expect(tiles).toEqual(['barcode', 'customers', 'expiry', 'rx', 'shift']);
+    expect(tiles).toEqual(['barcode', 'customers', 'expiry', 'growth', 'rx', 'shift']);
   });
 
   test('barcode lookup of the fixture product, customer lookup of a seeded customer, shift cash', async () => {
@@ -232,7 +232,7 @@ test.describe('manager (CHAIN): witness countersign, receiving, validation witho
     await expect(page.getByTestId('pharmacy-summary')).toBeVisible();
     await openWork(page);
     expect(await tilesOf(page)).toEqual(await apiTiles('manager'));
-    expect((await tilesOf(page)).length).toBe(9);
+    expect((await tilesOf(page)).length).toBe(10);
   });
 
   test('witness countersign through the UI (a different user than the reporter): API records one countersign and clears the witness-pending state', async () => {

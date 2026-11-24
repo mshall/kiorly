@@ -189,7 +189,7 @@ export default function PartnerGrowthScreen({ product }: { product: PartnerProdu
                         { label: t(`${ns}.profile.sms`), icon: "phone", onPress: () => void openSms(partnerShareMessage(product, name, actions.shortUrl, lang)) },
                         { label: t(`${ns}.profile.copy`), icon: "copy", onPress: () => void copy(actions.shortUrl) },
                         { label: t(`${ns}.profile.qr`), icon: "scan", onPress: () => setQrFor({ id: actions.id, name: actions.label }), disabled: actions.status !== "ACTIVE" },
-                        ...(cap.pause && o.can.pause ? [{ label: t(`${ns}.links.${actions.status === "ACTIVE" ? "pause" : "resume"}`), icon: "clock" as const, onPress: () => void setStatus(actions) }] : []),
+                        ...(cap.pause && o.can.update ? [{ label: t(`${ns}.links.${actions.status === "ACTIVE" ? "pause" : "resume"}`), icon: "clock" as const, onPress: () => void setStatus(actions) }] : []),
                       ] : []} />
                     <Sheet visible={!!qrFor} onClose={() => setQrFor(null)} title={t(`${ns}.qr.title`)} testID="growth-qr-sheet">
                       {qrFor ? <QrCard product={product} linkId={qrFor.id} caption={qrFor.name} testID="growth-qr-link" /> : null}
