@@ -53,7 +53,7 @@ test.describe('Kiorly (Expo web) - Growth tab against the real Clinic API', () =
 
     // per-link actions: pause -> PAUSED on the API, QR action disabled for a paused link
     await row.click();
-    await page.getByRole('button', { name: 'Pause' }).click();
+    await page.getByRole('button', { name: 'Pause', exact: true }).and(page.locator(':not([data-testid^="growth-promo-"])')).click(); // the action-sheet row (the promotions card also has Pause buttons, further down the page)
     await expect.poll(async () => ((await api(owner, 'GET', '/growth/links')).body.items as any[]).find((l) => l.id === link.id)?.status, { timeout: 15_000 }).toBe('PAUSED');
     await expect(row).toContainText('Paused');
 

@@ -18,7 +18,7 @@ export async function apiLogin(email: string) {
 
 /** Dev-DB reset for demo rows the flows consume (alerts, result review). Best effort: skipped when psql is not available. */
 export function sql(statement: string) {
-  try { execFileSync(process.env.PSQL ?? '/Users/postgres/bin/psql', ['-h', '127.0.0.1', '-p', '5433', '-U', 'postgres', '-d', 'kiorly', '-c', statement], { env: { ...process.env, PGPASSWORD: 'postgres' }, stdio: 'pipe' }); return true; } catch { return false; }
+  try { execFileSync(process.env.PSQL ?? '/Users/postgres/bin/psql', ['-h', '127.0.0.1', '-p', '5433', '-U', 'postgres', '-d', process.env.DB_NAME ?? 'kiorly', '-c', statement], { env: { ...process.env, PGPASSWORD: 'postgres' }, stdio: 'pipe' }); return true; } catch { return false; }
 }
 
 /** Collects console errors / uncaught page errors so each test can assert there were none. */

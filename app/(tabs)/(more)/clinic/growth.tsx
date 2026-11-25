@@ -15,6 +15,7 @@ import { haptic } from "@/lib/haptics";
 import { formatInt, formatMoney, localizeDigits } from "@/lib/format";
 import { copyText, openSms, openWeb, openWhatsapp, shareLink } from "@/lib/shareLink";
 import { ClinicError, Title, useClinicBoot, useLang } from "@/modules/clinic/shared";
+import { CreditCard, PromotionsCard } from "@/modules/clinic/CreditPromoCards";
 import { conversion, featuredLink, isNurseEdition, linkName, nextLinkQuota, pct, providerShare, shareMessage, type GrowthLink, type GrowthOverview, type GrowthQr } from "@/modules/clinic/growth";
 
 const CHANNELS = ["WHATSAPP_SHARE", "QR_DESK", "SOCIAL", "WEB_LINK"] as const;
@@ -226,6 +227,9 @@ export default function Growth() {
                         <T variant="caption" muted>{t("clinic.growth.commission.note")}</T>
                       </Card>
                     ) : null}
+
+                    {o.level === "admin" ? <CreditCard webUrl={o.webGrowthUrl} /> : null}
+                    {o.level === "admin" ? <PromotionsCard webUrl={o.webGrowthUrl} /> : null}
 
                     <Card style={{ gap: 8 }} testID="growth-web-card">
                       <T variant="small" muted>{t("clinic.growth.web.hint")}</T>
