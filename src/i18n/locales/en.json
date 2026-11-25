@@ -621,7 +621,12 @@
     },
     "noteLabel": "Add a note (optional)",
     "notePlaceholder": "Why you need it, for example how it would help your work",
-    "noteCount": "{{n}}/{{max}}"
+    "noteCount": "{{n}}/{{max}}",
+    "webPlan": {
+      "title": "Plans are managed on the web",
+      "body": "Plans are bought, renewed and cancelled on the web, not inside this app. Your data is kept whatever plan you are on.",
+      "open": "Open plan page on the web"
+    }
   },
   "pushPrompt": {
     "title": "Stay on top of what matters",

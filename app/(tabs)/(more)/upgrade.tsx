@@ -15,6 +15,8 @@ import { tileByKey } from "@/modules/registry";
 import { noteTapped } from "@/lite/useUpgradeRequest";
 import { useState } from "react";
 import { localizeDigits } from "@/lib/format";
+import { Linking } from "react-native";
+import { webPlanUrl } from "@/lite/webPlan";
 
 const FEATS: [IconName, string][] = [["list", "upgrade.feat1"], ["scan", "upgrade.feat2"], ["sync", "upgrade.feat3"], ["bell", "upgrade.feat4"], ["fingerprint", "upgrade.feat5"]];
 
@@ -40,6 +42,7 @@ export default function Upgrade() {
   const benefit = tile ? (i18n.exists(roleKey) ? t(roleKey) : t(defKey, { defaultValue: "" })) : t("upgrade.body");
   const locked = lockedTilesFor(p, b);
   const [sheet, setSheet] = useState<string | null>(null);
+  const planUrl = webPlanUrl(p);
   const mine = alerts.items.filter((a) => a.product === p && !a.ackedAt).length;
   return (
     <Screen padded={false} testID="upgrade" style={{ paddingBottom: 32 }}>
@@ -48,6 +51,11 @@ export default function Upgrade() {
         <View style={{ width: 56, height: 56, borderRadius: radii.lg, backgroundColor: colors.soft, alignItems: "center", justifyContent: "center", marginTop: space[3] }}><Icon name="award" size={28} color={colors.ink} /></View>
         <T variant="display" style={{ marginTop: space[4] }} accessibilityRole="header" testID="upgrade-title">{t("upgrade.title")}</T>
         <T color={colors.muted} style={{ marginTop: space[1] }}>{t("upgrade.subtitle", { product: name, org: (i18n.language.startsWith("ar") && b?.org.nameAr) || b?.org.name || "", plan: planLabel })}</T>
+        <View style={{ marginTop: space[3], gap: space[1] }} testID="web-plan-note" accessible accessibilityRole="text">
+          <T weight="semibold">{t("lite.webPlan.title")}</T>
+          <T variant="small" muted>{t("lite.webPlan.body")}</T>
+          {planUrl ? <Pressable onPress={() => void Linking.openURL(planUrl)} accessibilityRole="link" accessibilityLabel={t("lite.webPlan.open")} style={{ minHeight: 44, justifyContent: "center" }}><T weight="semibold" color={colors.ink}>{t("lite.webPlan.open")}</T></Pressable> : null}
+        </View>
       </View>
       <View style={{ paddingHorizontal: 16, gap: 14 }}>
         <FadeIn>
