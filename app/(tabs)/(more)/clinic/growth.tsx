@@ -15,6 +15,7 @@ import { haptic } from "@/lib/haptics";
 import { formatInt, formatMoney, localizeDigits } from "@/lib/format";
 import { copyText, openSms, openWeb, openWhatsapp, shareLink } from "@/lib/shareLink";
 import { ClinicError, Title, useClinicBoot, useLang } from "@/modules/clinic/shared";
+import { QrSaveButton } from "@/components/QrSaveButton";
 import { CreditCard, PromotionsCard } from "@/modules/clinic/CreditPromoCards";
 import { conversion, featuredLink, isNurseEdition, linkName, nextLinkQuota, pct, providerShare, shareMessage, type GrowthLink, type GrowthOverview, type GrowthQr } from "@/modules/clinic/growth";
 
@@ -34,6 +35,7 @@ function QrCard({ linkId, caption, testID }: { linkId?: string; caption: string;
           </View>
         ) : <ErrorState error={q.error} onRetry={() => void q.refetch()} />}
       {q.data ? <T variant="caption" muted selectable style={{ textAlign: "center" }} forceLatin>{q.data.url}</T> : null}
+      {q.data ? <QrSaveButton svg={q.data.svg} url={q.data.url} name={caption} testID={testID ? `${testID}-save` : undefined} /> : null}
     </View>
   );
 }

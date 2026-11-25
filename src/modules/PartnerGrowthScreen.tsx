@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { QrSaveButton } from "@/components/QrSaveButton";
 import { Stack } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Badge, Banner, Button, Card, Chip, Field, Row, Screen, Sheet, T, useToast } from "@/components/ui";
@@ -29,6 +30,7 @@ function QrCard({ product, linkId, caption, testID }: { product: PartnerProduct;
           </View>
         ) : <ErrorState error={q.error} onRetry={() => void q.refetch()} />}
       {q.data ? <T variant="caption" muted selectable style={{ textAlign: "center" }} forceLatin>{q.data.url}</T> : null}
+      {q.data ? <QrSaveButton svg={q.data.svg} url={q.data.url} name={caption} testID={testID ? `${testID}-save` : undefined} /> : null}
     </View>
   );
 }
