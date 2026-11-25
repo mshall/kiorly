@@ -7,6 +7,8 @@ export interface LoginResult { token: string; refreshToken?: string; sessionId?:
 /** Product login (Passport OIDC PKCE is the production path where the product supports it; see Docs/SECURITY.md). */
 export async function login(product: Product, c: Credentials): Promise<LoginResult> {
   if (product === "lab") {
+    // Dev IdP only: a release build (__DEV__ false) never reaches the Lab dev login; the branch below is dead code there and the minifier removes the call (launch guide 11.142)
+    if (!__DEV__) throw new Error("LAB_DEV_LOGIN_UNAVAILABLE");
     const r = await api.post<{ token: string }>("lab", "/auth/dev-login", { orgSlug: (c.org ?? "").trim(), email: c.email.trim() }, { auth: null, quiet: true });
     return { token: r.token };
   }
@@ -25,4 +27,4 @@ export async function refreshTokens(product: Product, refreshToken: string): Pro
 }
 
 /** Lab org picker for the sign-in screen (dev IdP). */
-export const labOrgs = () => api.get<{ orgs?: { slug: string; name: string }[] } | { slug: string; name: string }[]>("lab", "/auth/dev/orgs", { auth: null, quiet: true });
+export const labOrgs = () => !__DEV__ ? Promise.resolve([] as { slug: string; name: string }[]) : api.get<{ orgs?: { slug: string; name: string }[] } | { slug: string; name: string }[]>("lab", "/auth/dev/orgs", { auth: null, quiet: true });
