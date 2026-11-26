@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/theme";
 import { ToastProvider } from "@/components/ui";
 import { ApiError } from "@/api/errors";
 import { partnerCapabilities, type PartnerOverview } from "@/modules/partner-growth";
+import { pickWording, shiftPeriod } from "@/modules/partner-commission";
 import { tilesFor } from "@/modules/registry";
 
 const mockRequest = jest.fn();
@@ -159,5 +160,54 @@ describe("role matrix and tile registry (per partner)", () => {
   });
   it("the clinic Refer a company tile (clinic.b2b) is registered with its route", () => {
     expect(tilesFor("clinic", [{ key: "clinic.b2b", enabled: true }]).find((t) => t.key === "clinic.b2b")?.route).toBe("/clinic/growth-b2b");
+  });
+});
+
+const RATE = { known: true, state: "SET", effective: { state: "SET", source: "OVERRIDE", version: 2, reason: null, spec: { feeType: "PERCENT", percentBps: 500, flatMinor: null, minMinor: 200, maxMinor: null, mode: null } }, disclosure: { rateDisclosure: { en: "TEST disclosure", ar: "" }, termsSummary: { en: "", ar: "" } }, counsel: { status: "NOT_REVIEWED" } };
+const STMT = { currency: "EGP", period: { from: "2026-12-01T00:00:00.000Z", to: "2027-01-01T00:00:00.000Z", key: "2026-12" }, onlineCollectionsMinor: 9000, cashVisitCommissionAccruedMinor: 400, cashVisitCommissionNettedMinor: 100, cashVisitCommissionOpenMinor: 300, deductions: { commissionMinor: 900, feesMinor: 1334, refundsMinor: null, chargebacksMinor: 0 }, netPayableMinor: 8000, paidByBankTransferMinor: 8000, payouts: [{ payoutRef: "po1", paidAt: "2026-12-04T00:00:00.000Z", cashMinor: 8000, commissionDeductedMinor: 900, bankReference: "BK-1", reconciliation: "MATCHED" }], reconciliation: "MATCHED" };
+describe.each(cases)("%s commission rate and settlement statement cards", (product, Screen, P) => {
+  it("English: rate, counsel status, disclosure as Kiorex wrote it, statement figures with feesMinor, payout and reconciliation; read only", async () => {
+    await setLang("en");
+    route({ "GET /mobile/growth": overview(P, { can: { view: true, create: true, update: true, revoke: false, commission: true } }), "GET /mobile/growth/commission-rate": RATE, "GET /mobile/growth/commission-statement": STMT, ...QR });
+    await wrap(<Screen />);
+    expect(await screen.findByTestId("growth-rate-effective")).toBeTruthy();
+    expect(within(screen.getByTestId("growth-rate-card")).getByText("5% of the fee (min EGP 2.00)", { exact: false })).toBeTruthy();
+    expect(screen.getByTestId("growth-counsel")).toBeTruthy();
+    expect(within(screen.getByTestId("growth-disclosure-rateDisclosure")).getByText("TEST disclosure")).toBeTruthy();
+    expect(screen.queryByTestId("growth-disclosure-termsSummary")).toBeNull();
+    const fig = await screen.findByTestId("growth-stmt-figures");
+    expect(within(fig).getByText("Deduction: fees")).toBeTruthy(); expect(within(fig).getByText("EGP 13.34", { exact: false })).toBeTruthy(); expect(within(fig).getByText("—")).toBeTruthy(); // refunds unknown stays a dash
+    expect(within(screen.getByTestId("growth-stmt-payout-po1")).getByText("BK-1", { exact: false })).toBeTruthy();
+    expect(screen.getByTestId("growth-stmt-recon")).toBeTruthy();
+    expect(screen.queryByTestId("growth-statement")).toBeNull(); // the placeholder is replaced
+    await fireEvent.press(screen.getByTestId("growth-stmt-prev"));
+    await waitFor(() => expect(mockRequest).toHaveBeenCalledWith(product, "GET", "/mobile/growth/commission-statement", expect.objectContaining({ query: { period: shiftPeriod(new Date().toISOString().slice(0, 7), -1) } })));
+  });
+  it("Arabic: Arabic-Indic digits and wording; rate not set says nothing is charged", async () => {
+    await setLang("ar");
+    route({ "GET /mobile/growth": overview(P, { can: { view: true, create: true, update: true, revoke: false, commission: true } }), "GET /mobile/growth/commission-rate": { ...RATE, state: "NOT_SET", effective: { state: "NOT_SET", source: null, version: null, reason: null, spec: null }, disclosure: null, counsel: null }, "GET /mobile/growth/commission-statement": STMT, ...QR });
+    await wrap(<Screen />);
+    expect(await screen.findByTestId("growth-rate-not-set")).toBeTruthy();
+    expect(within(await screen.findByTestId("growth-stmt-figures")).getByText("خصم: الرسوم")).toBeTruthy();
+  });
+  it("roles without access to the figures keep the plain placeholder and never call the money routes", async () => {
+    await setLang("en");
+    route({ "GET /mobile/growth": overview(P), ...QR });
+    await wrap(<Screen />);
+    expect(await screen.findByTestId("growth-statement")).toBeTruthy();
+    expect(mockRequest.mock.calls.some((c) => String(c[2]).includes("commission"))).toBe(false);
+  });
+  it("the statement is not connected yet: one neutral line, not an invented figure", async () => {
+    await setLang("en");
+    route({ "GET /mobile/growth": overview(P, { can: { view: true, create: true, update: true, revoke: false, commission: true } }), "GET /mobile/growth/commission-rate": RATE, "GET /mobile/growth/commission-statement": new ApiError(503, "STATEMENT_NOT_CONNECTED", "no") });
+    await wrap(<Screen />);
+    expect(await screen.findByTestId("growth-stmt-unavailable")).toBeTruthy(); expect(screen.queryByTestId("growth-stmt-figures")).toBeNull();
+  });
+});
+describe("commission card helpers", () => {
+  it("months move back and never past the current month; wording falls back to the other language only when set", () => {
+    const now = new Date("2026-12-15T10:00:00Z");
+    expect([shiftPeriod("2026-12", -1, now), shiftPeriod("2026-01", -1, now), shiftPeriod("2026-12", 1, now), shiftPeriod("2026-10", 1, now)]).toEqual(["2026-11", "2025-12", "2026-12", "2026-11"]);
+    expect(pickWording({ en: "A", ar: "" }, "ar")).toEqual({ text: "A", lang: "en" }); expect(pickWording({ en: " ", ar: "" }, "en")).toBeNull();
   });
 });

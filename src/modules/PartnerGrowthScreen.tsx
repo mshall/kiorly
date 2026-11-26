@@ -15,6 +15,7 @@ import { useTheme } from "@/theme";
 import { haptic } from "@/lib/haptics";
 import { formatInt, localizeDigits } from "@/lib/format";
 import { copyText, openSms, openWeb, openWhatsapp, shareLink } from "@/lib/shareLink";
+import { PartnerCommissionCards } from "@/modules/PartnerCommissionCards";
 import { featuredPartnerLink, linkSite, partnerCapabilities, partnerShare, partnerShareMessage, percent, PARTNER_CHANNELS, scopeForChannel, type PartnerLink, type PartnerOverview, type PartnerProduct, type PartnerQr } from "@/modules/partner-growth";
 
 /** Resolves a link to its QR. The Pharmacy and Lab APIs render the SVG on the server (local QR library, no third-party service) and return JSON with `?format=json`. */
@@ -174,10 +175,12 @@ export default function PartnerGrowthScreen({ product }: { product: PartnerProdu
                       </Card>
                     ) : null}
 
-                    <Card style={{ gap: 6 }} testID="growth-statement">
-                      <SectionTitle title={t(`${ns}.statement.title`)} />
-                      <T muted>{t(`${ns}.statement.none`)}</T>
-                    </Card>
+                    {o.can.commission ? <PartnerCommissionCards product={product} /> : (
+                      <Card style={{ gap: 6 }} testID="growth-statement">
+                        <SectionTitle title={t(`${ns}.statement.title`)} />
+                        <T muted>{t(`${ns}.statement.none`)}</T>
+                      </Card>
+                    )}
 
                     <Card style={{ gap: 8 }} testID="growth-web-card">
                       <T variant="small" muted>{t(`${ns}.web.hint`)}</T>
