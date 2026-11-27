@@ -29,7 +29,8 @@ export default function ResultEntry() {
   const toast = useToast();
   const qc = useQueryClient();
   const { can } = useLab();
-  const list = useRead<EntrySpecimen[]>("lab", "/worklist", { query: { status: "PROCESSING" } });
+  // `specimenId` makes a current Lab API return exactly this specimen (the plain list is capped at the oldest 200); an older API ignores it and the specimen is found in the list below.
+  const list = useRead<EntrySpecimen[]>("lab", "/worklist", { query: { status: "PROCESSING", specimenId } });
   const instruments = useRead<Instrument[]>("lab", "/instruments", { enabled: mayEnter(can) });
   const refresh = usePullRefresh({ refetch: async () => { await Promise.all([list.refetch(), instruments.refetch()]); } });
   const [values, setValues] = useState<Record<string, string>>({});
