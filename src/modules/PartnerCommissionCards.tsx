@@ -7,7 +7,7 @@ import { ErrorState } from "@/components/states";
 import { ApiError } from "@/api/errors";
 import { useRead } from "@/hooks/useRead";
 import { formatMoney, localizeDigits } from "@/lib/format";
-import { currentPeriod, pickWording, reconTone, shiftPeriod, type PartnerRateView, type PartnerStatement, type RateSpec } from "@/modules/partner-commission";
+import { currentPeriod, pickWording, reconTone, shiftPeriod, isNotConnected, type PartnerRateView, type PartnerStatement, type PartnerStatementNotConnected, type RateSpec } from "@/modules/partner-commission";
 import type { PartnerProduct } from "@/modules/partner-growth";
 
 /**
@@ -18,17 +18,18 @@ export function PartnerCommissionCards({ product }: { product: PartnerProduct })
   const { t, i18n } = useTranslation(); const lang = i18n.language; const ns = `${product}.growth.commission`;
   const [period, setPeriod] = useState(currentPeriod());
   const rate = useRead<PartnerRateView>(product, "/mobile/growth/commission-rate");
-  const stmt = useRead<PartnerStatement>(product, "/mobile/growth/commission-statement", { query: { period } });
+  const stmt = useRead<PartnerStatement | PartnerStatementNotConnected>(product, "/mobile/growth/commission-statement", { query: { period } });
   const money = (minor: number | null) => (minor === null ? "—" : formatMoney(minor / 100, lang, 2));
   const spec = (s: RateSpec) => {
     const base = s.feeType === "PERCENT" ? t(`${ns}.percentOf`, { pct: localizeDigits(`${Math.round((s.percentBps ?? 0) / 100 * 100) / 100}%`, lang) }) : t(`${ns}.flatPer`, { amount: money(s.flatMinor ?? 0) });
     const bounds = [s.minMinor != null ? `${t(`${ns}.min`)} ${money(s.minMinor)}` : null, s.maxMinor != null ? `${t(`${ns}.max`)} ${money(s.maxMinor)}` : null].filter(Boolean).join(", ");
     return bounds ? `${base} (${bounds})` : base;
   };
-  const r = rate.data; const s = stmt.data;
+  const r = rate.data; const s = isNotConnected(stmt.data) ? undefined : stmt.data;
   const blocks = r?.disclosure ? (["rateDisclosure", "termsSummary"] as const).map((k) => { const w = pickWording(r.disclosure![k], lang); return w ? { k, ...w } : null; }).filter((b) => b !== null) : [];
-  const notConnected = stmt.error instanceof ApiError && stmt.error.code === "STATEMENT_NOT_CONNECTED";
-  const rows: [string, number | null][] = s ? [["cOnline", s.onlineCollectionsMinor], ["cCashAccrued", s.cashVisitCommissionAccruedMinor], ["cCashNetted", s.cashVisitCommissionNettedMinor], ["cCashOpen", s.cashVisitCommissionOpenMinor], ["cDedCommission", s.deductions.commissionMinor], ["cDedFees", s.deductions.feesMinor], ["cDedRefunds", s.deductions.refundsMinor], ["cDedChargebacks", s.deductions.chargebacksMinor], ["cNet", s.netPayableMinor], ["cPaid", s.paidByBankTransferMinor]] : [];
+  // current API: 200 { connected: false }; an older API answered 503 STATEMENT_NOT_CONNECTED (still handled)
+  const notConnected = isNotConnected(stmt.data) || (stmt.error instanceof ApiError && stmt.error.code === "STATEMENT_NOT_CONNECTED");
+  const rows: [string, number | null][] = s ? [["cOnline", s.onlineCollectionsMinor], ["cCashAccrued", s.cashVisitCommissionAccruedMinor], ["cCashNetted", s.cashVisitCommissionNettedMinor], ["cCashOpen", s.cashVisitCommissionOpenMinor], ...(s.cashBreakdown ? ([["cCashOnlyAccrued", s.cashBreakdown.cash.accruedMinor], ["cCashOnlyNetted", s.cashBreakdown.cash.nettedMinor], ["cCashTransferAccrued", s.cashBreakdown.cashTransfer.accruedMinor], ["cCashTransferNetted", s.cashBreakdown.cashTransfer.nettedMinor]] as [string, number | null][]) : []), ...(s.unknownTender && s.unknownTender.charges > 0 ? ([["cUnknownTender", s.unknownTender.commissionMinor]] as [string, number | null][]) : []), ["cDedCommission", s.deductions.commissionMinor], ["cDedFees", s.deductions.feesMinor], ["cDedRefunds", s.deductions.refundsMinor], ["cDedChargebacks", s.deductions.chargebacksMinor], ["cNet", s.netPayableMinor], ["cPaid", s.paidByBankTransferMinor]] : [];
 
   return (
     <View style={{ gap: 12 }} testID="growth-commission-cards">
@@ -64,7 +65,7 @@ export function PartnerCommissionCards({ product }: { product: PartnerProduct })
           <T weight="semibold" forceLatin testID="growth-stmt-period">{localizeDigits(period, lang)}</T>
           <Button small variant="secondary" title={t(`${ns}.stmt.next`)} onPress={() => setPeriod(shiftPeriod(period, 1))} disabled={period >= currentPeriod()} testID="growth-stmt-next" />
         </Row>
-        {stmt.isError && !s ? (notConnected ? <Banner tone="ink" body={t(`${ns}.stmt.notConnected`)} testID="growth-stmt-unavailable" /> : <ErrorState error={stmt.error} onRetry={() => void stmt.refetch()} />) : null}
+        {(stmt.isError || notConnected) && !s ? (notConnected ? <Banner tone="ink" body={t(`${ns}.stmt.notConnected`)} testID="growth-stmt-unavailable" /> : <ErrorState error={stmt.error} onRetry={() => void stmt.refetch()} />) : null}
         {s ? (
           <>
             <T variant="small" muted>{t(`${ns}.stmt.source`)}</T>

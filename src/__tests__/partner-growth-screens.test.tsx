@@ -197,6 +197,22 @@ describe.each(cases)("%s commission rate and settlement statement cards", (produ
     expect(await screen.findByTestId("growth-statement")).toBeTruthy();
     expect(mockRequest.mock.calls.some((c) => String(c[2]).includes("commission"))).toBe(false);
   });
+  it("the API answers 200 { connected: false } for an unconnected organisation: the same neutral line, no error state, no figures", async () => {
+    await setLang("en");
+    route({ "GET /mobile/growth": overview(P, { can: { view: true, create: true, update: true, revoke: false, commission: true } }), "GET /mobile/growth/commission-rate": RATE, "GET /mobile/growth/commission-statement": { connected: false, code: "STATEMENT_NOT_CONNECTED", period: "2026-12" } });
+    await wrap(<Screen />);
+    expect(await screen.findByTestId("growth-stmt-unavailable")).toBeTruthy(); expect(screen.queryByTestId("growth-stmt-figures")).toBeNull();
+    expect(screen.getByText("The Kiorex statement is not connected in this environment.")).toBeTruthy();
+  });
+  it("the cash vs cash-transfer split is shown as its own rows (and an unreported tender as an exception), nothing when the API sends none", async () => {
+    await setLang("en");
+    const split = { ...STMT, cashBreakdown: { cash: { accruedMinor: 100, nettedMinor: 100, openMinor: 0, charges: 1 }, cashTransfer: { accruedMinor: 300, nettedMinor: 0, openMinor: 300, charges: 2, byDetail: { INSTAPAY: 2 }, unspecifiedDetail: 0 } }, unknownTender: { charges: 1, commissionMinor: 250 } };
+    route({ "GET /mobile/growth": overview(P, { can: { view: true, create: true, update: true, revoke: false, commission: true } }), "GET /mobile/growth/commission-rate": RATE, "GET /mobile/growth/commission-statement": split, ...QR });
+    await wrap(<Screen />);
+    const fig = await screen.findByTestId("growth-stmt-figures");
+    expect(within(fig).getByText("Of which cash transfer: accrued")).toBeTruthy(); expect(within(fig).getByText("Of which cash at the visit: accrued")).toBeTruthy();
+    expect(within(fig).getByText("Visits with payment method not reported (exception)")).toBeTruthy(); expect(within(fig).getByText("EGP 2.50", { exact: false })).toBeTruthy();
+  });
   it("the statement is not connected yet: one neutral line, not an invented figure", async () => {
     await setLang("en");
     route({ "GET /mobile/growth": overview(P, { can: { view: true, create: true, update: true, revoke: false, commission: true } }), "GET /mobile/growth/commission-rate": RATE, "GET /mobile/growth/commission-statement": new ApiError(503, "STATEMENT_NOT_CONNECTED", "no") });

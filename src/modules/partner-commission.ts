@@ -7,7 +7,14 @@ export interface PartnerRateView {
   counsel?: { status: "NOT_REVIEWED" | "APPROVED_WITH_CONDITIONS" | "APPROVED" | "REJECTED" } | null;
 }
 export type Recon = "MATCHED" | "UNMATCHED" | "DISPUTED";
+export type TenderKind = { accruedMinor: number; nettedMinor: number; openMinor: number; charges: number };
+/** The mobile statement route answers 200 with this when Kiorex is not connected for the organisation (a normal state, not a server error). */
+export interface PartnerStatementNotConnected { connected: false; code: "STATEMENT_NOT_CONNECTED"; period: string | null }
 export interface PartnerStatement {
+  connected?: true;
+  /** LG-COM-20: the cash-type commission split into plain cash and cash transfer, as Kiorex finance sees it (absent on an older API). */
+  cashBreakdown?: { cash: TenderKind; cashTransfer: TenderKind & { byDetail: Record<string, number>; unspecifiedDetail: number } } | null;
+  unknownTender?: { charges: number; commissionMinor: number } | null;
   currency: string; period: { from: string; to: string; key: string };
   onlineCollectionsMinor: number; cashVisitCommissionAccruedMinor: number; cashVisitCommissionNettedMinor: number; cashVisitCommissionOpenMinor: number;
   deductions: { commissionMinor: number; feesMinor: number | null; refundsMinor: number | null; chargebacksMinor: number | null };
@@ -31,3 +38,5 @@ export function pickWording(x: { en: string; ar: string }, lang: string): { text
   return null;
 }
 export const reconTone = (s: string): "success" | "warning" | "muted" => (s === "MATCHED" ? "success" : s === "DISPUTED" ? "warning" : "muted");
+
+export const isNotConnected = (x: PartnerStatement | PartnerStatementNotConnected | undefined): x is PartnerStatementNotConnected => !!x && (x as PartnerStatementNotConnected).connected === false;
