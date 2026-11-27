@@ -58,7 +58,8 @@ test.describe('theme: light by default, an explicit choice is persisted', () => 
   test.use({ colorScheme: 'dark' }); // a dark OS must NOT turn the app dark
   test('light on a first visit even on a dark OS; a stored Dark choice is restored after a reload', async ({ page }) => {
     await openSignIn(page);
-    expect(await groundColour(page)).toBe(LIGHT_GROUND);
+    // the ground is now a light brand gradient over a white root: assert it is LIGHT (every channel >= 240), not the single flat Ground token
+    expect((await groundColour(page)).match(/\d+/g)!.slice(0, 3).map(Number).every((n) => n >= 240), `light ground, got ${await groundColour(page)} (brand Ground ${LIGHT_GROUND})`).toBe(true);
     expect(await page.evaluate((k) => localStorage.getItem(k), THEME_KEY)).toBeNull(); // nothing stored for a plain visit
     await page.evaluate((k) => localStorage.setItem(k, 'dark'), THEME_KEY);
     await page.reload(); await expect(page.getByTestId('signin-method')).toBeVisible();

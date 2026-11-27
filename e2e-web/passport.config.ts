@@ -4,7 +4,7 @@ import { defineConfig } from '@playwright/test';
  * Kiorex Passport sign-in / sign-out specs (passport-*.spec.ts): the Expo WEB build against a MOCK Passport (OIDC provider) and a mocked clinic API,
  * both served by Playwright routes, so no stack, no ports and no OTP are needed. The real dev IdP (kiorex-account, :4400) is never contacted.
  * Build + serve:
- *   cd kiorly && npx expo export -p web --output-dir /tmp/kiorly-web && node e2e-web/serve.mjs /tmp/kiorly-web 8097
+ *   cd kiorly && EXPO_PUBLIC_PASSPORT_ISSUER=http://localhost:4400 EXPO_PUBLIC_CLINIC_API=http://localhost:3010/api/v1 npx expo export -p web --output-dir /tmp/kiorly-web && node e2e-web/serve.mjs /tmp/kiorly-web 8097  (a production export has no dev hosts: the issuer and clinic API must be given)
  * Run: cd kiorly/e2e-web && WEB_URL=http://localhost:8097 npx playwright test -c passport.config.ts
  */
 const executablePath = process.env.CHROMIUM_PATH ?? `${process.env.HOME}/Library/Caches/ms-playwright/chromium_headless_shell-1255/chrome-headless-shell-mac-arm64/chrome-headless-shell`;
