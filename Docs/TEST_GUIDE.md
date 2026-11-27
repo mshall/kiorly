@@ -50,3 +50,11 @@ Run `cd kiorly && npm run web` and open http://localhost:8082 at phone width.
 11. **Language, theme, sign-out.** Arabic default (RTL) and English; light and dark; Sign out asks for confirmation from Home and Me.
 
 More: `DEMO_DATA.md` (W1-W15).
+
+## Dev client builds versus release builds (28 Nov 2026)
+
+The dev client (`expo-dev-client`, the dev menu, `npx expo start --dev-client`) exists only in `development` and `development-simulator` builds. `preview`, `kx-test`, `kx-test-simulator`, `pilot`, `production` and the local `npm run build:android:test` APK are built without it, so you cannot attach Metro to them; to debug against kx-test use `npm run web:test` or a development build with the test environment variables. Check a profile with `EAS_BUILD_PROFILE=<profile> npx expo config --json` (see README, "Dev client only in development profiles").
+
+## Sign-in closed without a result (Android)
+
+On Android the Passport sign-in runs in a Custom Tab. If the tab closes without a redirect (back button, or the phone number is not linked to a staff account of the chosen product and the page ended there) the sign-in screen shows "Sign-in did not finish" with Try again and Choose another product (EN/AR, `signIn.passportDismissed*`), instead of returning silently. Test: `src/__tests__/signin-passport.test.tsx`. An explicit cancel on iOS and web stays silent.

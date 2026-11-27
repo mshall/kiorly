@@ -6,7 +6,7 @@ Demo logins, role x module matrix, Basic/Lite walkthrough and manual test script
 
 ## Development build (local, no EAS account)
 
-The app is a normal Expo SDK 58 project with `expo-dev-client`; native folders (`ios/`, `android/`) are **generated** (`expo prebuild`) and git-ignored. Config lives in `app.json` (bundle id / package `com.kiorly.app`, scheme `kiorly`, permissions, `expo-notifications` plugin with `remote-notification` background mode) and `eas.json` (profiles `development`, `development-simulator`, `preview`, `production`; no secrets).
+The app is a normal Expo SDK 58 project; `expo-dev-client` is part of DEVELOPMENT builds only (see "Dev client only in development profiles" below); native folders (`ios/`, `android/`) are **generated** (`expo prebuild`) and git-ignored. Config lives in `app.json` (bundle id / package `com.kiorly.app`, scheme `kiorly`, permissions, `expo-notifications` plugin with `remote-notification` background mode) and `eas.json` (profiles `development`, `development-simulator`, `preview`, `production`; no secrets).
 
 ```bash
 # one-time tooling (this Mac has no Homebrew): CocoaPods into ~/.local/gems
@@ -51,3 +51,15 @@ Sign-in shows four tiles: Clinic, **Nurse**, Pharmacy and Lab. Nurse is the fron
 * **Sign out.** Home header has a sign-out button; Me has a prominent "Sign out" on top and at the bottom, per product and "everything". All go through `SignOutSheet` (confirm step): it deletes this device's record on the product API (this drops the push token), clears the secure-stored session and the query cache, and returns to `/sign-in` when no account is left.
 * **Sign-in header.** `BrandLockup` (mark | rule | "Kiorly" bold, from `app.name`) plus the language pills; product tiles are a 2x2 grid (icon + full label).
 * **Dev-client "Tools" gear.** The round gear that used to overlap the sign-in header in debug builds is the expo-dev-client floating tools button, not part of the app. `plugins/withDevMenuNoFab.js` sets `EXDevMenuShowFloatingActionButton=false` (Info.plist / manifest meta-data) so it is off by default after the next `expo prebuild`; it can still be switched on in the dev menu ("Tools button"). Release builds never have it.
+
+## Dev client only in development profiles
+
+`app.config.ts` removes the `expo-dev-client` and `./plugins/withDevMenuNoFab.js` config plugins unless the build profile is `development` or `development-*` (`EAS_BUILD_PROFILE`, else `APP_ENV`, else development for local runs). So `preview`, `kx-test`, `kx-test-simulator`, `pilot` and `production` (the store and internal release profiles) are prebuilt without the dev launcher wiring or the dev-menu manifest entries. The profile is checked per EAS profile by `src/__tests__/dev-client-profiles.test.ts`. By hand:
+
+```bash
+for p in development development-simulator preview kx-test pilot production; do
+  echo "== $p"; EAS_BUILD_PROFILE=$p SKIP_FIREBASE_CHECK=1 STAFF_LINK_HOST=app.test.kiorly.com npx expo config --json | node -e 'const d=JSON.parse(require("fs").readFileSync(0));console.log(d.plugins.map(p=>Array.isArray(p)?p[0]:p).filter(x=>/dev/i.test(x)))'
+done   # development* print both plugins, every other profile prints []
+```
+
+Limit worth knowing: the `expo-dev-client` npm package stays in `package.json` (development builds need it) and Expo autolinking still compiles its native modules, whose release variants are no-ops; what is gone from the other profiles is the config-plugin native wiring. Local release builds (`npm run build:android:test`, APP_ENV `preview`) follow the same rule, so Metro with `--dev-client` needs a development build, not that APK.

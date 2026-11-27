@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { KeyboardAvoidingView, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -29,6 +29,9 @@ export default function SignIn() {
   const product: Product = productOf(entry);
   const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [org, setOrg] = useState("");
   const [mfa, setMfa] = useState(""); const [needMfa, setNeedMfa] = useState(false);
+  // Android Custom Tab closed without a redirect: shown as a message with Try again / Choose another product (never a silent return to this screen)
+  const [dismissed, setDismissed] = useState(false);
+  const scrollRef = useRef<{ scrollTo: (o: { y: number; animated?: boolean }) => void } | null>(null); const gridY = useRef(0);
   const [busy, setBusy] = useState(false); const [busyPassport, setBusyPassport] = useState(false); const [error, setError] = useState<string | null>(null);
   const meta = PRODUCT_META[product];
   // Two methods only: Kiorex Passport (default) and Password. The last method that signed this device in is preselected (falls back to Passport).
@@ -52,14 +55,14 @@ export default function SignIn() {
     } finally { setBusy(false); }
   };
   const submitPassport = async () => {
-    setError(null); setBusyPassport(true);
+    setError(null); setDismissed(false); setBusyPassport(true);
     try {
       const b = await signInPassport(product, i18n.language);
       haptic.success(); void rememberSignInMethod("passport"); void rememberSignInEntry(entry);
       router.replace(b.entitlement.enabled ? (entry === "nurse" ? "/clinic/rounds" : "/(tabs)") as never : (`/upgrade?product=${product}` as never));
     } catch (e) {
       if (e instanceof PassportError) {
-        if (e.code === "cancelled") setError(null);
+        if (e.code === "cancelled") { setError(null); if (e.detail === "dismiss") setDismissed(true); }
         else { haptic.error(); setError(e.code === "network" ? t("signIn.passportNetwork") : t("signIn.passportFailed")); }
       } else {
         haptic.error();
@@ -76,7 +79,7 @@ export default function SignIn() {
     <KeyboardAvoidingView style={{ flex: 1, backgroundColor: colors.ground }} behavior="padding" /* Android 15 is edge-to-edge: the window no longer resizes for the keyboard, so pad on both platforms */>
       {/* the only decoration: a whisper of indigo at the very top of the screen, fading to the ground colour (no banner) */}
       <LinearGradient pointerEvents="none" aria-hidden colors={[tint, "rgba(0,0,0,0)"]} style={{ position: "absolute", top: 0, left: 0, right: 0, height: 280 }} />
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollRef as never} keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <BrandHeader testID="signin-header" lockupTestID="brand-lockup"><LanguageMenu testID="language-menu" /></BrandHeader>
 
         <View style={{ paddingHorizontal: 24, paddingTop: space[5], paddingBottom: space[4], gap: space[2] }}>
@@ -86,11 +89,11 @@ export default function SignIn() {
 
         <View style={{ marginHorizontal: space[4], marginBottom: space[4], padding: space[5], gap: space[4], borderRadius: radii.xl, backgroundColor: colors.surface, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.border, ...layeredShadow(scheme) }} testID="signin-card">
           <T variant="label" muted>{t("signIn.subtitle")}</T>
-          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }} testID="product-grid" accessibilityRole="radiogroup">
+          <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }} testID="product-grid" accessibilityRole="radiogroup" onLayout={(ev) => { gridY.current = ev.nativeEvent.layout.y; }}>
             {SIGN_IN_ENTRIES.map((e) => {
               const p = productOf(e); const sel = e === entry; const a = accentFor(p, scheme); const done = products.includes(p);
               return (
-                <Pressable key={e} testID={`product-${e}`} onPress={() => { haptic.select(); setEntry(e); setError(null); setNeedMfa(false); }} accessibilityRole="radio" accessibilityState={{ selected: sel, checked: sel }}
+                <Pressable key={e} testID={`product-${e}`} onPress={() => { haptic.select(); setEntry(e); setError(null); setDismissed(false); setNeedMfa(false); }} accessibilityRole="radio" accessibilityState={{ selected: sel, checked: sel }}
                   accessibilityLabel={`${t(e === "nurse" ? "product.nurse" : PRODUCT_META[p].nameKey)}${done ? `, ${t("signIn.connected")}` : ""}`}
                   style={({ pressed }) => ({ flexGrow: 1, flexBasis: "45%", minWidth: 120, minHeight: 64, borderRadius: radii.lg, paddingHorizontal: space[3], paddingVertical: space[2], flexDirection: "row", alignItems: "center", gap: space[3], borderWidth: 1.5, borderColor: sel ? colors.ink : colors.border, backgroundColor: sel ? colors.soft : pressed ? colors.raised : colors.surface })}>
                   <Icon name={e === "nurse" ? "heart" : PRODUCT_META[p].icon} size={24} color={a} />
@@ -109,6 +112,14 @@ export default function SignIn() {
               options={[{ value: "passport", label: t("signIn.methodPassport") }, { value: "password", label: t("signIn.methodPassword") }]} />
           ) : null}
           {error ? <Banner tone="danger" body={error} testID="signin-error" /> : null}
+          {dismissed && !error ? (
+            <Banner tone="warning" title={t("signIn.passportDismissedTitle")} body={t("signIn.passportDismissed", { product: t(entry === "nurse" ? "product.nurse" : meta.nameKey) })} testID="signin-dismissed">
+              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: space[2], marginTop: space[2] }}>
+                <Button small title={t("signIn.tryAgain")} icon="shield" onPress={() => void submitPassport()} testID="signin-retry" />
+                <Button small variant="secondary" title={t("signIn.chooseProduct")} onPress={() => { haptic.select(); setDismissed(false); scrollRef.current?.scrollTo({ y: Math.max(0, gridY.current - 16), animated: true }); }} testID="signin-choose-product" />
+              </View>
+            </Banner>
+          ) : null}
           {showPassport ? (
             <View style={{ gap: space[3] }} testID="signin-passport-panel">
               <Button title={t("signIn.passport")} onPress={() => void submitPassport()} loading={busyPassport} icon="shield" testID="signin-passport" />

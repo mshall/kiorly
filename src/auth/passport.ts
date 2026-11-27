@@ -145,9 +145,11 @@ export async function signInWithPassport(o: { lang?: string; fetchImpl?: typeof 
   const d = await discover(PASSPORT_ISSUER, f);
   const { request, nonce } = await buildAuthRequest(d, { lang: o.lang });
   const result = await request.promptAsync({ authorizationEndpoint: d.authorizationEndpoint });
-  if (result.type === "cancel" || result.type === "dismiss" || result.type === "locked") throw new PassportError("cancelled", "Sign-in was cancelled");
+  // detail = the browser result type: `dismiss` is what Android reports when the Custom Tab closes without a redirect (back button, or the
+  // sign-in page ended on "not linked to a product"); the sign-in screen shows a retry / choose-product message for it instead of staying silent.
+  if (result.type === "cancel" || result.type === "dismiss" || result.type === "locked") throw new PassportError("cancelled", "Sign-in was cancelled", result.type);
   if (result.type === "error") throw new PassportError("denied", result.error?.description || result.error?.message || "Passport refused the sign-in", result.params?.error);
-  if (result.type !== "success") throw new PassportError("cancelled", "Sign-in did not complete");
+  if (result.type !== "success") throw new PassportError("cancelled", "Sign-in did not complete", "dismiss");
   if (result.params.state !== request.state) throw new PassportError("state", "Sign-in response did not match the request (state)");
   if (result.params.iss && d.issuer && result.params.iss !== d.issuer) throw new PassportError("state", "Sign-in response came from a different issuer");
   const code = result.params.code;

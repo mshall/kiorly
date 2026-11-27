@@ -62,6 +62,41 @@ describe("sign-in screen: Kiorex Passport", () => {
     await waitFor(() => expect(mockSignInPassport).toHaveBeenCalled());
     expect(screen.queryByTestId("signin-error")).toBeNull(); expect(mockReplace).not.toHaveBeenCalled();
   });
+  it("a dismissed browser (Android Custom Tab closed without a redirect) shows a clear message with Try again and Choose another product", async () => {
+    mockSignInPassport.mockRejectedValueOnce(new PassportError("cancelled", "x", "dismiss"));
+    await wrap(<SignIn />);
+    await fireEvent.press(screen.getByTestId("product-pharmacy"));
+    await fireEvent.press(screen.getByTestId("signin-passport"));
+    await waitFor(() => expect(screen.getByTestId("signin-dismissed")).toBeTruthy());
+    expect(screen.getByText("Sign-in did not finish")).toBeTruthy();
+    expect(screen.getByText(/not linked to a Pharmacy staff account/)).toBeTruthy();
+    expect(mockReplace).not.toHaveBeenCalled();
+    // retry runs the sign-in again for the same product and clears the message
+    mockSignInPassport.mockResolvedValueOnce(entitled);
+    await fireEvent.press(screen.getByTestId("signin-retry"));
+    await waitFor(() => expect(mockSignInPassport).toHaveBeenCalledTimes(2));
+    expect(mockSignInPassport).toHaveBeenLastCalledWith("pharmacy", "en");
+    await waitFor(() => expect(mockReplace).toHaveBeenCalledWith("/(tabs)"));
+    expect(screen.queryByTestId("signin-dismissed")).toBeNull();
+  });
+  it("Choose another product clears the message and keeps the product grid usable", async () => {
+    mockSignInPassport.mockRejectedValueOnce(new PassportError("cancelled", "x", "dismiss"));
+    await wrap(<SignIn />);
+    await fireEvent.press(screen.getByTestId("signin-passport"));
+    await waitFor(() => expect(screen.getByTestId("signin-dismissed")).toBeTruthy());
+    await fireEvent.press(screen.getByTestId("signin-choose-product"));
+    expect(screen.queryByTestId("signin-dismissed")).toBeNull();
+    await fireEvent.press(screen.getByTestId("product-lab"));
+    expect(screen.getByTestId("product-lab").props.accessibilityState?.selected).toBe(true);
+  });
+  it("shows the dismissed message in Arabic", async () => {
+    await act(async () => { await i18n.changeLanguage("ar"); });
+    mockSignInPassport.mockRejectedValueOnce(new PassportError("cancelled", "x", "dismiss"));
+    await wrap(<SignIn />);
+    await fireEvent.press(screen.getByTestId("signin-passport"));
+    await waitFor(() => expect(screen.getByText("لم يكتمل تسجيل الدخول")).toBeTruthy());
+    expect(screen.getByText("حاول مرة أخرى")).toBeTruthy(); expect(screen.getByText("اختر منتجًا آخر")).toBeTruthy();
+  });
   it("explains an unlinked Passport (403 PASSPORT_NOT_LINKED) with the product name", async () => {
     mockSignInPassport.mockRejectedValueOnce(new ApiError(403, "PASSPORT_NOT_LINKED", "not linked"));
     await wrap(<SignIn />);
@@ -82,7 +117,7 @@ describe("sign-in screen: Kiorex Passport", () => {
   });
   it("has Arabic strings for every Passport message", async () => {
     await act(async () => { await i18n.changeLanguage("ar"); });
-    for (const k of ["passport", "passportHint", "passportCancelled", "passportFailed", "passportNetwork", "passportNotLinked", "passportUnsupported"]) expect(i18n.t(`signIn.${k}`, { product: "المعمل" })).not.toBe(`signIn.${k}`);
+    for (const k of ["passport", "passportHint", "passportCancelled", "passportDismissedTitle", "passportDismissed", "tryAgain", "chooseProduct", "passportFailed", "passportNetwork", "passportNotLinked", "passportUnsupported"]) expect(i18n.t(`signIn.${k}`, { product: "المعمل" })).not.toBe(`signIn.${k}`);
     expect(i18n.t("signIn.passport")).toBe("الدخول عبر كيوريكس باسبورت");
   });
 });

@@ -40,6 +40,11 @@ export const staffAssociatedDomains = (host: string | null = staffLinkHost()): s
 export const staffIntentFilters = (host: string | null = staffLinkHost()) =>
   host ? [{ action: "VIEW", autoVerify: true, data: STAFF_ANDROID_PATH_PREFIXES.map((pathPrefix) => ({ scheme: "https", host, pathPrefix })), category: ["BROWSABLE", "DEFAULT"] }] : [];
 const PRODUCTION_CLASS_PROFILES = ["production", "pilot"];
+// expo-dev-client (launcher, dev menu, and our floating-button override) belongs in development builds only. Every store or release-class profile
+// (preview, kx-test, kx-test-simulator, pilot, production) is built WITHOUT these config plugins: no dev launcher wiring in MainActivity / AppDelegate,
+// no dev-menu manifest entries. A development build is a profile named `development` or `development-*` (EAS) or a local run with APP_ENV unset / `development`.
+export const isDevClientProfile = (profile: string): boolean => profile === "development" || profile.startsWith("development-");
+export const DEV_CLIENT_PLUGINS = ["expo-dev-client", "./plugins/withDevMenuNoFab.js"] as const;
 
 const exists = (p: string) => { try { return fs.existsSync(p); } catch { return false; } };
 const pick = (envName: string, local: string): string | undefined => process.env[envName] || (exists(local) ? local : undefined);
@@ -57,7 +62,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
   if (!linkHost && PRODUCTION_CLASS_PROFILES.includes(profile) && !process.env.SKIP_LINK_HOST_CHECK) throw new Error(`A ${profile} build needs STAFF_LINK_HOST (the Kiorly Home host of the environment, set per profile in eas.json). Associated domains are compile time.`);
   if (linkHost) process.env.EXPO_PUBLIC_LINK_HOSTS ??= linkHost; // the in-app link resolver (src/lib/deepLink.ts) accepts https links for the same host
   const projectId = process.env.EAS_PROJECT_ID ?? (config.extra as { eas?: { projectId?: string } } | undefined)?.eas?.projectId;
-  const plugins = (config.plugins ?? []).map((p) => (Array.isArray(p) ? p : [p, undefined]) as [string, Record<string, unknown> | undefined]).map(([name, opts]) =>
+  const devClient = isDevClientProfile(profile);
+  const plugins = (config.plugins ?? []).filter((p) => devClient || !DEV_CLIENT_PLUGINS.includes((Array.isArray(p) ? p[0] : p) as (typeof DEV_CLIENT_PLUGINS)[number])).map((p) => (Array.isArray(p) ? p : [p, undefined]) as [string, Record<string, unknown> | undefined]).map(([name, opts]) =>
     name === "expo-notifications" ? ([name, { ...(opts ?? {}), defaultChannel: "default", enableBackgroundRemoteNotifications: true }] as [string, Record<string, unknown>]) : opts ? ([name, opts] as [string, Record<string, unknown>]) : name,
   );
   return {
