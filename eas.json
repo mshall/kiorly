@@ -19,7 +19,12 @@
       "channel": "preview",
       "android": { "buildType": "apk", "gradleCommand": ":app:assembleRelease" },
       "ios": { "buildConfiguration": "Release" },
-      "env": { "APP_ENV": "preview", "EXPO_PUBLIC_ENV": "staging" }
+      "env": { "APP_ENV": "preview", "EXPO_PUBLIC_ENV": "staging", "STAFF_LINK_HOST": "app.test.kiorly.com" }
+    },
+    "pilot": {
+      "extends": "production",
+      "channel": "pilot",
+      "env": { "APP_ENV": "pilot", "EXPO_PUBLIC_ENV": "pilot", "STAFF_LINK_HOST": "app.pilot.kiorly.com" }
     },
     "production": {
       "extends": "base",
@@ -28,7 +33,7 @@
       "channel": "production",
       "android": { "buildType": "app-bundle", "gradleCommand": ":app:bundleRelease" },
       "ios": { "buildConfiguration": "Release" },
-      "env": { "APP_ENV": "production", "EXPO_PUBLIC_ENV": "production" }
+      "env": { "APP_ENV": "production", "EXPO_PUBLIC_ENV": "production", "STAFF_LINK_HOST": "app.kiorly.com" }
     }
   },
   "submit": { "production": { "android": { "track": "internal", "releaseStatus": "draft" }, "ios": {} } }

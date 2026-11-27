@@ -1,5 +1,5 @@
 // GRW-P1-H: deep link resolution for the Kiorly staff app (com.kiorly.app). Pure and dependency free (unit tested with malicious inputs).
-// The staff app has one association (kiorex-account config/domains.json `appLinks`: host www.kiorly.com, paths /signin/* and /open/*). A link is matched against a
+// The staff app has one association: the Kiorly Home host of the environment (build variable STAFF_LINK_HOST, mirrored in EXPO_PUBLIC_LINK_HOSTS; none = scheme links only), path /open/*. A link is matched against a
 // CLOSED route table: `/open/<route-key>:<id>` (a key and an id, never a URL), `/signin/*` (opens the sign-in screen; nothing in the URL is read, so
 // a Passport redirect that lands here can never sign anyone in), and the existing `kiorly://auth/*` Passport redirect. Everything else opens Home.
 // No URL-valued parameter is honoured, no token is read from a link, and a link never links, merges or signs in an account: staff screens need
@@ -23,7 +23,7 @@ export const OPEN_ROUTE_KEYS: Readonly<Record<string, (id: string) => string>> =
   growth: (id) => (Object.prototype.hasOwnProperty.call(GROWTH_SCREENS, id) ? GROWTH_SCREENS[id]! : "/clinic/growth"),
 };
 export const configuredHosts = (env: string | undefined = process.env.EXPO_PUBLIC_LINK_HOSTS): string[] =>
-  (env ?? "www.kiorly.com").split(",").map((h) => h.trim().toLowerCase()).filter((h) => /^[a-z0-9.-]+(:\d{1,5})?$/.test(h));
+  (env ?? "").split(",").map((h) => h.trim().toLowerCase()).filter((h) => /^[a-z0-9.-]+(:\d{1,5})?$/.test(h));
 
 const decodeOnce = (s: string): string | null => { try { return decodeURIComponent(s); } catch { return null; } };
 const clean = (raw: string): string | null => { const d = decodeOnce(raw); return d === null || d.includes("%") || /[\\/\u0000-\u001f\u007f\s]/.test(d) ? null : d; };

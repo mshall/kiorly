@@ -81,6 +81,7 @@ The app needs **no code change** to go from mock push to real push; only build-t
 | `EAS_PROJECT_ID` | EAS env (all profiles) | from `eas init`; required for Expo push tokens (without it the app keeps the mock token) |
 | `GOOGLE_SERVICES_JSON` | EAS **file** secret per environment | Firebase Android config for `com.kiorly.app` (add `.dev` / `.preview` ids if you use `APP_ID_SUFFIX`) |
 | `GOOGLE_SERVICE_INFO_PLIST` | EAS **file** secret per environment | Firebase iOS config for `com.kiorly.app` |
+| `STAFF_LINK_HOST` | `eas.json` profile `env` (per environment) | Universal/app link host, compile time; see `Docs/APP_LINKS.md` |
 | `EXPO_PUBLIC_CLINIC_API`, `EXPO_PUBLIC_PHARMACY_API`, `EXPO_PUBLIC_LAB_API`, `EXPO_PUBLIC_PASSPORT_ISSUER` | EAS env per environment | HTTPS API bases / issuer |
 
 Commands: `eas env:create --environment production --name GOOGLE_SERVICES_JSON --type file --visibility secret --value ./google-services.json` (same for the plist and each profile), then `eas build -p android --profile preview` (APK) / `--profile production` (AAB). A `production` build **fails at config time** if either Firebase file is missing. Local placeholder notes: `config/firebase/README.md` (files are git-ignored).
