@@ -14,6 +14,8 @@ describe("staff app deep links (GRW-P1-H)", () => {
     expect(r("https://app.test.kiorly.com/open/visit:apt_123")).toEqual({ kind: "open", route: "/clinic/visit/apt_123", requiresSignIn: true });
     expect(r("https://app.test.kiorly.com/open/patient:P-42").route).toBe("/clinic/patient/P-42");
     expect(r("https://app.test.kiorly.com/open/rx:rx_9").route).toBe("/pharmacy/rx/rx_9");
+    expect(r("kiorly://open/specimen:cmwz4jnfl001l").route).toBe("/lab/results/cmwz4jnfl001l");
+    expect(r("kiorly://open/specimen:..%2Fsecret").route).toBe("/");
     expect(r("https://app.test.kiorly.com/open/growth:me")).toMatchObject({ kind: "open", route: "/clinic/growth", requiresSignIn: true }); // GRW-P1-L
     // GRW-P2-C: the closed set of Growth screens; any other id (including prototype names) opens the hub, never a path taken from the link
     for (const [id, route] of [["share", "/clinic/growth-share"], ["slots", "/clinic/growth-slots"], ["statements", "/clinic/growth-statements"], ["verification", "/clinic/growth-verification"]]) {
@@ -30,7 +32,7 @@ describe("staff app deep links (GRW-P1-H)", () => {
     expect(r("https://app.test.kiorly.com/auth/callback?code=a&state=b").kind).toBe("home");
   });
   it("route keys are a closed list of key:id pairs, never URLs", () => {
-    expect(Object.keys(OPEN_ROUTE_KEYS).sort()).toEqual(["growth", "patient", "round", "rx", "visit"]);
+    expect(Object.keys(OPEN_ROUTE_KEYS).sort()).toEqual(["growth", "patient", "round", "rx", "specimen", "visit"]);
     for (const u of [
       "https://app.test.kiorly.com/open/https:evil.example", "https://app.test.kiorly.com/open/visit:https%3A%2F%2Fevil.example", "https://app.test.kiorly.com/open/visit:..%2F..%2Fx", "https://app.test.kiorly.com/open/visit:a/b",
       "https://app.test.kiorly.com/open/unknown:abc", "https://app.test.kiorly.com/open/visit", "https://app.test.kiorly.com/open/visit:", "https://app.test.kiorly.com/open/visit:%252e%252e", "https://app.test.kiorly.com/open/visit:" + "a".repeat(70),

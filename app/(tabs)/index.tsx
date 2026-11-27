@@ -85,8 +85,9 @@ export default function Home() {
           <FadeIn key={p} delay={80 * (idx + 1)}>
             <View style={{ gap: 10 }} testID={`home-${p}`}>
               <Row style={{ justifyContent: "space-between" }}>
-                <Row gap={8}><View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: accent }} /><T variant="h2">{t(PRODUCT_META[p].nameKey)}</T></Row>
-                <Badge tone={entitled ? "success" : "warning"} label={b ? `${b.org.plan === "BASIC" ? t("signIn.planBasic") : b.org.plan === "PRO" ? t("signIn.planPro") : t("signIn.planEnterprise")} · ${pick(b.org as object, "name", i18n.language) || b.org.name}` : "-"} />
+                <Row gap={8} style={{ flexShrink: 0 }}><View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: accent }} /><T variant="h2">{t(PRODUCT_META[p].nameKey)}</T></Row>
+                {/* large fonts: the plan pill shrinks with an ellipsis instead of running off the screen edge */}
+                <View style={{ flexShrink: 1, minWidth: 0 }}><Badge tone={entitled ? "success" : "warning"} label={b ? `${b.org.plan === "BASIC" ? t("signIn.planBasic") : b.org.plan === "PRO" ? t("signIn.planPro") : t("signIn.planEnterprise")} · ${pick(b.org as object, "name", i18n.language) || b.org.name}` : "-"} /></View>
               </Row>
               {entitled ? (
                 <>

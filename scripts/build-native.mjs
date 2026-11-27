@@ -8,7 +8,7 @@
 // It never touches this checkout's ios/ and android/ folders or .env.local: the source is copied (APFS clone for node_modules) to KX_BUILD_ROOT, prebuilt
 // there with the profile, built, and the artifact copied out. A debug-key APK is for testing only: never upload it to a store.
 import { execFileSync, spawnSync } from "node:child_process";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -38,6 +38,12 @@ if (target === "android") {
   const androidHome = process.env.ANDROID_HOME ?? path.join(homedir(), ".local/android/sdk");
   Object.assign(buildEnv, { JAVA_HOME: javaHome, ANDROID_HOME: androidHome, ANDROID_SDK_ROOT: androidHome, PATH: `${javaHome}/bin:${androidHome}/platform-tools:${process.env.PATH}` });
   sh("npx", ["expo", "prebuild", "--platform", "android", "--no-install", "--clean"], { cwd: work, env: buildEnv });
+  // KX_CLEARTEXT=1: private-stack test builds only (http hosts on adb-reversed loopback ports). Patches the throw-away copy's manifest, never the checkout; a kx-test, pilot or prod build must never set it.
+  if (process.env.KX_CLEARTEXT === "1") {
+    if (["test", "pilot", "prod"].includes(profile)) { console.error("KX_CLEARTEXT is for private-stack profiles only"); process.exit(64); }
+    const mf = path.join(work, "android/app/src/main/AndroidManifest.xml");
+    writeFileSync(mf, readFileSync(mf, "utf8").replace("<application ", '<application android:usesCleartextTraffic="true" '));
+  }
   mkdirSync(path.join(work, "android"), { recursive: true });
   sh("bash", ["-c", `echo "sdk.dir=${androidHome}" > local.properties`], { cwd: path.join(work, "android") });
   const arch = process.env.KX_ARCH ?? "arm64-v8a";

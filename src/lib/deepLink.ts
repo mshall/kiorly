@@ -19,6 +19,8 @@ export const OPEN_ROUTE_KEYS: Readonly<Record<string, (id: string) => string>> =
   patient: (id) => `/clinic/patient/${id}`,
   round: (id) => `/clinic/round/${id}`,
   rx: (id) => `/pharmacy/rx/${id}`,
+  /** Lab bench result entry for one specimen in processing (`results.enter` / `results.second_entry` are checked by the screen and the API). */
+  specimen: (id) => `/lab/results/${id}`,
   /** GRW-P1-L: `kiorly://open/growth:me` (the hub shows the signed-in user's own links; the module key and role are checked by the API). */
   growth: (id) => (Object.prototype.hasOwnProperty.call(GROWTH_SCREENS, id) ? GROWTH_SCREENS[id]! : "/clinic/growth"),
 };
