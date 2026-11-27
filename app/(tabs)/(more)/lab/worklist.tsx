@@ -1,18 +1,21 @@
 import { View } from "react-native";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Card, Row, Screen, T } from "@/components/ui";
 import { ListRow, Progress, QueryView, SectionTitle } from "@/components/kit";
 import { useRead, usePullRefresh } from "@/hooks/useRead";
 import { sectionPercent, sectionTone, type Section } from "@/modules/lab/helpers";
 import { statusLabel } from "@/lib/status";
+import { useLab } from "@/modules/lab/useLab";
+import { mayOpenEntry, specimenProgress, type EntrySpecimen } from "@/modules/lab/entry";
 
-interface Spec { id: string; accessionNumber: string; specimenType: string; status: string; order?: { orderNumber?: string; priority?: string } }
 
 export default function Worklist() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { can } = useLab();
   const prog = useRead<{ windowDays: number; sections: Section[] }>("lab", "/mobile/worklist/progress");
-  const list = useRead<Spec[]>("lab", "/worklist", { query: { status: "PROCESSING" } });
+  const list = useRead<EntrySpecimen[]>("lab", "/worklist", { query: { status: "PROCESSING" } });
   const refresh = usePullRefresh({ refetch: async () => { await Promise.all([prog.refetch(), list.refetch()]); } });
   return (
     <Screen refresh={refresh} testID="lab-worklist">
@@ -30,7 +33,7 @@ export default function Worklist() {
       </QueryView>
       <SectionTitle title={t("lab.inLab")} />
       <QueryView q={list} isEmpty={(d) => !d.length} rows={3} empty={{ icon: "list", title: t("lab.queueEmpty") }}>
-        {(d) => <View style={{ gap: 8 }}>{d.slice(0, 15).map((s) => <ListRow key={s.id} icon="syringe" title={s.accessionNumber} subtitle={`${s.order?.orderNumber ?? ""} · ${s.specimenType}`} badge={s.order?.priority !== "ROUTINE" ? statusLabel(t, s.order?.priority, { kind: "priority" }) : undefined} badgeTone="danger" />)}</View>}
+        {(d) => <View style={{ gap: 8 }}>{d.slice(0, 15).map((s) => { const pr = specimenProgress(s); return <ListRow key={s.id} testID={`worklist-specimen-${s.id}`} icon="syringe" title={s.accessionNumber} subtitle={`${s.order?.orderNumber ?? ""} · ${s.specimenType}`} meta={pr.total ? t("lab.entry.progress", { done: pr.done, total: pr.total }) : undefined} badge={s.order?.priority !== "ROUTINE" ? statusLabel(t, s.order?.priority, { kind: "priority" }) : undefined} badgeTone="danger" onPress={mayOpenEntry(can) ? () => router.push(`/lab/results/${s.id}` as never) : undefined} />; })}</View>}
       </QueryView>
     </Screen>
   );

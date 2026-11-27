@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useQueryClient } from "@tanstack/react-query";
-import { Screen, Row, useToast } from "@/components/ui";
+import { Button, Screen, Row, Sheet, T, useToast } from "@/components/ui";
 import { ActionSheet, FadeIn, ListRow, QueryView, Segmented, StatTile, type SheetAction } from "@/components/kit";
 import { useRead, usePullRefresh } from "@/hooks/useRead";
 import { api } from "@/api/client";
@@ -30,6 +30,7 @@ export default function ClinicSchedule() {
   const refresh = usePullRefresh(q);
   const [tab, setTab] = useState<"queue" | "all">("queue");
   const [sel, setSel] = useState<Appt | null>(null);
+  const [noShow, setNoShow] = useState<Appt | null>(null); const [busy, setBusy] = useState(false);
   const items = (tab === "queue" ? q.data?.queue : q.data?.items) ?? [];
   const counts = { waiting: 0, inExam: 0, done: 0 };
   (q.data?.items ?? []).forEach((a) => { const k = queueView(a.status, a.queueStage).key; if (k === "waiting") counts.waiting++; else if (k === "inExam") counts.inExam++; else if (k === "completed") counts.done++; });
@@ -38,11 +39,18 @@ export default function ClinicSchedule() {
     try { await api.post("clinic", `/front-desk/appointments/${a.id}/check-in`, {}); toast.show(t("clinic.schedule.checkedIn")); haptic.success(); await qc.invalidateQueries({ queryKey: ["clinic"] }); }
     catch (e) { toast.show((e as ApiError).status === 403 ? t("common.notAllowed") : (e as ApiError).message, "error"); }
   };
+  // No-show: the same status change the web makes (PATCH /appointments/:id/status). Whatever follows from it (deposit policy, fees) is the server's rule; the server also decides who may do it.
+  const markNoShow = async () => {
+    if (!noShow || busy) return; setBusy(true);
+    try { await api.patch("clinic", `/appointments/${noShow.id}/status`, { status: "NO_SHOW" }); haptic.success(); toast.show(t("clinic.schedule.noShowDone")); setNoShow(null); await qc.invalidateQueries({ queryKey: ["clinic"] }); }
+    catch (e) { const er = e as ApiError; haptic.error(); toast.show(er.status === 403 ? t("common.notAllowed") : er.status === 409 ? t("clinic.schedule.noShowConflict") : er.message, "error"); setNoShow(null); } finally { setBusy(false); }
+  };
   const actions = (a: Appt): SheetAction[] => [
     { label: t("clinic.schedule.openPatient"), icon: "user", onPress: () => router.push(`/clinic/patient/${a.patient.id}` as never) },
     ...(canCheckIn(a.status) ? [{ label: t("clinic.schedule.checkIn"), icon: "check" as const, onPress: () => void checkIn(a) }] : []),
     ...(canStartVisit(boot) && canStartFrom(a.status, a.queueStage) ? [{ label: t("clinic.schedule.startVisit"), icon: "stethoscope" as const, onPress: () => router.push(`/clinic/visit/${a.id}` as never) }] : []),
     { label: t("clinic.vitals.title"), icon: "activity", onPress: () => router.push(`/clinic/vitals?patientId=${a.patient.id}` as never) },
+    ...(canCheckIn(a.status) ? [{ label: t("clinic.schedule.noShow"), icon: "close" as const, tone: "danger" as const, onPress: () => setNoShow(a) }] : []),
   ];
 
   return (
@@ -72,6 +80,9 @@ export default function ClinicSchedule() {
           </QueryView>
         )}
       </View>
+      <Sheet visible={!!noShow} onClose={() => setNoShow(null)} title={t("clinic.schedule.noShowTitle")} testID="noshow-sheet" footer={<Button variant="danger" title={t("clinic.schedule.noShow")} onPress={() => void markNoShow()} loading={busy} testID="noshow-confirm" />}>
+        <T>{noShow ? nameOf(noShow.patient, lang) : ""}</T><T variant="small" muted>{t("clinic.schedule.noShowBody")}</T>
+      </Sheet>
       <ActionSheet visible={!!sel} onClose={() => setSel(null)} title={sel ? nameOf(sel.patient, lang) : ""} actions={sel ? actions(sel) : []} />
     </Screen>
   );

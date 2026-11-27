@@ -14,11 +14,20 @@ import type { PartnerProduct } from "@/modules/partner-growth";
  * Commission rate and settlement statement cards of the Pharmacy and Lab Growth tab (read only; Kiorex sets both). Shown to the roles the API names in `can.commission`.
  * Every figure and text comes from Kiorex through the product API: nothing is computed, estimated or worded here beyond neutral labels. Cash is never paid out: payouts are bank transfers.
  */
-export function PartnerCommissionCards({ product }: { product: PartnerProduct }) {
-  const { t, i18n } = useTranslation(); const lang = i18n.language; const ns = `${product}.growth.commission`;
+/** Where each product serves the same read-only views (the Clinic keeps them under billing; Pharmacy and Lab under the mobile Growth routes) and where its strings live. */
+export const COMMISSION_SOURCES = {
+  pharmacy: { api: "pharmacy", rate: "/mobile/growth/commission-rate", statement: "/mobile/growth/commission-statement", ns: "pharmacy.growth.commission" },
+  lab: { api: "lab", rate: "/mobile/growth/commission-rate", statement: "/mobile/growth/commission-statement", ns: "lab.growth.commission" },
+  clinic: { api: "clinic", rate: "/billing/kiorex-commissions/rate", statement: "/billing/kiorex-commissions/statement", ns: "clinic.settlement" },
+} as const;
+/** A server that is not (yet) connected to Kiorex answers 503 with one of these codes; the app shows the neutral "not connected" state, not an error. */
+const NOT_CONNECTED_CODES = ["STATEMENT_NOT_CONNECTED", "STATEMENT_NOT_CONFIGURED", "STATEMENT_UNAVAILABLE"];
+
+export function PartnerCommissionCards({ product }: { product: PartnerProduct | "clinic" }) {
+  const { t, i18n } = useTranslation(); const lang = i18n.language; const src = COMMISSION_SOURCES[product]; const ns = src.ns;
   const [period, setPeriod] = useState(currentPeriod());
-  const rate = useRead<PartnerRateView>(product, "/mobile/growth/commission-rate");
-  const stmt = useRead<PartnerStatement | PartnerStatementNotConnected>(product, "/mobile/growth/commission-statement", { query: { period } });
+  const rate = useRead<PartnerRateView>(src.api, src.rate);
+  const stmt = useRead<PartnerStatement | PartnerStatementNotConnected>(src.api, src.statement, { query: { period } });
   const money = (minor: number | null) => (minor === null ? "—" : formatMoney(minor / 100, lang, 2));
   const spec = (s: RateSpec) => {
     const base = s.feeType === "PERCENT" ? t(`${ns}.percentOf`, { pct: localizeDigits(`${Math.round((s.percentBps ?? 0) / 100 * 100) / 100}%`, lang) }) : t(`${ns}.flatPer`, { amount: money(s.flatMinor ?? 0) });
@@ -28,7 +37,7 @@ export function PartnerCommissionCards({ product }: { product: PartnerProduct })
   const r = rate.data; const s = isNotConnected(stmt.data) ? undefined : stmt.data;
   const blocks = r?.disclosure ? (["rateDisclosure", "termsSummary"] as const).map((k) => { const w = pickWording(r.disclosure![k], lang); return w ? { k, ...w } : null; }).filter((b) => b !== null) : [];
   // current API: 200 { connected: false }; an older API answered 503 STATEMENT_NOT_CONNECTED (still handled)
-  const notConnected = isNotConnected(stmt.data) || (stmt.error instanceof ApiError && stmt.error.code === "STATEMENT_NOT_CONNECTED");
+  const notConnected = isNotConnected(stmt.data) || (stmt.error instanceof ApiError && NOT_CONNECTED_CODES.includes(stmt.error.code));
   const rows: [string, number | null][] = s ? [["cOnline", s.onlineCollectionsMinor], ["cCashAccrued", s.cashVisitCommissionAccruedMinor], ["cCashNetted", s.cashVisitCommissionNettedMinor], ["cCashOpen", s.cashVisitCommissionOpenMinor], ...(s.cashBreakdown ? ([["cCashOnlyAccrued", s.cashBreakdown.cash.accruedMinor], ["cCashOnlyNetted", s.cashBreakdown.cash.nettedMinor], ["cCashTransferAccrued", s.cashBreakdown.cashTransfer.accruedMinor], ["cCashTransferNetted", s.cashBreakdown.cashTransfer.nettedMinor]] as [string, number | null][]) : []), ...(s.unknownTender && s.unknownTender.charges > 0 ? ([["cUnknownTender", s.unknownTender.commissionMinor]] as [string, number | null][]) : []), ["cDedCommission", s.deductions.commissionMinor], ["cDedFees", s.deductions.feesMinor], ["cDedRefunds", s.deductions.refundsMinor], ["cDedChargebacks", s.deductions.chargebacksMinor], ["cNet", s.netPayableMinor], ["cPaid", s.paidByBankTransferMinor]] : [];
 
   return (

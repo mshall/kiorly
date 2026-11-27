@@ -1,6 +1,7 @@
 import { View } from "react-native";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Card, Row, Screen, T, Badge } from "@/components/ui";
+import { Button, Card, Row, Screen, T, Badge } from "@/components/ui";
 import { BarChart, FadeIn, KV, QueryView, SectionTitle, Sparkline, StatTile } from "@/components/kit";
 import { useRead, usePullRefresh } from "@/hooks/useRead";
 import { formatMoney } from "@/lib/format";
@@ -12,6 +13,7 @@ export default function Revenue() {
   const { t } = useTranslation();
   const { lang } = useLang();
   const { colors } = useTheme();
+  const router = useRouter();
   const q = useRead<RevenueSnapshot>("clinic", "/mobile/revenue/snapshot");
   const refresh = usePullRefresh(q);
   return (
@@ -39,6 +41,7 @@ export default function Revenue() {
                       <Sparkline data={spark} color={colors.pulse} height={40} />
                     </Card>
                     <T variant="caption" muted>{t("clinic.revenue.note")}</T>
+                    <Button variant="secondary" icon="receipt" title={t("clinic.settlementPage.open")} onPress={() => router.push("/clinic/commission" as never)} testID="revenue-commission" />
                   </View>
                 </FadeIn>
               );
