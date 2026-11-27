@@ -44,6 +44,7 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/withAndroidDefaultStrings.js",
       "expo-dev-client",
       "./plugins/withDevMenuNoFab.js",
       "expo-secure-store",

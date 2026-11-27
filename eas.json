@@ -1,40 +1,114 @@
 {
-  "cli": { "version": ">= 16.0.0", "appVersionSource": "remote", "requireCommit": false },
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote",
+    "requireCommit": false
+  },
   "build": {
-    "base": { "node": "24.11.0", "environment": "development" },
+    "base": {
+      "node": "24.11.0",
+      "environment": "development"
+    },
     "development": {
       "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
       "environment": "development",
       "channel": "development",
-      "android": { "buildType": "apk", "gradleCommand": ":app:assembleDebug" },
-      "env": { "APP_ENV": "development", "EXPO_PUBLIC_ENV": "development" }
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "env": {
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_ENV": "development"
+      }
     },
-    "development-simulator": { "extends": "development", "ios": { "simulator": true } },
+    "development-simulator": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      }
+    },
     "preview": {
       "extends": "base",
       "distribution": "internal",
       "environment": "preview",
       "channel": "preview",
-      "android": { "buildType": "apk", "gradleCommand": ":app:assembleRelease" },
-      "ios": { "buildConfiguration": "Release" },
-      "env": { "APP_ENV": "preview", "EXPO_PUBLIC_ENV": "staging", "STAFF_LINK_HOST": "app.test.kiorly.com" }
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_ENV": "test",
+        "EXPO_PUBLIC_CLINIC_API": "https://clinics.test.kiorly.com/api/v1",
+        "EXPO_PUBLIC_PHARMACY_API": "https://pharmacies.test.kiorly.com/api/v1",
+        "EXPO_PUBLIC_LAB_API": "https://labs.test.kiorly.com/api/v1",
+        "EXPO_PUBLIC_PASSPORT_ISSUER": "https://passport.test.kiorex.com",
+        "EXPO_PUBLIC_PASSPORT_CLIENT_ID": "kiorly",
+        "STAFF_LINK_HOST": "app.test.kiorly.com"
+      }
     },
     "pilot": {
       "extends": "production",
       "channel": "pilot",
-      "env": { "APP_ENV": "pilot", "EXPO_PUBLIC_ENV": "pilot", "STAFF_LINK_HOST": "app.pilot.kiorly.com" }
+      "env": {
+        "APP_ENV": "pilot",
+        "EXPO_PUBLIC_ENV": "pilot",
+        "EXPO_PUBLIC_CLINIC_API": "https://clinics.pilot.kiorly.com/api/v1",
+        "EXPO_PUBLIC_PHARMACY_API": "https://pharmacies.pilot.kiorly.com/api/v1",
+        "EXPO_PUBLIC_LAB_API": "https://labs.pilot.kiorly.com/api/v1",
+        "EXPO_PUBLIC_PASSPORT_ISSUER": "https://passport.kiorex.com",
+        "EXPO_PUBLIC_PASSPORT_CLIENT_ID": "kiorly",
+        "STAFF_LINK_HOST": "app.pilot.kiorly.com"
+      }
     },
     "production": {
       "extends": "base",
       "autoIncrement": true,
       "environment": "production",
       "channel": "production",
-      "android": { "buildType": "app-bundle", "gradleCommand": ":app:bundleRelease" },
-      "ios": { "buildConfiguration": "Release" },
-      "env": { "APP_ENV": "production", "EXPO_PUBLIC_ENV": "production", "STAFF_LINK_HOST": "app.kiorly.com" }
+      "android": {
+        "buildType": "app-bundle",
+        "gradleCommand": ":app:bundleRelease"
+      },
+      "ios": {
+        "buildConfiguration": "Release"
+      },
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_ENV": "production",
+        "EXPO_PUBLIC_CLINIC_API": "https://clinics.kiorly.com/api/v1",
+        "EXPO_PUBLIC_PHARMACY_API": "https://pharmacies.kiorly.com/api/v1",
+        "EXPO_PUBLIC_LAB_API": "https://labs.kiorly.com/api/v1",
+        "EXPO_PUBLIC_PASSPORT_ISSUER": "https://passport.kiorex.com",
+        "EXPO_PUBLIC_PASSPORT_CLIENT_ID": "kiorly",
+        "STAFF_LINK_HOST": "app.kiorly.com"
+      }
+    },
+    "kx-test": {
+      "extends": "preview",
+      "channel": "kx-test"
+    },
+    "kx-test-simulator": {
+      "extends": "kx-test",
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
     }
   },
-  "submit": { "production": { "android": { "track": "internal", "releaseStatus": "draft" }, "ios": {} } }
+  "submit": {
+    "production": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      },
+      "ios": {}
+    }
+  }
 }

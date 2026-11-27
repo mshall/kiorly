@@ -15,3 +15,6 @@ config/firebase/google-services.json
 config/firebase/GoogleService-Info.plist
 google-services.json
 GoogleService-Info.plist
+
+# kx-test web export (scripts: export:web:test)
+dist-test/

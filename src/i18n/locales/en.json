@@ -56,6 +56,10 @@
     "errorTitle": "We could not load this",
     "errorBody": "Check your connection and try again.",
     "retry": "Try again",
+    "forbiddenTitle": "Your role does not include this",
+    "forbiddenBody": "Ask an administrator of your organisation if you need access.",
+    "mfaTitle": "Two-step verification needed",
+    "mfaBody": "This part of Kiorly needs two-step verification. Turn it on in Kiorex Passport (Security), then sign in again.",
     "emptyTitle": "Nothing here yet",
     "emptyHint": "New items will show up here."
   },

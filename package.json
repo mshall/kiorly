@@ -12,7 +12,14 @@
     "test": "jest",
     "check:dev-test-users": "node scripts/check-no-dev-test-users.mjs",
     "gen:assets": "node scripts/gen-assets.mjs",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "env:print": "node scripts/with-env.mjs",
+    "start:test": "node scripts/with-env.mjs test -- expo start --dev-client",
+    "web:test": "node scripts/with-env.mjs test -- expo start --web --port 8082",
+    "start:local-android": "node scripts/with-env.mjs local-android -- expo start --dev-client",
+    "export:web:test": "node scripts/with-env.mjs test -- expo export --platform web --output-dir dist-test",
+    "build:android:test": "node scripts/build-native.mjs android test",
+    "build:ios-sim:test": "node scripts/build-native.mjs ios-sim test"
   },
   "dependencies": {
     "@expo-google-fonts/ibm-plex-sans-arabic": "^0.4.2",

@@ -39,6 +39,17 @@ export function UnavailableState({ featureKey, scope }: { featureKey?: string; s
 export function ErrorState({ error, onRetry }: { error?: unknown; onRetry?: () => void }) {
   const { t } = useTranslation();
   if (error instanceof ApiError && error.isFeatureDisabled) return <UnavailableState featureKey={error.featureKey} scope={error.details?.scope as string | undefined} />;
+  // 403 is an answer, not an outage: the role does not include this screen (or the product wants two-step verification). A retry button would only repeat it.
+  if (error instanceof ApiError && error.status === 403) {
+    const mfa = error.code === "MFA_REQUIRED";
+    return (
+      <View testID={mfa ? "mfa-required" : "not-allowed"} accessibilityRole="alert" style={{ alignItems: "center", padding: 28, gap: 10 }}>
+        <BrandIllustration tone="error" />
+        <T variant="h2" style={{ textAlign: "center" }}>{t(mfa ? "states.mfaTitle" : "states.forbiddenTitle")}</T>
+        <T muted style={{ textAlign: "center" }}>{t(mfa ? "states.mfaBody" : "states.forbiddenBody")}</T>
+      </View>
+    );
+  }
   return (
     <View testID="error-state" style={{ alignItems: "center", padding: 28, gap: 10 }}>
       <BrandIllustration tone="error" />
