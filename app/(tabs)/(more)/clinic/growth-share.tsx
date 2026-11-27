@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { stripSvgRootAria } from "@/lib/svgXml";
 import { useTranslation } from "react-i18next";
 import { Banner, Button, Card, Field, Row, Screen, T, useToast } from "@/components/ui";
 import { FadeIn, QueryView, SectionTitle } from "@/components/kit";
@@ -82,7 +83,7 @@ export default function GrowthShare() {
                     <Card style={{ gap: 10 }} testID="share-result">
                       <SectionTitle title={t("clinic.growth.share.preview")} />
                       <View accessible accessibilityRole="image" accessibilityLabel={picked?.title} style={{ alignItems: "center", backgroundColor: "#FFFFFF", borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 6 }}>
-                        <SvgXml xml={card.svg} width={260} height={260} />
+                        <SvgXml xml={stripSvgRootAria(card.svg)} width={260} height={260} />
                       </View>
                       <T variant="small" weight="semibold">{t("clinic.growth.share.caption")}</T>
                       <T selectable testID="share-caption">{card.caption}</T>

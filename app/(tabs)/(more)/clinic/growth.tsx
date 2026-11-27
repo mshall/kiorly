@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { stripSvgRootAria } from "@/lib/svgXml";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Badge, Banner, Button, Card, Chip, Field, Row, Screen, Sheet, T, useToast } from "@/components/ui";
@@ -31,7 +32,7 @@ function QrCard({ linkId, caption, testID }: { linkId?: string; caption: string;
       {q.isLoading ? <View accessibilityLabel={t("clinic.growth.qr.loading")} style={{ width: 220, height: 220, borderRadius: 16, backgroundColor: colors.subtle }} />
         : q.data ? (
           <View accessible accessibilityRole="image" accessibilityLabel={t("clinic.growth.qr.forLink", { name: caption })} style={{ padding: 8, borderRadius: 16, backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: colors.border }}>
-            <SvgXml xml={q.data.svg} width={220} height={220} />
+            <SvgXml xml={stripSvgRootAria(q.data.svg)} width={220} height={220} />
           </View>
         ) : <ErrorState error={q.error} onRetry={() => void q.refetch()} />}
       {q.data ? <T variant="caption" muted selectable style={{ textAlign: "center" }} forceLatin>{q.data.url}</T> : null}

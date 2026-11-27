@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Pressable, View } from "react-native";
 import { SvgXml } from "react-native-svg";
+import { stripSvgRootAria } from "@/lib/svgXml";
 import { useTranslation } from "react-i18next";
 import { Banner, Button, Card, Row, Screen, T } from "@/components/ui";
 import { FadeIn, QueryView, SectionTitle } from "@/components/kit";
@@ -69,7 +70,7 @@ export default function GrowthSlots() {
                   {card ? (
                     <Card style={{ gap: 10 }} testID="slots-result">
                       <View accessible accessibilityRole="image" style={{ alignItems: "center", backgroundColor: "#FFFFFF", borderRadius: 12, borderWidth: 1, borderColor: colors.border, padding: 6 }}>
-                        <SvgXml xml={card.svg} width={260} height={325} />
+                        <SvgXml xml={stripSvgRootAria(card.svg)} width={260} height={325} />
                       </View>
                       <T variant="caption" muted>{t("clinic.growth.slots.link")}</T>
                       <T selectable forceLatin variant="small">{card.link}</T>
