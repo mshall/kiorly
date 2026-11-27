@@ -43,13 +43,14 @@ test.describe('sign-in: Kiorex Passport default, Password toggle, last-method me
     await expect(page.getByTestId('signin-method-passport')).toHaveAttribute('aria-selected', 'true');
   });
 
-  test('a dev test-user chip switches to the password form (it fills the credentials)', async ({ page }) => {
+  test('no test-user chips or demo hints are rendered, and typed credentials fill the password form', async ({ page }) => {
     await openSignIn(page);
-    const chip = page.locator('[data-testid^="demo-"]').first();
-    test.skip(!(await chip.isVisible().catch(() => false)), 'dev test users are not in this build');
-    await chip.click();
-    await expect(page.getByTestId('signin-method-password')).toHaveAttribute('aria-selected', 'true');
-    await expect(page.getByTestId('signin-email')).not.toHaveValue('');
+    await expect(page.locator('[data-testid^="demo-"]')).toHaveCount(0);
+    await expect(page.getByText(/Test users|demo/i)).toHaveCount(0);
+    await page.getByTestId('signin-method-password').click();
+    await page.getByTestId('signin-email').fill('someone@example.com');
+    await page.getByTestId('signin-password').fill('typed-by-hand');
+    await expect(page.getByTestId('signin-email')).toHaveValue('someone@example.com');
   });
 });
 

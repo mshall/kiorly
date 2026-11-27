@@ -1,14 +1,13 @@
 import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { DEMO_ACCOUNTS } from "@/dev/demoAccounts";
 
-describe("DEV ONLY test users (staff sign-in)", () => {
-  it("covers every product with only synthetic demo logins", () => {
-    for (const p of ["clinic", "pharmacy", "lab"] as const) expect(DEMO_ACCOUNTS[p].length).toBeGreaterThanOrEqual(4);
-    for (const d of DEMO_ACCOUNTS.clinic.concat(DEMO_ACCOUNTS.pharmacy)) { expect(d.email).toMatch(/@(demo\.kiorex\.test|nurse-demo\.kiorly\.test|demo\.kiorly\.local)$/); expect(d.password).toBe("Demo@12345"); }
-    for (const d of DEMO_ACCOUNTS.lab) expect(d.email).toMatch(/@(demo|chain|basic)-lab\.test$/);
+describe("no test-user or demo panel on the staff sign-in", () => {
+  it("has no dev folder and the sign-in screen does not load one", () => {
+    expect(existsSync(path.join(__dirname, "../dev"))).toBe(false);
+    expect(readFileSync(path.join(__dirname, "../../app/sign-in.tsx"), "utf8")).not.toMatch(/DevTestUsers|@\/dev\//);
   });
-  it("are absent from a production bundle (and present in a dev export)", () => {
+  it("is absent from the production bundle and the dev export", () => {
     expect(() => execFileSync("node", [path.join(__dirname, "../../scripts/check-no-dev-test-users.mjs")], { stdio: "pipe" })).not.toThrow();
   }, 240_000);
 });

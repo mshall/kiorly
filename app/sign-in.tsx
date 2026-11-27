@@ -17,8 +17,6 @@ import { initialSignInEntry, initialSignInMethod, loadSignInEntry, loadSignInMet
 import { ApiError } from "@/api/errors";
 import { haptic } from "@/lib/haptics";
 
-// DEV ONLY. Keep the condition an inline literal expression: Metro folds `__DEV__` and EXPO_PUBLIC_* per file, so production bundles drop the require and with it ./dev/* (scripts/check-no-dev-test-users.mjs).
-const DevTestUsers = __DEV__ && process.env.EXPO_PUBLIC_DEV_TEST_USERS !== "false" ? (require("@/dev/DevTestUsers") as typeof import("@/dev/DevTestUsers")).DevTestUsers : null;
 
 export default function SignIn() {
   const { t, i18n } = useTranslation();
@@ -128,7 +126,7 @@ export default function SignIn() {
           )}
         </View>
 
-        {DevTestUsers ? <View style={{ paddingHorizontal: space[4], paddingBottom: insets.bottom + space[5] }}><DevTestUsers product={product} entry={entry} onPick={(a) => { setMethod("password"); setEmail(a.email); setPassword(a.password); setOrg(a.org); }} /></View> : <View style={{ height: insets.bottom + space[5] }} />}
+        <View style={{ height: insets.bottom + space[5] }} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
