@@ -7,10 +7,12 @@ import { test, expect, type Page, type BrowserContext } from '@playwright/test';
  * ends the Passport session (the next "Sign in with Kiorex Passport" asks for the phone again).
  */
 const IDP = process.env.PASSPORT_URL ?? 'http://localhost:4400';
+// The API ports the app talks to: the shared dev stack by default; a PRIVATE stack (e2e/scripts/reg-stack.sh: Clinic :4812, Pharmacy :4814, Lab :4815) passes its own.
+const API_PORTS = { clinic: process.env.REAL_CLINIC_PORT ?? '3010', pharmacy: process.env.REAL_PHARMACY_PORT ?? '3100', lab: process.env.REAL_LAB_PORT ?? '3200' };
 const CASES = [
-  { entry: 'clinic', phone: '+201000002001', api: ':3010', who: 'owner.na' },
-  { entry: 'pharmacy', phone: '+201000002004', api: ':3100', who: 'pharmacist' },
-  { entry: 'lab', phone: '+201000002005', api: ':3200', who: 'tech' },
+  { entry: 'clinic', phone: '+201000002001', api: `:${API_PORTS.clinic}`, who: 'owner.na' },
+  { entry: 'pharmacy', phone: '+201000002004', api: `:${API_PORTS.pharmacy}`, who: 'pharmacist' },
+  { entry: 'lab', phone: '+201000002005', api: `:${API_PORTS.lab}`, who: 'tech' },
 ] as const;
 
 async function passportPopup(page: Page, context: BrowserContext, phone: string, expectPhoneAsked: boolean) {
