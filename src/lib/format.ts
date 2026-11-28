@@ -1,4 +1,4 @@
-const loc = (lang: string) => (lang.startsWith("ar") ? "ar-EG" : "en-GB");
+const loc = (lang: string) => (lang.startsWith("ar") ? "ar-EG-u-nu-latn" : "en-GB");
 const TZ = "Africa/Cairo";
 
 /** `digits` = 0 for dashboards; pass 2 where piasters matter (unit prices, cash counts, variances). */
@@ -29,14 +29,9 @@ export const formatCountdown = (ms: number) => {
 };
 
 // ---- digits and durations -------------------------------------------------------------------------------------------------------------------------
-// Convention: every number a person reads in the Arabic UI uses Arabic-Indic digits (the `ar-EG` Intl formatters above already do). Identifiers
-// (order/accession/lot numbers, MRN, barcodes) are never passed through these helpers and stay Latin so they can be matched against labels.
-const ARABIC_INDIC = "٠١٢٣٤٥٦٧٨٩";
-/** Replaces Latin digits with Arabic-Indic digits when the UI language is Arabic; returns the input unchanged otherwise. */
-export const localizeDigits = (value: string | number, lang: string): string => {
-  const s = String(value);
-  return lang.startsWith("ar") ? s.replace(/[0-9]/g, (d) => ARABIC_INDIC[Number(d)]) : s;
-};
+// Convention (founder, 28 Nov 2026): Western digits 0-9 in Arabic and English alike. Identifiers (order/accession/lot numbers, MRN, barcodes) stay Latin too.
+/** Kept for call sites: digits are Western in every language now, so this returns the text unchanged. */
+export const localizeDigits = (value: string | number, _lang: string): string => String(value);
 /** A whole number / count in the active language's digits (no grouping change for small counts; uses Intl grouping for large ones). */
 export const formatInt = (n: number, lang: string) => new Intl.NumberFormat(loc(lang), { maximumFractionDigits: 0 }).format(n);
 

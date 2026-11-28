@@ -74,7 +74,7 @@ describe("Growth tab: credit and promotion cards", () => {
     const card = await screen.findByTestId("growth-credit");
     expect(within(card).getByText("رصيد كيوريكس")).toBeTruthy();
     expect(within(card).getByText("رسوم كيوريكس")).toBeTruthy();
-    expect(within(card).getByText("١٢", { exact: false })).toBeTruthy();
+    expect(within(card).getByText("12", { exact: false })).toBeTruthy();
     expect(within(await screen.findByTestId("growth-promo-p1")).getByText("نشط")).toBeTruthy();
   });
 

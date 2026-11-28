@@ -71,7 +71,7 @@ describe.each(cases)("%s Growth tab", (product, Screen, P) => {
     await setLang("ar");
     route({ "GET /mobile/growth": overview(P), ...QR });
     await wrap(<Screen />);
-    expect(within(await screen.findByTestId("growth-link-l1")).getByText("٤٠", { exact: false })).toBeTruthy();
+    expect(within(await screen.findByTestId("growth-link-l1")).getByText("40", { exact: false })).toBeTruthy();
   });
 
   it("empty: no links shows the empty state and no QR card", async () => {

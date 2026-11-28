@@ -77,8 +77,8 @@ describe("Growth tab", () => {
     route({ "GET /mobile/growth": overview(), ...QR });
     await wrap(<Growth />);
     expect(within(await screen.findByTestId("growth-profile")).getByText("ملفك العام على كيوريكس", { exact: false })).toBeTruthy();
-    expect(within(screen.getByTestId("growth-link-l1")).getByText("٤٠", { exact: false })).toBeTruthy();
-    expect(within(screen.getByTestId("growth-perf")).getByText("٦٧٪", { exact: false })).toBeTruthy();
+    expect(within(screen.getByTestId("growth-link-l1")).getByText("40", { exact: false })).toBeTruthy();
+    expect(within(screen.getByTestId("growth-perf")).getByText("67٪", { exact: false })).toBeTruthy();
     expect(within(screen.getByTestId("growth-commission")).getByText("بدون رسوم", { exact: false })).toBeTruthy();
   });
 

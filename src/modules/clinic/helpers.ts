@@ -91,7 +91,7 @@ export const tubeLabelOk = (l: string) => TUBE_LABEL_RE.test(l.trim());
 // ---- revenue ----
 export interface RevenueSnapshot { currency: string; today: { net: number; gross: number }; last7: { net: number; gross: number }; last30: { net: number; gross: number }; daily: { date: string; net: number; gross: number }[]; completedVisitsToday: number }
 export function revenueSeries(s: RevenueSnapshot, lang: string) {
-  const fmt = new Intl.DateTimeFormat(lang.startsWith("ar") ? "ar-EG" : "en-GB", { weekday: "short", timeZone: "UTC" });
+  const fmt = new Intl.DateTimeFormat(lang.startsWith("ar") ? "ar-EG-u-nu-latn" : "en-GB", { weekday: "short", timeZone: "UTC" });
   return s.daily.map((d) => ({ label: fmt.format(new Date(`${d.date}T12:00:00Z`)), value: Math.round(d.net) }));
 }
 /** % change of the last day with revenue vs the average of the previous days. */
@@ -100,7 +100,7 @@ export function revenueTrend(daily: { net: number }[]): number | null {
   const last = v[v.length - 1]; const avg = v.slice(0, -1).reduce((a, b) => a + b, 0) / (v.length - 1);
   return avg ? Math.round(((last - avg) / avg) * 100) : null;
 }
-export const compactMoney = (n: number, lang: string, cur = "EGP") => new Intl.NumberFormat(lang.startsWith("ar") ? "ar-EG" : "en-GB", { notation: "compact", maximumFractionDigits: 1 }).format(n) + " " + cur;
+export const compactMoney = (n: number, lang: string, cur = "EGP") => new Intl.NumberFormat(lang.startsWith("ar") ? "ar-EG-u-nu-latn" : "en-GB", { notation: "compact", maximumFractionDigits: 1 }).format(n) + " " + cur;
 
 // ---- visit draft diff (PATCH only what changed; numeric fields sent as numbers) ----
 export const VISIT_NUMERIC = ["heartRate", "spo2", "bpSystolic", "bpDiastolic", "temperature", "weightKg"] as const;

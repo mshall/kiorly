@@ -52,7 +52,7 @@ describe("clinic schedule", () => {
     await wrap(<Schedule />);
     expect(await screen.findByText(/#7 · داليا إبراهيم/)).toBeTruthy();
     expect(screen.getAllByText("في الانتظار").length).toBeGreaterThan(0);
-    expect(screen.getByText("ينتظر ١٢ د")).toBeTruthy();
+    expect(screen.getByText("ينتظر 12 د")).toBeTruthy();
     await fireEvent.press(screen.getByTestId("appt-a1"));
     expect(await screen.findByText("بدء / متابعة الزيارة")).toBeTruthy();
     await fireEvent.press(screen.getByText("بدء / متابعة الزيارة"));
